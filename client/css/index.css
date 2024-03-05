@@ -1,0 +1,22 @@
+.body-bg {
+    background-image: url('../assets/blueBG.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.body {
+    font-family: 'Roboto', sans-serif;
+    min-height: 100vh;
+}
+
+.cloudBG {
+    background-image: url('../assets/cloudBG.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    height: 90vh;
+    width: 90%;
+}
