@@ -20,3 +20,21 @@
     height: 90vh;
     width: 90%;
 }
+
+nav label {
+    font-size: 32px;
+    font-weight: 100;
+    cursor: pointer;
+    border-top: 7px solid transparent;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"]:checked+label {
+    border-top: 7px solid;
+    border-image: linear-gradient(to left, #a4aeb1, #db624c);
+    border-image-slice: 1;
+    border-image-repeat: stretch;
+}
