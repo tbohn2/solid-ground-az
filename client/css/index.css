@@ -1,3 +1,8 @@
+:root {
+    --pink: #db624c;
+    --white: #e7f3f7;
+}
+
 .body-bg {
     background-image: url('../assets/blueBG.jpg');
     background-size: cover;
@@ -34,7 +39,7 @@ input[type="radio"] {
 
 input[type="radio"]:checked+label {
     border-top: 7px solid;
-    border-image: linear-gradient(to left, #a4aeb1, #db624c);
+    border-image: linear-gradient(to left, var(--white), var(--pink));
     border-image-slice: 1;
     border-image-repeat: stretch;
 }
