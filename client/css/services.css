@@ -1,0 +1,29 @@
+.serviceCard {
+    max-height: 30vh;
+    border-radius: 10px;
+    background-color: aliceblue;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.serviceCard:hover {
+    box-shadow: 0 0 10px 5px var(--pink);
+}
+
+.serviceCard img {
+    border-radius: 10px 0 0 10px;
+}
+
+.serviceCard div div button {
+    background-image: linear-gradient(to right bottom, var(--pink), var(--white));
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 20px;
+}
+
+.serviceCard div div button:hover {
+    background-image: linear-gradient(to right bottom, var(--white), var(--pink));
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
