@@ -1,0 +1,24 @@
+#calendar-weekdays div {
+    width: 14.28%;
+}
+
+.monthNavBtn {
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--white);
+    cursor: pointer;
+    background: none;
+    border-image: linear-gradient(to left, var(--white), var(--pink));
+    border-image-slice: 1;
+}
+
+.monthNavBtn:hover {
+    color: var(--pink);
+    transition: all 0.3s ease;
+}
+
+.date {
+    width: 14.28%;
+    height: 100px;
+    border: 1px solid #ccc;
+}
