@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "bootstrap": "^5.3.3",
-    "jquery": "^3.7.1"
+    "jquery": "^3.7.1",
+    "node-calendar": "^0.1.5"
   }
 }
