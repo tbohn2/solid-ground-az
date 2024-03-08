@@ -44,3 +44,7 @@
     transform: rotate(38deg);
     transform-origin: top left;
 }
+
+.currentDay {
+    border: 3px solid var(--pink);
+}
