@@ -12,14 +12,16 @@ function renderCalendar() {
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
 
     displayedDates.forEach(week => {
-        let weekDisplay = $('<div class="d-flex justify-content-between col-12"></div>');
+        let weekDisplay = $('<div class="d-flex"></div>');
         week.forEach(day => {
-            let dayDisplay = $('<div class="date"></div>');
+            let dayDisplay = $('<div class="date availableDate" data-bs-toggle="modal" data-bs-target="#serviceSelection"></div>');
             if (day === 0) {
                 dayDisplay.text('');
             } else {
                 dayDisplay.text(day);
             }
+            let blockedOut = $('<span class="unavailableDate"></span>')
+            dayDisplay.append(blockedOut);
             weekDisplay.append(dayDisplay);
         });
         $('#calendar-dates').append(weekDisplay);
