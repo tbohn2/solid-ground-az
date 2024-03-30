@@ -6,9 +6,9 @@ namespace StretchScheduler.Models
     {
         public int Id { get; set; }
         public int MonthNumber { get; set; }
-        public string Name { get; set; }
-        public List<Date> Dates { get; set; }
+        public required string Name { get; set; }
+        public List<Date>? Dates { get; set; }
         public int YearId { get; set; } // Foreign key
-        public Year Year { get; set; }   // Navigation property
+        public required Year Year { get; set; }   // Navigation property
     }
 }
