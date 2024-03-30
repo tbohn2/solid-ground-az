@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,31 +9,10 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using StretchScheduler.Models;
 using dotenv.net;
+using Newtonsoft.Json;
 
 namespace StretchScheduler
 {
-    public class StretchSchedulerContext : DbContext
-    {
-        static readonly string connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
-
-        public DbSet<Year> Years { get; set; }
-        public DbSet<Month> Months { get; set; }
-        public DbSet<Date> Dates { get; set; }
-        public DbSet<Time> Times { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (connectionString == null)
-            {
-                Console.WriteLine("Connection string not found or not set.");
-                // Handle the case where the connection string is not available
-            }
-            else
-            {
-                optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-            }
-        }
-    }
-
     // Define a class for configuring the ASP.NET Core application
     public class Startup
     {
@@ -40,7 +20,6 @@ namespace StretchScheduler
         {
             // Load environment variables
             DotEnv.Load();
-
             // Add the DbContext to the service collection
             services.AddDbContext<StretchSchedulerContext>();
             // Add controllers to the service collection
@@ -65,7 +44,45 @@ namespace StretchScheduler
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Hello World!");
+                });
 
+                endpoints.MapPost("/api/years", async context =>
+                {
+                    // Read the request body to get the year data
+                    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+
+                    try
+                    {
+                        // Deserialize the JSON request body and creates an instance of a Year 
+                        var newYear = JsonConvert.DeserializeObject<Year>(requestBody);
+
+                        // Validate the year object
+                        if (newYear == null)
+                        {
+                            context.Response.StatusCode = 400; // Bad Request
+                            await context.Response.WriteAsync("Invalid year data");
+                            return;
+                        }
+                        Console.WriteLine($"Year: {newYear.YearNumber}");
+
+                        // Add the new year to the database
+                        using (var scope = app.ApplicationServices.CreateScope())
+                        {
+                            var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                            await dbContext.Years.AddAsync(newYear);
+                            await dbContext.SaveChangesAsync();
+                        }
+
+                        context.Response.StatusCode = 201; // Created
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(newYear));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                        context.Response.StatusCode = 500;
+                        await context.Response.WriteAsync("An error occurred while creating the year.");
+                    }
                 });
             });
         }
