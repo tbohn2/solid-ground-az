@@ -6,8 +6,7 @@ namespace StretchScheduler.Models
     {
         public int Id { get; set; }
         public int DateNumber { get; set; }
-        public List<Time>? Times { get; set; }
-        public int MonthId { get; set; }
+        public int MonthNumber { get; set; }
         public required Month Month { get; set; }
     }
 }
