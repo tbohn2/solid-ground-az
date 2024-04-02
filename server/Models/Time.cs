@@ -10,7 +10,7 @@ namespace StretchScheduler.Models
         public bool Requested { get; set; } = false;
         // public int ClientId { get; set; }
         // public Client Client { get; set; }
-        public int DateId { get; set; }
+        public int DateNumber { get; set; }
         public required Date Date { get; set; }
     }
 }
