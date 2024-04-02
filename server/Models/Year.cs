@@ -3,16 +3,14 @@ using System.Collections.Generic;
 
 namespace StretchScheduler.Models
 {
-    public class Year(int yearNumber)
+    public class Year
     {
         public int Id { get; set; }
-        public required int YearNumber { get; set; } = yearNumber;
-        public List<Month>? Months { get; set; } = new List<Month>();
+        public required int YearNumber { get; set; }
 
-        // Method to add a Month to the Year
-        public void AddMonth(Month month)
+        public Year(int yearNumber)
         {
-            Months?.Add(month);
+            YearNumber = yearNumber;
         }
     }
 }
