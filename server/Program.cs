@@ -38,53 +38,7 @@ namespace StretchScheduler
             // Enable routing
             app.UseRouting();
 
-            // Define endpoint for handling GET requests to the root URL
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
-
-                endpoints.MapPost("/api/years", async context =>
-                {
-                    // Read the request body to get the year data
-                    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
-
-                    try
-                    {
-                        // Deserialize the JSON request body and creates an instance of a Year 
-                        var newYear = JsonConvert.DeserializeObject<Year>(requestBody);
-
-                        // Validate the year object
-                        if (newYear == null)
-                        {
-                            context.Response.StatusCode = 400; // Bad Request
-                            await context.Response.WriteAsync("Invalid year data");
-                            return;
-                        }
-                        Console.WriteLine($"Year: {newYear.YearNumber}");
-
-                        // Add the new year to the database
-                        using (var scope = app.ApplicationServices.CreateScope())
-                        {
-                            var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                            await dbContext.Years.AddAsync(newYear);
-                            await dbContext.SaveChangesAsync();
-                        }
-
-                        context.Response.StatusCode = 201; // Created
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(newYear));
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"An error occurred: {ex.Message}");
-                        context.Response.StatusCode = 500;
-                        await context.Response.WriteAsync("An error occurred while creating the year.");
-                    }
-                });
-            });
+            Endpoints.MapEndpoints(app);
         }
     }
 
