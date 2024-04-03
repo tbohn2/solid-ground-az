@@ -9,7 +9,7 @@ public class StretchSchedulerContext : DbContext
   public DbSet<Year> Years { get; set; }
   public DbSet<Month> Months { get; set; }
   public DbSet<Date> Dates { get; set; }
-  public DbSet<Time> Times { get; set; }
+  public DbSet<Appointment> Appointments { get; set; }
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (connectionString == null)
