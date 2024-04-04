@@ -14,6 +14,45 @@ namespace StretchScheduler
         {
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGet("/api/apptsInMonth", async context =>
+               {
+                   var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+                   try
+                   {
+                       var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
+
+                       if (appt == null)
+                       {
+                           context.Response.StatusCode = 400; // Bad Request
+                           await context.Response.WriteAsync("Invalid appointment data");
+                           return;
+                       }
+
+                       using (var scope = app.ApplicationServices.CreateScope())
+                       {
+                           var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                           var appts = await dbContext.Appointments.Where(a => a.Month == appt.Month && a.Year == appt.Year).ToListAsync();
+                           if (appts == null)
+                           {
+                               context.Response.StatusCode = 404; // Not Found
+                               await context.Response.WriteAsync("No appointments found");
+                               return;
+                           }
+                           else
+                           {
+                               context.Response.StatusCode = 200; // OK
+                               context.Response.ContentType = "application/json";
+                               await context.Response.WriteAsync(JsonConvert.SerializeObject(appts));
+                           }
+                       }
+                   }
+                   catch (Exception ex)
+                   {
+                       Console.WriteLine($"An error occurred: {ex.Message}");
+                       context.Response.StatusCode = 500; // Internal Server Error
+                       await context.Response.WriteAsync("An error occurred while getting data");
+                   }
+               });
                 endpoints.MapPost("/api/newAppt", async context =>
                   {
                       // Read the request body to get the data: MonthNumber, Name, YearNumber
