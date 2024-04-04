@@ -23,10 +23,8 @@ namespace StretchScheduler
                       {
                           // Deserialize the JSON request body and create an instance of a Month
                           var newAppt = JsonConvert.DeserializeObject<Appointment>(requestBody);
-                          var dateData = JsonConvert.DeserializeObject<Date>(requestBody);
-                          var monthData = JsonConvert.DeserializeObject<Month>(requestBody);
 
-                          if (newAppt == null || dateData == null || monthData == null)
+                          if (newAppt == null)
                           {
                               context.Response.StatusCode = 400; // Bad Request
                               await context.Response.WriteAsync("Invalid appointment data");
@@ -36,40 +34,6 @@ namespace StretchScheduler
                           using (var scope = app.ApplicationServices.CreateScope())
                           {
                               var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-
-                              var year = await dbContext.Years.FirstOrDefaultAsync(y => y.YearNumber == monthData.YearNumber);
-
-                              if (year == null)
-                              {
-                                  Year newYear = new(monthData.YearNumber) { YearNumber = monthData.YearNumber }; // Create a new Year instance
-                                  year = newYear;
-                                  await dbContext.Years.AddAsync(year);
-                                  await dbContext.SaveChangesAsync();
-                              }
-
-                              var month = await dbContext.Months.FirstOrDefaultAsync(m => m.MonthNumber == monthData.MonthNumber && m.YearNumber == year.YearNumber);
-
-                              if (month == null)
-                              {
-                                  monthData.Year = year;
-                                  month = monthData;
-                                  await dbContext.Months.AddAsync(month);
-                                  await dbContext.SaveChangesAsync();
-                              }
-
-                              var date = await dbContext.Dates.FirstOrDefaultAsync(d => d.Id == newAppt.DateId);
-
-                              if (date == null)
-                              {
-                                  Console.WriteLine("Date is null");
-                                  Date newDate = new() { DateNumber = dateData.DateNumber, MonthId = month.Id }; // Create a new Date instance
-                                  date = newDate;
-                                  await dbContext.Dates.AddAsync(date);
-                                  await dbContext.SaveChangesAsync();
-                              }
-
-                              newAppt.Date = date;
-                              newAppt.DateId = date.Id;
                               await dbContext.Appointments.AddAsync(newAppt);
                               await dbContext.SaveChangesAsync();
                           }
