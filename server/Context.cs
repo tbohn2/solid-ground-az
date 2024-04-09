@@ -7,6 +7,7 @@ public class StretchSchedulerContext : DbContext
   static readonly string? connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
   public DbSet<Appointment> Appointments { get; set; }
   public DbSet<Client> Clients { get; set; }
+  public DbSet<Admin> Admins { get; set; }
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     if (connectionString == null)
