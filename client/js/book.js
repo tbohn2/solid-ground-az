@@ -1,56 +1,28 @@
 const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-
-// Will fetch available appointments from the server by month and year
-const availableAppts = [
-    {
-        year: 2024,
-        months: [
-            {
-                month: 3,
-                dates: [
-                    { date: 1, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 2, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 5, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 6, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 7, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 8, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 9, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 29, times: [{ time: '10:00 AM', booked: false }], }
-                ]
-            },
-            {
-                month: 4,
-                dates: [
-                    { date: 2, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 5, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 6, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 7, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 8, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 9, times: [{ time: '10:00 AM', booked: false }], },
-                    { date: 29, times: [{ time: '10:00 AM', booked: false }], },
-                ]
-            },
-        ],
-    },
-];
-
 const currentDay = new Date().getDate();
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 let displayedYear = currentYear;
 let displayedMonth = currentMonth;
+let availableAppts = [];
+
+async function getAppointments() {
+    try {
+        const response = await fetch(`http://localhost:5062/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
+        const data = await response.json();
+        availableAppts = data;
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 // Array of arrays of weeks
 let displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
 
-function renderCalendar() {
+async function renderCalendar() {
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
-
-    let availableDates = [];
-    // Optional chaining to check if the date, month, and year are available
-    if (availableAppts.find(appt => appt.year === displayedYear)?.months?.find(month => month.month === displayedMonth)?.dates) {
-        availableDates = availableAppts.find(appt => appt.year === displayedYear).months.find(month => month.month === displayedMonth).dates;
-    }
+    await getAppointments();
+    console.log(availableAppts);
 
     displayedDates.forEach(week => {
         let weekDisplay = $('<div class="d-flex"></div>');
@@ -59,12 +31,14 @@ function renderCalendar() {
             let blockedOut = $('<span class="unavailableDate"></span>')
             if (day === 0) {
                 dayDisplay.text('');
-            } else {
-                if (availableDates.find(appt => appt.date === day && appt.times.find(time => time.booked === false)) && day >= currentDay) {
+            }
+            else {
+                if (day === currentDay && displayedMonth === currentMonth && displayedYear === currentYear) {
+                    dayDisplay.addClass('currentDay');
+                }
+                if (availableAppts.find(appt => appt.Date === day && appt.Requested === false && day >= currentDay)) {
+                    console.log("yo");
                     dayDisplay = $('<div class="date availableDate" data-bs-toggle="modal" data-bs-target="#serviceSelection"></div>');
-                    if (day === currentDay && displayedMonth === currentMonth && displayedYear === currentYear) {
-                        dayDisplay.addClass('currentDay');
-                    }
                     dayDisplay.text(day);
                 } else {
                     dayDisplay.text(day);
@@ -85,7 +59,7 @@ $('#prev').on('click', () => {
     }
     $('#calendar-dates').empty();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
-    renderCalendar();
+    renderCalendar(displayedMonth, displayedYear);
 });
 
 $('#next').on('click', () => {
@@ -96,7 +70,7 @@ $('#next').on('click', () => {
     }
     $('#calendar-dates').empty();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
-    renderCalendar();
+    renderCalendar(displayedMonth, displayedYear);
 });
 
 renderCalendar();
