@@ -64,6 +64,51 @@ namespace StretchScheduler
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(clients));
                     }
                 });
+                endpoints.MapPost("/api/newAdmin", async context =>
+                {
+                    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+                    try
+                    {
+                        var adminData = JsonConvert.DeserializeObject<Admin>(requestBody);
+
+                        if (adminData == null)
+                        {
+                            context.Response.StatusCode = 400; // Bad Request
+                            await context.Response.WriteAsync("Invalid admin data");
+                            return;
+                        }
+
+                        using (var scope = app.ApplicationServices.CreateScope())
+                        {
+                            var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+
+
+                            var existingAdmin = await dbContext.Admins.FirstOrDefaultAsync(a => a.Username == adminData.Username);
+                            if (existingAdmin != null)
+                            {
+                                context.Response.StatusCode = 400; // Bad Request
+                                await context.Response.WriteAsync("Username already exists");
+                                return;
+                            }
+
+                            adminData.SetPassword(adminData.Password);
+
+                            await dbContext.Admins.AddAsync(adminData);
+                            await dbContext.SaveChangesAsync();
+
+                            context.Response.StatusCode = 201; // Created
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsync(JsonConvert.SerializeObject(adminData));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                        context.Response.StatusCode = 500; // Internal Server Error
+                        await context.Response.WriteAsync("An error occurred while creating the admin.");
+                    }
+                });
+
                 endpoints.MapPost("/api/newAppts", async context =>
                 {
                     // Data is array of appointments
