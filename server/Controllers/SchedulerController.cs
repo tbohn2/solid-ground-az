@@ -14,24 +14,25 @@ namespace StretchScheduler
         {
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/api/apptsInMonth", async context =>
+                endpoints.MapGet("/api/apptsInMonth/{month}/{year}", async context =>
                {
-                   var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
                    try
                    {
-                       var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
-
-                       if (appt == null)
+                       if (context.Request.RouteValues["month"] == null || context.Request.RouteValues["year"] == null)
                        {
                            context.Response.StatusCode = 400; // Bad Request
-                           await context.Response.WriteAsync("Invalid appointment data");
+                           await context.Response.WriteAsync("Invalid month or year");
                            return;
                        }
+
+                       var month = Convert.ToInt32(context.Request.RouteValues["month"]);
+                       var year = Convert.ToInt32(context.Request.RouteValues["year"]);
+
 
                        using (var scope = app.ApplicationServices.CreateScope())
                        {
                            var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                           var appts = await dbContext.Appointments.Where(a => a.Month == appt.Month && a.Year == appt.Year).Include(a => a.Client).ToListAsync();
+                           var appts = await dbContext.Appointments.Where(a => a.Month == month && a.Year == year).Include(a => a.Client).ToListAsync();
                            if (appts == null)
                            {
                                context.Response.StatusCode = 404; // Not Found
