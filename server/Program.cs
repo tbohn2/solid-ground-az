@@ -18,8 +18,6 @@ namespace StretchScheduler
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            // Load environment variables
-            DotEnv.Load();
             // Add the DbContext to the service collection
             services.AddDbContext<StretchSchedulerContext>();
             // Add controllers to the service collection
@@ -35,8 +33,18 @@ namespace StretchScheduler
                 app.UseDeveloperExceptionPage();
             }
 
-            // Enable routing
+            app.UseHttpsRedirection();
+
             app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("http://127.0.0.1:5500")
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
 
             Endpoints.MapEndpoints(app);
         }
@@ -47,6 +55,8 @@ namespace StretchScheduler
     {
         public static void Main(string[] args)
         {
+            // Load environment variables
+            DotEnv.Load();
             // Build and run the web host
             CreateHostBuilder(args).Build().Run();
         }
