@@ -88,3 +88,7 @@
     border-image: linear-gradient(to left, var(--white), var(--pink));
     border-image-slice: 1;
 }
+
+.spinner-border {
+    color: var(--pink);
+}
