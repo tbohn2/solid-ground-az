@@ -18,6 +18,8 @@ namespace StretchScheduler
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            // Load environment variables
+            DotEnv.Load();
             // Add the DbContext to the service collection
             services.AddDbContext<StretchSchedulerContext>();
             // Add controllers to the service collection
@@ -27,6 +29,7 @@ namespace StretchScheduler
         // Configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             // Use developer exception page if in development mode
             if (env.IsDevelopment())
             {
@@ -55,8 +58,7 @@ namespace StretchScheduler
     {
         public static void Main(string[] args)
         {
-            // Load environment variables
-            DotEnv.Load();
+
             // Build and run the web host
             CreateHostBuilder(args).Build().Run();
         }
