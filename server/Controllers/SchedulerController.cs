@@ -192,6 +192,9 @@ namespace StretchScheduler
                                 await dbContext.Clients.AddAsync(newClient);
                                 existingClient = newClient;
                             }
+                            requestedAppt.Type = appt.Type;
+                            requestedAppt.Price = appt.Price;
+                            requestedAppt.Duration = appt.Duration;
                             requestedAppt.ClientId = existingClient.Id;
                             requestedAppt.Client = existingClient;
                             requestedAppt.Requested = true;
@@ -274,6 +277,9 @@ namespace StretchScheduler
                             }
                             requestedAppt.Booked = false;
                             requestedAppt.Requested = false;
+                            requestedAppt.Type = null;
+                            requestedAppt.Price = null;
+                            requestedAppt.Duration = null;
                             requestedAppt.ClientId = null;
                             requestedAppt.Client = null;
                             await dbContext.SaveChangesAsync();
