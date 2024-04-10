@@ -48,3 +48,43 @@
 .currentDay {
     border: 3px solid var(--pink);
 }
+
+.modal-content {
+    background-image: url('../assets/cloudBG.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+.time-option {
+    font-size: 30px;
+    font-weight: 300;
+    color: var(--white);
+    cursor: pointer;
+    border: 1px solid var(--white);
+    border-image: linear-gradient(to left, var(--white), var(--pink));
+    border-image-slice: 1;
+    border-radius: 7px;
+}
+
+.time-option:hover {
+    color: var(--pink);
+    transition: all 0.3s ease;
+}
+
+.dropdown-toggle {
+    background: none !important;
+    border: 1px solid var(--white) !important;
+    border-image: linear-gradient(to left, var(--white), var(--pink)) !important;
+    border-image-slice: 1 !important;
+}
+
+.dropdown-menu li {
+    cursor: pointer;
+    color: var(--white);
+    background-color: rgb(112, 119, 134);
+    border: 1px solid var(--white);
+    border-image: linear-gradient(to left, var(--white), var(--pink));
+    border-image-slice: 1;
+}
