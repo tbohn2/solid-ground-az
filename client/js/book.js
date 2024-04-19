@@ -117,7 +117,6 @@ async function renderCalendar() {
                     const email = $('#emailInput').val();
                     const phone = $('#phoneInput').val();
                     selectedService = selectedService.split(' ');
-
                     const price = parseInt(selectedService[0].slice(1))
                     const duration = parseInt(selectedService[selectedService.length - 2] + ' ' + selectedService[selectedService.length - 1]);
                     let type = '';
@@ -144,7 +143,7 @@ async function renderCalendar() {
                             },
                             body: JSON.stringify(apptToRequest)
                         })
-                        if (response) {
+                        if (response.status === 200) {
                             console.log('Success:', response);
                             $('#serviceSelectionLabel').text('Appointment Requested');
                             $('#modal-body').empty();
@@ -152,6 +151,9 @@ async function renderCalendar() {
                         }
                     } catch (error) {
                         console.error('Error:', error);
+                        $('#serviceSelectionLabel').text('Appointment Request Failed');
+                        $('#modal-body').empty();
+                        $('#modal-body').append(`<div class="fs-3 m-1 text-center">An error occured. Please try again later.</div>`);
                     }
                 });
             });
