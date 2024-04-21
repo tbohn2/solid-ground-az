@@ -60,9 +60,15 @@ namespace StretchScheduler
                     {
                         var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
                         var clients = await dbContext.Clients.ToListAsync();
+                        var appts = await dbContext.Appointments.Where(a => a.Requested == true).ToListAsync();
+                        var clientData = clients.Select(client => new
+                        {
+                            Client = client,
+                            Appointments = appts.Where(a => a.ClientId == client.Id).ToList()
+                        }).ToList();
                         context.Response.StatusCode = 200; // OK
                         context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(clients));
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(clientData));
                     }
                 });
                 endpoints.MapPost("/api/newAdmin", async context =>
