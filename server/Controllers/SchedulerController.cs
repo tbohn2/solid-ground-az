@@ -302,6 +302,92 @@ namespace StretchScheduler
                         await context.Response.WriteAsync("An error occurred while updating the appointment");
                     }
                 });
+                endpoints.MapPut("/api/completeAppt", async context =>
+                {
+                    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+                    try
+                    {
+                        var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
+
+                        if (appt == null)
+                        {
+                            context.Response.StatusCode = 400; // Bad Request
+                            await context.Response.WriteAsync("Invalid appointment data");
+                            return;
+                        }
+
+                        using (var scope = app.ApplicationServices.CreateScope())
+                        {
+                            var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                            var requestedAppt = await dbContext.Appointments.FindAsync(appt.Id);
+                            if (requestedAppt == null)
+                            {
+                                context.Response.StatusCode = 404; // Not Found
+                                await context.Response.WriteAsync("Appointment not found");
+                                return;
+                            }
+                            var client = await dbContext.Clients.FindAsync(requestedAppt.ClientId);
+                            if (client == null)
+                            {
+                                context.Response.StatusCode = 404; // Not Found
+                                await context.Response.WriteAsync("Appointment not found");
+                                return;
+                            }
+                            client.Balance += requestedAppt.Price ?? 0;
+                            requestedAppt.Completed = true;
+                            await dbContext.SaveChangesAsync();
+                        }
+
+                        context.Response.StatusCode = 200; // OK
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync("Appointment Set Complete");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                        context.Response.StatusCode = 500; // Internal Server Error
+                        await context.Response.WriteAsync("An error occurred while updating the appointment");
+                    }
+                });
+                endpoints.MapPut("/api/adjustBalance", async context =>
+                {
+                    var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+                    try
+                    {
+                        var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
+
+                        if (appt == null)
+                        {
+                            context.Response.StatusCode = 400; // Bad Request
+                            await context.Response.WriteAsync("Invalid appointment data");
+                            return;
+                        }
+
+                        using (var scope = app.ApplicationServices.CreateScope())
+                        {
+                            var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                            var client = await dbContext.Clients.FindAsync(appt.ClientId);
+                            if (client == null)
+                            {
+                                context.Response.StatusCode = 404; // Not Found
+                                await context.Response.WriteAsync("Appointment not found");
+                                return;
+                            }
+                            client.Balance -= appt.Price ?? 0;
+                            await dbContext.SaveChangesAsync();
+                        }
+
+                        context.Response.StatusCode = 200; // OK
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync("Appointment Set Complete");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An error occurred: {ex.Message}");
+                        context.Response.StatusCode = 500; // Internal Server Error
+                        await context.Response.WriteAsync("An error occurred while updating the appointment");
+                    }
+                });
                 endpoints.MapDelete("/api/deleteAppt", async context =>
                 {
                     var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
