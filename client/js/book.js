@@ -107,12 +107,6 @@ async function renderCalendar() {
                 $('#modal-body').append(form);
                 form.on('submit', async (event) => {
                     event.preventDefault();
-                    $('#modal-body').empty()
-                    $('#modal-body').append(`
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>`)
-
                     const name = $('#nameInput').val();
                     const email = $('#emailInput').val();
                     const phone = $('#phoneInput').val();
@@ -135,6 +129,13 @@ async function renderCalendar() {
                         Price: price,
                         Duration: duration,
                     }
+
+                    $('#modal-body').empty()
+                    $('#modal-body').append(`
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>`)
+
                     try {
                         const response = await fetch('http://localhost:5062/api/requestAppt', {
                             method: 'PUT',
@@ -148,6 +149,7 @@ async function renderCalendar() {
                             $('#serviceSelectionLabel').text('Appointment Requested');
                             $('#modal-body').empty();
                             $('#modal-body').append(`<div class="fs-3 m-1 text-center">Thank you for your request! Expect a response within 24 hours</div>`);
+                            getAppointments();
                         }
                     } catch (error) {
                         console.error('Error:', error);
