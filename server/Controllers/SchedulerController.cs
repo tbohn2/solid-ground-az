@@ -32,7 +32,7 @@ namespace StretchScheduler
                        using (var scope = app.ApplicationServices.CreateScope())
                        {
                            var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                           var appts = await dbContext.Appointments.Where(a => a.Month == month && a.Year == year).Include(a => a.Client).ToListAsync();
+                           var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year).Include(a => a.Client).ToListAsync();
                            if (appts == null)
                            {
                                context.Response.StatusCode = 404; // Not Found
@@ -60,7 +60,7 @@ namespace StretchScheduler
                     {
                         var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
                         var clients = await dbContext.Clients.ToListAsync();
-                        var appts = await dbContext.Appointments.Where(a => a.Requested == true).ToListAsync();
+                        var appts = await dbContext.Appointments.Where(a => a.Status != Appointment.StatusOptions.Available).ToListAsync();
                         var clientData = clients.Select(client => new
                         {
                             Client = client,
@@ -138,6 +138,7 @@ namespace StretchScheduler
 
                             foreach (var newAppt in newAppts)
                             {
+                                newAppt.Status = Appointment.StatusOptions.Available;
                                 await dbContext.Appointments.AddAsync(newAppt);
                             }
 
@@ -203,7 +204,7 @@ namespace StretchScheduler
                             requestedAppt.Duration = appt.Duration;
                             requestedAppt.ClientId = existingClient.Id;
                             requestedAppt.Client = existingClient;
-                            requestedAppt.Requested = true;
+                            requestedAppt.Status = Appointment.StatusOptions.Requested;
                             await dbContext.SaveChangesAsync();
                         }
 
@@ -242,7 +243,7 @@ namespace StretchScheduler
                                 await context.Response.WriteAsync("Appointment not found");
                                 return;
                             }
-                            requestedAppt.Booked = true;
+                            requestedAppt.Status = Appointment.StatusOptions.Booked;
                             await dbContext.SaveChangesAsync();
                         }
 
@@ -281,13 +282,12 @@ namespace StretchScheduler
                                 await context.Response.WriteAsync("Appointment not found");
                                 return;
                             }
-                            requestedAppt.Booked = false;
-                            requestedAppt.Requested = false;
                             requestedAppt.Type = null;
                             requestedAppt.Price = null;
                             requestedAppt.Duration = null;
                             requestedAppt.ClientId = null;
                             requestedAppt.Client = null;
+                            requestedAppt.Status = Appointment.StatusOptions.Available;
                             await dbContext.SaveChangesAsync();
                         }
 
@@ -334,7 +334,7 @@ namespace StretchScheduler
                                 return;
                             }
                             client.Balance += requestedAppt.Price ?? 0;
-                            requestedAppt.Completed = true;
+                            requestedAppt.Status = Appointment.StatusOptions.Completed;
                             await dbContext.SaveChangesAsync();
                         }
 
