@@ -1,55 +1,58 @@
-using System;
-using System.IO;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Linq;
-using StretchScheduler.Models;
+
 using dotenv.net;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace StretchScheduler
 {
-    // Define a class for configuring the ASP.NET Core application
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            // Load environment variables
             DotEnv.Load();
-            // Add the DbContext to the service collection
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ouP12@fsNv#27G48E1l1e53T59l8V0Af")),
+                        ValidIssuer = "http://localhost:5062",
+                        ValidAudience = "http://localhost:5173"
+                    };
+                });
             services.AddDbContext<StretchSchedulerContext>();
-            // Add controllers to the service collection
             services.AddControllers();
         }
 
         // Configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-
+            app.UseAuthentication();
             // Use developer exception page if in development mode
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseCors(builder =>
             {
                 builder.WithOrigins("http://127.0.0.1:5500", "http://localhost:5173")
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
-
-            Endpoints.MapEndpoints(app);
+            app.UseEndpoints(endpoints =>
+            {
+                AdminRoutes.MapEndpoints(endpoints);
+                UserRoutes.MapEndpoints(endpoints);
+            });
         }
     }
 
