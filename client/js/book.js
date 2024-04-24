@@ -1,5 +1,5 @@
 const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-const currentDay = new Date().getDate();
+const currentDate = new Date().getDate();
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 let displayedYear = currentYear;
@@ -25,38 +25,40 @@ async function renderCalendar() {
 
     displayedDates.forEach(week => {
         let weekDisplay = $('<div class="d-flex"></div>');
-        week.forEach(day => {
-            let dayDisplay = $('<div class="date"></div>');
+        week.forEach(date => {
+            let dateDisplay = $('<div class="date"></div>');
             let blockedOut = $('<span class="unavailableDate"></span>')
-            if (day === 0) {
-                dayDisplay.text('');
+            if (date === 0) {
+                dateDisplay.text('');
             }
             else {
-                const availableApptsInMonth = appointments.filter(appt => appt.Date === day && appt.Requested === false && day >= currentDay);
-                if (day === currentDay && displayedMonth === currentMonth && displayedYear === currentYear) {
-                    dayDisplay.addClass('currentDay');
+                const availableApptsInDay = appointments.filter(appt => new Date(appt.DateTime).getDate() === date && appt.Status === 0 && date >= currentDate)
+                if (date === currentDate && displayedMonth === currentMonth && displayedYear === currentYear) {
+                    dateDisplay.addClass('currentDay');
                 }
-                if (availableApptsInMonth.length != 0) {
-                    dayDisplay = $(`<div id=${day} class="date availableDate" data-bs-toggle="modal" data-bs-target="#serviceSelection"></div>`);
-                    dayDisplay.text(day);
+                if (availableApptsInDay.length != 0) {
+                    dateDisplay = $(`<div id=${date} class="date availableDate" data-bs-toggle="modal" data-bs-target="#serviceSelection"></div>`);
+                    dateDisplay.text(date);
                 } else {
-                    dayDisplay.text(day);
-                    dayDisplay.append(blockedOut);
+                    dateDisplay.text(date);
+                    dateDisplay.append(blockedOut);
                 }
             }
-            weekDisplay.append(dayDisplay);
+            weekDisplay.append(dateDisplay);
         });
         $('#calendar-dates').append(weekDisplay);
     });
 
     $('.availableDate').on('click', (event) => {
-        const day = parseInt(event.target.id);
-        const dateDisplay = displayedMonth + '/' + day + '/' + displayedYear
-        $('#serviceSelectionLabel').text('Available on' + ' ' + displayedMonth + '/' + day + '/' + displayedYear);
-        const availableApptsInDay = appointments.filter(appt => appt.Date === day && appt.Requested === false);
+        const date = parseInt(event.target.id);
+        const dateDisplay = displayedMonth + '/' + date + '/' + displayedYear
+        $('#serviceSelectionLabel').text('Available on' + ' ' + dateDisplay);
+        const availableApptsInDay = appointments.filter(appt => new Date(appt.DateTime).getDate() === date && appt.Status === 0)
+            .sort((a, b) => new Date(a.DateTime) - new Date(b.DateTime));
 
         availableApptsInDay.forEach(appt => {
-            const timeDisplay = $(`<div id=${appt.Id} class="col-5 m-1 text-center time-option">${appt.Time}</div>`);
+            const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const timeDisplay = $(`<div id=${appt.Id} class="col-5 m-1 text-center time-option">${apptTime}</div>`);
             $('#modal-body').append(timeDisplay);
         });
         $('.time-option').on('click', (event) => {
@@ -65,7 +67,8 @@ async function renderCalendar() {
             const time = event.target.innerText;
             $('#modal-body').append(`<div id=dateDisplay class="fs-3 m-1 text-center">${time} | ${dateDisplay}</div>`);
 
-            const selectedAppt = availableApptsInDay.find(appt => appt.Time === time);
+            const selectedAppt = availableApptsInDay.find(appt => new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) === time);
+
             let selectedService
             const dropdown = $(` 
             <div class="dropdown">
