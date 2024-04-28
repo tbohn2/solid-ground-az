@@ -3,6 +3,9 @@ using Newtonsoft.Json;
 using StretchScheduler.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System;
+using System.Net;
+using System.Net.Mail;
 
 
 namespace StretchScheduler
@@ -222,11 +225,31 @@ namespace StretchScheduler
                     }
                     requestedAppt.Status = Appointment.StatusOptions.Booked;
                     await dbContext.SaveChangesAsync();
-                }
 
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Appointment Set");
+                    SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
+                    smtpClient.Port = 587;
+                    Console.WriteLine(Environment.GetEnvironmentVariable("EMAIL"));
+                    Console.WriteLine(Environment.GetEnvironmentVariable("GPW"));
+                    smtpClient.Credentials = new NetworkCredential(Environment.GetEnvironmentVariable("EMAIL"), Environment.GetEnvironmentVariable("GPW"));
+                    smtpClient.EnableSsl = true;
+
+                    MailMessage mailMessage = new MailMessage();
+                    mailMessage.From = new MailAddress(Environment.GetEnvironmentVariable("EMAIL"));
+                    mailMessage.To.Add("");
+                    mailMessage.Subject = "Test Email";
+                    mailMessage.Body = "This is a test email sent from ASP.NET.";
+
+                    try
+                    {
+                        smtpClient.Send(mailMessage);
+                        Console.WriteLine("Email sent successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Failed to send email: " + ex.Message);
+                        await context.Response.WriteAsync(ex.Message);
+                    }
+                }
             }
             catch (Exception ex)
             {
