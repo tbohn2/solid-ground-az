@@ -216,28 +216,36 @@ namespace StretchScheduler
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                    var requestedAppt = await dbContext.Appointments.FindAsync(appt.Id);
-                    if (requestedAppt == null)
+                    var requestedAppt = await dbContext.Appointments.Include(a => a.Client).FirstOrDefaultAsync(a => a.Id == appt.Id);
+                    if (requestedAppt == null || requestedAppt.Client == null)
                     {
                         context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment not found");
+                        await context.Response.WriteAsync("Appointment or Client not found");
                         return;
                     }
                     requestedAppt.Status = Appointment.StatusOptions.Booked;
                     await dbContext.SaveChangesAsync();
 
+                    var email = Environment.GetEnvironmentVariable("EMAIL");
+                    var password = Environment.GetEnvironmentVariable("GPW");
+                    if (email == null || password == null)
+                    {
+                        context.Response.StatusCode = 500; // Internal Server Error
+                        await context.Response.WriteAsync("Email credentials not found");
+                        return;
+                    }
+
                     SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
                     smtpClient.Port = 587;
-                    Console.WriteLine(Environment.GetEnvironmentVariable("EMAIL"));
-                    Console.WriteLine(Environment.GetEnvironmentVariable("GPW"));
-                    smtpClient.Credentials = new NetworkCredential(Environment.GetEnvironmentVariable("EMAIL"), Environment.GetEnvironmentVariable("GPW"));
+                    smtpClient.Credentials = new NetworkCredential(email, password);
                     smtpClient.EnableSsl = true;
 
                     MailMessage mailMessage = new MailMessage();
-                    mailMessage.From = new MailAddress(Environment.GetEnvironmentVariable("EMAIL"));
-                    mailMessage.To.Add("");
-                    mailMessage.Subject = "Test Email";
-                    mailMessage.Body = "This is a test email sent from ASP.NET.";
+                    mailMessage.From = new MailAddress(email);
+                    mailMessage.To.Add(requestedAppt.Client.Email);
+                    mailMessage.Subject = "Appointment Confirmation";
+                    mailMessage.Body = "Your appointment has been confirmed for " + requestedAppt.DateTime.ToLocalTime().ToString("MMMM dd, yyyy 'at' h:mm tt")
+                     + " for the following session: " + requestedAppt.Type + ". See you soon!";
 
                     try
                     {
