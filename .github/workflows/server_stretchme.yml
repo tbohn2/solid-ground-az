@@ -21,20 +21,11 @@ jobs:
         with:
           dotnet-version: '8.x'
                    
-      - name: List contents of current directory
-        run: ls
-
-      - name: Change to project directory
-        run: cd server
-
-      - name: List contents of 'server' directory
-        run: ls
-
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --project server/stretch-scheduler.csproj
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp --project server/stretch-scheduler.csproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
