@@ -25,7 +25,7 @@ jobs:
         run: dotnet build server/stretch-scheduler.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish server/stretch-scheduler.csproj -c Release -o
+        run: dotnet publish server/stretch-scheduler.csproj -c Release -o ./publish
       
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
