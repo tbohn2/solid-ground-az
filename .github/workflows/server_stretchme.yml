@@ -21,8 +21,14 @@ jobs:
         with:
           dotnet-version: '8.x'
                    
+      - name: List contents of current directory
+        run: ls
+
       - name: Change to project directory
         run: cd server
+
+      - name: List contents of 'server' directory
+        run: ls
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
