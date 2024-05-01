@@ -44,7 +44,8 @@ namespace StretchScheduler
             app.UseAuthorization();
             app.UseCors(builder =>
             {
-                builder.WithOrigins("http://127.0.0.1:5500", "http://localhost:5173")
+                // builder.WithOrigins("http://127.0.0.1:5500", "http://localhost:5173")
+                builder.AllowAnyOrigin()
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
