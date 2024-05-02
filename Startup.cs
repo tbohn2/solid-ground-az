@@ -1,8 +1,8 @@
-
 using dotenv.net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace StretchScheduler
 {
@@ -40,6 +40,12 @@ namespace StretchScheduler
                 app.UseDeveloperExceptionPage();
             }
             app.UseHttpsRedirection();
+            var rewriteOptions = new RewriteOptions()
+                .AddRewrite(@"^$", "index.html", skipRemainingRules: true)
+                .AddRewrite(@"^book$", "book.html", skipRemainingRules: true)
+                .AddRewrite(@"^services$", "services.html", skipRemainingRules: true);
+            app.UseRewriter(rewriteOptions);
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
             app.UseCors(builder =>
@@ -54,25 +60,5 @@ namespace StretchScheduler
                 UserRoutes.MapEndpoints(endpoints);
             });
         }
-    }
-
-    // Define the entry point of the application
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-
-            // Build and run the web host
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        // Create a default host builder
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    // Configure the web host using the Startup class
-                    webBuilder.UseStartup<Startup>();
-                });
     }
 }
