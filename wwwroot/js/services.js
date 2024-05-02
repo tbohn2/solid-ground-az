@@ -29,9 +29,11 @@ const services = [
     },
 ]
 
+$('#option1').attr('checked', true);
+
 for (let i = 0; i < services.length; i++) {
     const card =
-        `<div class="serviceCard my-3 col-5 d-flex">
+        `<div class="serviceCard my-3 col-5 d-flex fade-top">
         <img class="col-5" src="./assets/blueBG.jpg" alt="blue water">
         <div class="col-7 ps-3 d-flex flex-column align-items-start justify-content-between">
             <h4 class="mt-3">${services[i].name}</h4>

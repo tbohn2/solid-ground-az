@@ -4,15 +4,23 @@ const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 let displayedYear = currentYear;
 let displayedMonth = currentMonth;
-let appointments = [];
+
+$('#option2').attr('checked', true);
 
 async function getAppointments() {
     try {
         const response = await fetch(`http://localhost:5062/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         const data = await response.json();
-        appointments = data;
+        const appointments = data;
+        return appointments;
     } catch (error) {
         console.error(error);
+        $('#calendar-dates').append(`
+        <div class="alert alert-danger align-self-center mt-5 col-6" role="alert">
+            Server request failed. Please try again later.
+        </div>
+    `);
+        return null;
     }
 }
 
@@ -21,10 +29,14 @@ let displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, d
 
 async function renderCalendar() {
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
-    await getAppointments();
+
+    const appointments = await getAppointments();
+    if (appointments === null) {
+        return;
+    }
 
     displayedDates.forEach(week => {
-        let weekDisplay = $('<div class="d-flex"></div>');
+        let weekDisplay = $('<div class="d-flex fade-in"></div>');
         week.forEach(date => {
             let dateDisplay = $('<div class="date"></div>');
             let blockedOut = $('<span class="unavailableDate"></span>')
