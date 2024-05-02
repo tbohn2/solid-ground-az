@@ -12,6 +12,11 @@ namespace StretchScheduler
         {
             DotEnv.Load();
 
+            services.AddRazorPages(options =>
+                {
+                    options.RootDirectory = "/Views";
+                });
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -56,9 +61,12 @@ namespace StretchScheduler
             });
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 AdminRoutes.MapEndpoints(endpoints);
                 UserRoutes.MapEndpoints(endpoints);
             });
+
+
         }
     }
 }
