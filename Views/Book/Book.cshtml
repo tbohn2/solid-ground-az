@@ -1,0 +1,46 @@
+@page "/book"
+@{
+    ViewData["Title"] = "Book";
+}
+
+<div id="book" class="mt-5 d-flex justify-content-center text-light fade-in">
+    <div id="calendar">
+        <div id="calendar-header" class="d-flex justify-content-between align-items-center">
+            <button id="prev" class="monthNavBtn ">Prev</button>
+            <h1 id="month-year" class="fw-light"></h1>
+            <button id="next" class="monthNavBtn">Next</button>
+        </div>
+        <div id="calendar-body">
+            <div id="calendar-weekdays" class="d-flex justify-content-between col-12">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+            <div id="calendar-dates" class="d-flex flex-column col-12 border"></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="serviceSelection" tabindex="-1" aria-labelledby="serviceSelectionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-light">
+            <div id="modal-header" class="d-flex justify-content-between m-2">
+                <h1 class="modal-title fs-3" id="serviceSelectionLabel"></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+            </div>
+            <div id="modal-body" class="col-12 d-flex flex-column align-items-center"></div>
+            <div id="modal-footer" class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+@section Scripts {
+<script src="~/lib/node-calendar/node-calendar.js"></script>
+<script src="~/js/book.js"></script>
+ }
