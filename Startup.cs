@@ -45,11 +45,7 @@ namespace StretchScheduler
                 app.UseDeveloperExceptionPage();
             }
             app.UseHttpsRedirection();
-            var rewriteOptions = new RewriteOptions()
-                .AddRewrite(@"^$", "index.html", skipRemainingRules: true)
-                .AddRewrite(@"^book$", "book.html", skipRemainingRules: true)
-                .AddRewrite(@"^services$", "services.html", skipRemainingRules: true);
-            app.UseRewriter(rewriteOptions);
+        
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
