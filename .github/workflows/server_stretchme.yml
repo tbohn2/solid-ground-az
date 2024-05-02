@@ -1,66 +1,17 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - stretchme
-
-on:
-  push:
-    branches:
-      - server
-  workflow_dispatch:
+name: Build project and deploy to SmarterASP.NET
+on: [push]
 
 jobs:
-  build:
+  build_and_deploy:
+    name: Build package and deploy to SmarterASP.NET
     runs-on: windows-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: build file
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          dotnet-version: '8.x'
-                   
-      - name: Build with dotnet
-        run: dotnet build server/stretch-scheduler.csproj --configuration Release
-
-      - name: dotnet publish
-        run: dotnet publish server/stretch-scheduler.csproj -c Release -o ./publish
-      
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: .net-app
-          path: ./publish
-
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: .net-app
-          path: ./publish
-      
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_5F0CB3CA30BC41A4A98A195FCAA066C6 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9BE155019B5740FB9870D0EE6401FE78 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_7A16C1439B6E4079804A433E7C352C58 }}
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'stretchme'
-          slot-name: 'Production'
-          package: .
-          
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
