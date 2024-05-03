@@ -31,4 +31,6 @@ jobs:
           website-name: tbohn2-001-site1.ctempurl.com
           server-computer-name: ${{ secrets.FTP_SERVER }}
           server-username: ${{ secrets.FTP_USERNAME }}
-          server-password: ${{ secrets.FTP_PASSWORD }}          
+          server-password: ${{ secrets.FTP_PASSWORD }}   
+          source-path: './bin/Release/net8.0/publish/'
+
