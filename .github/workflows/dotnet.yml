@@ -28,9 +28,9 @@ jobs:
       - name: Deploy to SmarterASP.NET        
         uses: talunzhang/auto-web-deploy@v1.0.1
         with:
-          website-name: tbohn2-001-site1.ctempurl.com
+          website-name: tbohn2-001-site1
           server-computer-name: ${{ secrets.SERVICE_URL }}
-          server-username: ${{ secrets.FTP_USERNAME }}
-          server-password: ${{ secrets.FTP_PASSWORD }}   
+          server-username: ${{ secrets.USERNAME }}
+          server-password: ${{ secrets.PASSWORD }}   
           source-path: bin/Release/net8.0/publish/
 
