@@ -1,43 +1,17 @@
-name: Build, publish and deploy project to SmarterASP.NET
-
+name: Build project and deploy to SmarterASP.NET
 on: [push]
 
 jobs:
-            
   build_and_deploy:
+    name: Build package and deploy to SmarterASP.NET
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: build file
+        uses: actions/checkout@v4
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          dotnet-version: 8.0
-          
-      - name: Install dependencies
-        run: dotnet restore
-        
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Publish
-        run: dotnet publish
-        
-      - name: Test with .NET
-        run: dotnet test
-
-      - name: Log Secret USERNAME
-        run: echo  ${{ secrets.USERNAME }}
-      
-      - name: Log Secret PASSWORD
-        run: echo ${{ secrets.PASSWORD }}
-
-      - name: Deploy to SmarterASP.NET        
-        uses: talunzhang/auto-web-deploy@v1.0.1
-        with:
-          website-name: tbohn2-001-site1
-          server-computer-name: ${{ secrets.SERVICE_URL }}
-          server-username: ${{ secrets.USERNAME }}
-          server-password: ${{ secrets.PASSWORD }}   
-          source-path: bin/Release/net8.0/publish/
-
+          server: ${{ secrets.SERVICE_URL }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
