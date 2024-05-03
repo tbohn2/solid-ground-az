@@ -32,5 +32,5 @@ jobs:
           server-computer-name: ${{ secrets.FTP_SERVER }}
           server-username: ${{ secrets.FTP_USERNAME }}
           server-password: ${{ secrets.FTP_PASSWORD }}   
-          source-path: './bin/Release/net8.0/publish/'
+          source-path: ${{ github.workspace }}/bin/Release/net8.0/publish/
 
