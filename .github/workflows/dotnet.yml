@@ -3,6 +3,7 @@ name: Build, publish and deploy project to SmarterASP.NET
 on: [push]
 
 jobs:
+            
   build_and_deploy:
     runs-on: windows-latest
     steps:
@@ -24,6 +25,12 @@ jobs:
         
       - name: Test with .NET
         run: dotnet test
+
+      - name: Log Secret USERNAME
+        run: echo  ${{ secrets.USERNAME }}
+      
+      - name: Log Secret PASSWORD
+        run: echo ${{ secrets.PASSWORD }}
 
       - name: Deploy to SmarterASP.NET        
         uses: talunzhang/auto-web-deploy@v1.0.1
