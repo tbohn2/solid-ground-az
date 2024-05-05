@@ -28,3 +28,4 @@ obj/
 .env
 migrations/
 .vs/
+lib/
