@@ -17,20 +17,20 @@ namespace StretchScheduler
                     options.RootDirectory = "/Views";
                 });
 
-            // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //     .AddJwtBearer(options =>
-            //     {
-            //         options.TokenValidationParameters = new TokenValidationParameters
-            //         {
-            //             ValidateIssuer = true,
-            //             ValidateAudience = true,
-            //             ValidateLifetime = true,
-            //             ValidateIssuerSigningKey = true,
-            //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ouP12@fsNv#27G48E1l1e53T59l8V0Af")),
-            //             ValidIssuer = "http://localhost:5062",
-            //             ValidAudience = "http://localhost:5173"
-            //         };
-            //     });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ouP12@fsNv#27G48E1l1e53T59l8V0Af")),
+                        ValidIssuer = "http://localhost:5062",
+                        ValidAudience = "http://localhost:5173"
+                    };
+                });
             services.AddDbContext<StretchSchedulerContext>();
             services.AddControllers();
         }
@@ -38,7 +38,6 @@ namespace StretchScheduler
         // Configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // app.UseAuthentication();
             // Use developer exception page if in development mode
             if (env.IsDevelopment())
             {
@@ -48,14 +47,15 @@ namespace StretchScheduler
 
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseAuthorization();
             app.UseCors(builder =>
             {
-                builder.WithOrigins("http://localhost:5173")
                 // builder.AllowAnyOrigin()
+                builder.WithOrigins("http://localhost:5173")
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
