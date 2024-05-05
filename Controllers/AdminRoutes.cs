@@ -14,6 +14,7 @@ namespace StretchScheduler
     {
         public static void MapEndpoints(IEndpointRouteBuilder endpoints)
         {
+            endpoints.MapMethods("api/{*path}", new[] { "OPTIONS" }, allowAccess);
             endpoints.MapGet("/api/clients", GetClients);
             endpoints.MapPost("/api/login", Login);
             endpoints.MapPost("/api/newAdmin", CreateAdmin);
@@ -26,6 +27,14 @@ namespace StretchScheduler
             endpoints.MapDelete("/api/deleteClient", DeleteClient);
         }
 
+        private static async Task allowAccess(HttpContext context)
+        {
+            context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+            context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            context.Response.StatusCode = 200; // OK
+            await context.Response.WriteAsync("Access granted");
+        }
         private static async Task<bool> Authenticate(HttpContext context)
         {
             var authenticated = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
