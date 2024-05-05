@@ -9,7 +9,7 @@ $('#option2').attr('checked', true);
 
 async function getAppointments() {
     try {
-        const response = await fetch(`http://localhost:5062/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
+        const response = await fetch(`http://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         const data = await response.json();
         const appointments = data;
         return appointments;
