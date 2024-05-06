@@ -14,9 +14,9 @@ namespace StretchScheduler
     {
         public static void MapEndpoints(IEndpointRouteBuilder endpoints)
         {
-            endpoints.MapMethods("api/{*path}", new[] { "OPTIONS" }, AllowAccess);
+            endpoints.MapMethods("api/{*path}", new[] { "OPTIONS" }, AllowAccess).RequireCors("MyPolicy");
             endpoints.MapGet("/api/clients", GetClients);
-            endpoints.MapPost("/api/login", Login);
+            endpoints.MapPost("/api/login", Login).RequireCors("MyPolicy");
             endpoints.MapPost("/api/newAdmin", CreateAdmin);
             endpoints.MapPost("/api/newAppts", CreateNewAppts);
             endpoints.MapPut("/api/approveAppt", ApproveAppt);
