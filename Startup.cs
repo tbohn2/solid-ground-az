@@ -12,10 +12,16 @@ namespace StretchScheduler
         {
             DotEnv.Load();
 
-            services.AddRazorPages(options =>
-                {
-                    options.RootDirectory = "/Views";
-                });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "MyPolicy",
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                    });
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -33,6 +39,10 @@ namespace StretchScheduler
                 });
             services.AddDbContext<StretchSchedulerContext>();
             services.AddControllers();
+            services.AddRazorPages(options =>
+            {
+                options.RootDirectory = "/Views";
+            });
         }
 
         // Configure the HTTP request pipeline
@@ -47,13 +57,9 @@ namespace StretchScheduler
 
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseCors(builder =>
-            {
-                // builder.AllowAnyOrigin()
-                builder.WithOrigins("http://localhost:5173")
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
+
+            app.UseCors("MyPolicy");
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
@@ -62,8 +68,6 @@ namespace StretchScheduler
                 AdminRoutes.MapEndpoints(endpoints);
                 UserRoutes.MapEndpoints(endpoints);
             });
-
-
         }
     }
 }
