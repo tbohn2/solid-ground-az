@@ -10,6 +10,7 @@ $('#option2').attr('checked', true);
 async function getAppointments() {
     try {
         const response = await fetch(`http://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
+        console.log(response);
         const data = await response.json();
         const appointments = data;
         return appointments;
