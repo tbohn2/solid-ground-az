@@ -9,8 +9,7 @@ $('#option2').attr('checked', true);
 
 async function getAppointments() {
     try {
-        const response = await fetch(`http://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
-        console.log(response);
+        const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         const data = await response.json();
         const appointments = data;
         return appointments;
@@ -153,7 +152,7 @@ async function renderCalendar() {
                     </div>`)
 
                     try {
-                        const response = await fetch('http://localhost:5062/api/requestAppt', {
+                        const response = await fetch('https://localhost:5062/api/requestAppt', {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json'
