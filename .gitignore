@@ -25,7 +25,7 @@ dist-ssr
 
 bin/
 obj/
-.env
+*.env
 migrations/
 .vs/
 lib/

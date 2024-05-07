@@ -12,10 +12,16 @@ namespace StretchScheduler
         {
             DotEnv.Load();
 
-            services.AddRazorPages(options =>
-                {
-                    options.RootDirectory = "/Views";
-                });
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "MyPolicy",
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                    });
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -33,37 +39,35 @@ namespace StretchScheduler
                 });
             services.AddDbContext<StretchSchedulerContext>();
             services.AddControllers();
+            services.AddRazorPages(options =>
+            {
+                options.RootDirectory = "/Views";
+            });
         }
 
         // Configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseAuthentication();
             // Use developer exception page if in development mode
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             app.UseHttpsRedirection();
-        
+
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseCors("MyPolicy");
+
+            app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(builder =>
-            {
-                // builder.WithOrigins("http://127.0.0.1:5500", "http://localhost:5173")
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader();
-            });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
                 AdminRoutes.MapEndpoints(endpoints);
                 UserRoutes.MapEndpoints(endpoints);
             });
-
-
         }
     }
 }
