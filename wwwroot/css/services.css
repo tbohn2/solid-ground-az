@@ -1,5 +1,4 @@
 .serviceCard {
-    max-height: 30vh;
     border-radius: 10px;
     background-color: aliceblue;
     transition: all 0.3s ease;
@@ -12,9 +11,10 @@
 
 .serviceCard img {
     border-radius: 10px 0 0 10px;
+    height: 250px;
 }
 
-.serviceCard div div button {
+.serviceCard-button {
     background-image: linear-gradient(to right bottom, var(--pink), var(--white));
     border: none;
     border-radius: 5px;
@@ -26,4 +26,12 @@
     background-image: linear-gradient(to right bottom, var(--white), var(--pink));
     transition: all 0.3s ease;
     cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .serviceCard img {
+        height: 200px;
+        border-radius: 10px 10px 0 0;
+    }
+
 }

@@ -22,27 +22,55 @@ const services = [
     },
     {
         name: 'BLENDED SERVICE',
-        description: 'Comnbined assisted stretch, ball rolling, and yoga',
+        description: 'Combined assisted stretch, ball rolling, and yoga',
         price: 50,
         time: 60,
         imageURL: './assets/blueBG.jpg'
     },
 ]
 
+let screenSize
+
+function checkScreenWidth() {
+    var width = window.innerWidth;
+    if (width < 768) {
+        screenSize = "mobile"
+    }
+}
+
+checkScreenWidth();
+
 $('#option1').attr('checked', true);
 
 for (let i = 0; i < services.length; i++) {
-    const card =
-        `<div class="serviceCard my-3 col-5 d-flex fade-top">
-        <img class="col-5" src="./assets/blueBG.jpg" alt="blue water">
-        <div class="col-7 ps-3 d-flex flex-column align-items-start justify-content-between">
-            <h4 class="mt-3">${services[i].name}</h4>
-            <p>${services[i].description}</p>
-            <div class="align-self-end d-flex flex-column align-items-end">
-                <p class="pe-3">${services[i].price} | ${services[i].time} min</p>
-                <button>Book</button>
+    let card
+    if (screenSize === 'mobile') {
+        card = `
+        <div class="serviceCard my-3 col-10 d-flex flex-column fade-top">
+            <img class="col-12" src="./assets/blueBG.jpg" alt="blue water">
+                <h3 class="mt-3 align-self-center text-center">${services[i].name}</h3>
+                <p class="m-2 fs-5 align-self-center">${services[i].description}</p>
+                <div class="d-flex align-items-center justify-content-between col-12">
+                    <p class="col-8 m-0 text-center">$${services[i].price} | ${services[i].time} min</p>
+                    <button class="serviceCard-button col-4">Book</button>
+                </div>
+        </div>`
+    }
+    else {
+        card = `
+        <div class="serviceCard my-3 col-10 col-lg-5 d-flex fade-top">
+            <img class="col-5" src="./assets/blueBG.jpg" alt="blue water">
+            <div class="col-7 d-flex flex-column align-items-start justify-content-between">
+                <h3 class="mt-3 align-self-center text-center">${services[i].name}</h3>
+                <p class="m-2 fs-5 align-self-center">${services[i].description}</p>
+                <div class="d-flex align-items-center justify-content-between col-12">
+                    <p class="col-8 m-0 text-center">$${services[i].price} | ${services[i].time} min</p>
+                    <button class="serviceCard-button col-4">Book</button>
+                </div>
             </div>
-        </div>
-    </div>`
+        </div>`
+    }
     $('#services').append(card)
 }
+
+window.addEventListener('resize', checkScreenWidth);
