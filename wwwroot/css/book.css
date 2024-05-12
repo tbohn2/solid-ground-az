@@ -1,5 +1,5 @@
 #calendar-weekdays div {
-    width: 125px;
+    width: 14.2857%;
 }
 
 .monthNavBtn {
@@ -18,7 +18,7 @@
 }
 
 .date {
-    width: 125px;
+    width: 14.2857%;
     height: 100px;
     border: 1px solid #ccc;
     font-size: 20px;
@@ -32,7 +32,7 @@
     cursor: pointer;
 }
 
-.unavailableDate {
+/* .unavailableDate {
     position: absolute;
     top: 0;
     left: 0;
@@ -43,7 +43,7 @@
     border-image-slice: 1;
     transform: rotate(38deg);
     transform-origin: top left;
-}
+} */
 
 .currentDay {
     border: 3px solid var(--pink);
@@ -91,4 +91,11 @@
 
 .spinner-border {
     color: var(--pink);
+}
+
+@media screen and (max-width: 768px) {
+    .date {
+        height: 80px;
+    }
+
 }
