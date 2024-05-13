@@ -8,6 +8,10 @@ let displayedMonth = currentMonth;
 $('#option2').attr('checked', true);
 
 async function getAppointments() {
+    $('#calendar-header').after(`
+    <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>`)
     try {
         const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         const data = await response.json();
@@ -15,8 +19,9 @@ async function getAppointments() {
         return appointments;
     } catch (error) {
         console.error(error);
-        $('#calendar-dates').append(`
-        <div class="alert alert-danger align-self-center mt-5 col-6" role="alert">
+        $('.spinner-border').remove();
+        $('#calendar-header').after(`
+        <div class="alert alert-danger text-center mt-2" role="alert">
             Server request failed. Please try again later.
         </div>
     `);
@@ -34,26 +39,37 @@ async function renderCalendar() {
     if (appointments === null) {
         return;
     }
+    if (appointments.length === 0) {
+        $('#calendar-header').after(`
+        <div class="alert alert-info text-center mt-2" role="alert">
+            No appointments available this month.
+        </div>
+    `);
+    }
+    $('.spinner-border').remove();
 
     displayedDates.forEach(week => {
         let weekDisplay = $('<div class="d-flex fade-in"></div>');
         week.forEach(date => {
-            let dateDisplay = $('<div class="date"></div>');
-            let blockedOut = $('<span class="unavailableDate"></span>')
+            let dateDisplay = $('<div class="px-1 d-flex flex-column align-items-center date"></div>');
+            let pastDate = false;
             if (date === 0) {
                 dateDisplay.text('');
             }
             else {
+                dateDisplay.append(`<div id=${date}  class='date-display'>${date}</div>`)
                 const availableApptsInDay = appointments.filter(appt => new Date(appt.DateTime).getDate() === date && appt.Status === 0 && date >= currentDate)
-                if (date === currentDate && displayedMonth === currentMonth && displayedYear === currentYear) {
-                    dateDisplay.addClass('currentDay');
+                if (date < currentDate && displayedMonth === currentMonth && displayedYear === currentYear || displayedMonth < currentMonth && displayedYear === currentYear || displayedYear < currentYear) {
+                    dateDisplay.addClass('pastDate');
+                    pastDate = true;
                 }
-                if (availableApptsInDay.length != 0) {
-                    dateDisplay = $(`<div id=${date} class="date availableDate" data-bs-toggle="modal" data-bs-target="#serviceSelection"></div>`);
-                    dateDisplay.text(date);
-                } else {
-                    dateDisplay.text(date);
-                    dateDisplay.append(blockedOut);
+                if (availableApptsInDay.length != 0 && !pastDate) {
+                    dateDisplay.attr('data-bs-toggle', 'modal');
+                    dateDisplay.attr('data-bs-target', '#serviceSelection');
+                    dateDisplay.attr('id', date);
+                    dateDisplay.addClass('availableDate');
+                    const numberOfAppts = availableApptsInDay.length;
+                    dateDisplay.append(`<div id=${date} class='fs-3 d-flex justify-content-center align-items-center number-of-appts'>${numberOfAppts}</div>`)
                 }
             }
             weekDisplay.append(dateDisplay);
@@ -178,7 +194,7 @@ async function renderCalendar() {
     });
 }
 
-$('[data-bs-dismiss="modal"]').on('click', () => {
+$('#serviceSelection').on('hidden.bs.modal', function () {
     $('#serviceSelectionLabel').empty();
     $('#modal-body').empty();
 });
@@ -189,6 +205,8 @@ $('#prev').on('click', () => {
         displayedMonth = 12;
         displayedYear -= 1;
     }
+    $('.alert').remove();
+    $('.spinner-border').remove();
     $('#calendar-dates').empty();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
     renderCalendar(displayedMonth, displayedYear);
@@ -200,6 +218,8 @@ $('#next').on('click', () => {
         displayedMonth = 1;
         displayedYear += 1;
     }
+    $('.alert').remove();
+    $('.spinner-border').remove();
     $('#calendar-dates').empty();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
     renderCalendar(displayedMonth, displayedYear);

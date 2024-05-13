@@ -17,12 +17,18 @@
     transition: all 0.3s ease;
 }
 
+.monthNavBtn:active {
+    background-color: var(--pink);
+}
+
 .date {
     width: 14.2857%;
     height: 100px;
-    border: 1px solid #ccc;
     font-size: 20px;
     position: relative;
+    border: 1px solid var(--white);
+    border-image: linear-gradient(to left, var(--white), var(--pink));
+    border-image-slice: 1;
 }
 
 .availableDate:hover {
@@ -32,18 +38,30 @@
     cursor: pointer;
 }
 
-/* .unavailableDate {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 160.078px;
-    height: 1px;
-    border-top: 2px solid;
-    border-image: linear-gradient(to left, var(--white), var(--pink));
-    border-image-slice: 1;
-    transform: rotate(38deg);
-    transform-origin: top left;
-} */
+.availableDate:active {
+    background-color: var(--pink);
+}
+
+.date-display {
+    align-self: flex-start;
+}
+
+.number-of-appts {
+    color: var(--white);
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    z-index: 0;
+    font-weight: 700;
+    background-image: radial-gradient(transparent 55%, var(--white) 60%, var(--pink) 75%);
+    background-size: cover;
+    background-position: center;
+}
+
+.pastDate {
+    color: black;
+}
 
 .currentDay {
     border: 3px solid var(--pink);
@@ -73,6 +91,11 @@
     transition: all 0.3s ease;
 }
 
+.time-option:active {
+    color: var(--white);
+    background-color: var(--pink);
+}
+
 .dropdown-toggle {
     background: none !important;
     border: 1px solid var(--white) !important;
@@ -95,7 +118,18 @@
 
 @media screen and (max-width: 768px) {
     .date {
-        height: 80px;
+        height: 70px;
+    }
+
+    .date-display {
+        align-self: center;
+    }
+
+    .number-of-appts {
+        width: 25px;
+        height: 25px;
+        font-size: 15px;
+        font-weight: 400;
     }
 
 }
