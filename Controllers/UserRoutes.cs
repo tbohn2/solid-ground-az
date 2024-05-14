@@ -31,11 +31,10 @@ namespace StretchScheduler
                 var month = Convert.ToInt32(context.Request.RouteValues["month"]);
                 var year = Convert.ToInt32(context.Request.RouteValues["year"]);
 
-
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                    var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year && a.Status == 0).ToListAsync();
+                    var appts = await dbContext.Appointments.Where(a => a.DateTime >= DateTime.Now && a.DateTime.Month == month && a.DateTime.Year == year && a.Status == 0).ToListAsync();
                     if (appts == null)
                     {
                         await WriteResponseAsync(context, 404, "application/json", "No appointments found");
