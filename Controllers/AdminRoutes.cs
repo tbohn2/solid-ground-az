@@ -12,6 +12,7 @@ namespace StretchScheduler
 {
     public static class AdminRoutes
     {
+
         public static void MapEndpoints(IEndpointRouteBuilder endpoints)
         {
             endpoints.MapMethods("api/{*path}", new[] { "OPTIONS" }, AllowAccess);
@@ -26,6 +27,13 @@ namespace StretchScheduler
             endpoints.MapDelete("/api/deleteAppt", DeleteAppt);
             endpoints.MapDelete("/api/deleteClient", DeleteClient);
         }
+        public static async Task WriteResponseAsync(HttpContext context, int statusCode, string contentType, object data)
+        {
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = contentType;
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(data));
+            return;
+        }
 
         private static async Task AllowAccess(HttpContext context)
         {
@@ -39,15 +47,14 @@ namespace StretchScheduler
         {
             var authenticated = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
 
-            if (!authenticated.Succeeded)
+            if (authenticated.Succeeded)
             {
-                context.Response.StatusCode = 401; // Unauthorized
-                await context.Response.WriteAsync("Unauthorized");
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                await WriteResponseAsync(context, 401, "application/json", "Unauthorized");
+                return false;
             }
 
         }
@@ -66,9 +73,7 @@ namespace StretchScheduler
                     Client = client,
                     Appointments = appts.Where(a => a.ClientId == client.Id).ToList()
                 }).ToList();
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(clientData));
+                await WriteResponseAsync(context, 200, "application/json", clientData);
             }
         }
 
@@ -81,8 +86,7 @@ namespace StretchScheduler
 
                 if (adminLoggingIn == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid username or password");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid username or password");
                     return;
                 }
 
@@ -93,23 +97,19 @@ namespace StretchScheduler
 
                     if (admin == null || !admin.VerifyPassword(adminLoggingIn.Password))
                     {
-                        context.Response.StatusCode = 401; // Unauthorized
-                        await context.Response.WriteAsync("Invalid username or password");
+                        await WriteResponseAsync(context, 401, "application/json", "Invalid username or password");
                         return;
                     }
 
                     var jwtToken = admin.GenerateJwtToken("ouP12@fsNv#27G48E1l1e53T59l8V0Af", "http://localhost:5062", "http://localhost:5173", 60);
 
-                    context.Response.StatusCode = 200; // OK
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new { token = jwtToken }));
+                    await WriteResponseAsync(context, 200, "application/json", new { token = jwtToken });
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while processing the request");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while processing the request");
             }
         }
         private static async Task CreateAdmin(HttpContext context)
@@ -123,8 +123,7 @@ namespace StretchScheduler
 
                 if (adminData == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid admin data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid admin data");
                     return;
                 }
 
@@ -136,8 +135,7 @@ namespace StretchScheduler
                     var existingAdmin = await dbContext.Admins.FirstOrDefaultAsync(a => a.Username == adminData.Username);
                     if (existingAdmin != null)
                     {
-                        context.Response.StatusCode = 400; // Bad Request
-                        await context.Response.WriteAsync("Username already exists");
+                        await WriteResponseAsync(context, 400, "application/json", "Username already exists");
                         return;
                     }
 
@@ -146,16 +144,13 @@ namespace StretchScheduler
                     await dbContext.Admins.AddAsync(adminData);
                     await dbContext.SaveChangesAsync();
 
-                    context.Response.StatusCode = 201; // Created
-                    context.Response.ContentType = "application/json";
-                    await context.Response.WriteAsync(JsonConvert.SerializeObject(adminData));
+                    await WriteResponseAsync(context, 201, "application/json", adminData);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while creating the admin.");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while creating the admin");
             }
         }
         private static async Task CreateNewAppts(HttpContext context)
@@ -171,8 +166,7 @@ namespace StretchScheduler
 
                 if (newAppts == null || !newAppts.Any())
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
                     return;
                 }
 
@@ -189,21 +183,17 @@ namespace StretchScheduler
                     await dbContext.SaveChangesAsync();
                 }
 
-                context.Response.StatusCode = 201; // Created
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(newAppts));
+                await WriteResponseAsync(context, 201, "application/json", newAppts);
             }
             catch (DbUpdateException ex)
             {
                 Console.WriteLine($"An error occurred while saving changes to the database: {ex.InnerException?.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while saving changes to the database.");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while saving changes to the database.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while creating the month.");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while creating the appointments.");
             }
         }
         private static async Task ApproveAppt(HttpContext context)
@@ -217,8 +207,7 @@ namespace StretchScheduler
 
                 if (appt == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
                     return;
                 }
 
@@ -228,8 +217,7 @@ namespace StretchScheduler
                     var requestedAppt = await dbContext.Appointments.Include(a => a.Client).FirstOrDefaultAsync(a => a.Id == appt.Id);
                     if (requestedAppt == null || requestedAppt.Client == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment or Client not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment or Client not found");
                         return;
                     }
                     requestedAppt.Status = Appointment.StatusOptions.Booked;
@@ -239,8 +227,7 @@ namespace StretchScheduler
                     var password = Environment.GetEnvironmentVariable("GPW");
                     if (email == null || password == null)
                     {
-                        context.Response.StatusCode = 500; // Internal Server Error
-                        await context.Response.WriteAsync("Email credentials not found");
+                        await WriteResponseAsync(context, 500, "application/json", "Email credentials not found");
                         return;
                     }
 
@@ -271,8 +258,7 @@ namespace StretchScheduler
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while updating the appointment");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment");
             }
         }
         private static async Task DenyAppt(HttpContext context)
@@ -286,8 +272,7 @@ namespace StretchScheduler
 
                 if (appt == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
                     return;
                 }
 
@@ -297,8 +282,7 @@ namespace StretchScheduler
                     var requestedAppt = await dbContext.Appointments.FindAsync(appt.Id);
                     if (requestedAppt == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
                         return;
                     }
                     requestedAppt.Type = null;
@@ -310,15 +294,12 @@ namespace StretchScheduler
                     await dbContext.SaveChangesAsync();
                 }
 
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Appointment Remains Available");
+                await WriteResponseAsync(context, 200, "application/json", "Appointment Remains Available");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while updating the appointment");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment");
             }
         }
         private static async Task CompleteAppt(HttpContext context)
@@ -332,8 +313,7 @@ namespace StretchScheduler
 
                 if (appt == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
                     return;
                 }
 
@@ -343,15 +323,13 @@ namespace StretchScheduler
                     var requestedAppt = await dbContext.Appointments.FindAsync(appt.Id);
                     if (requestedAppt == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
                         return;
                     }
                     var client = await dbContext.Clients.FindAsync(requestedAppt.ClientId);
                     if (client == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Client not found");
                         return;
                     }
                     client.Balance += requestedAppt.Price ?? 0;
@@ -359,15 +337,12 @@ namespace StretchScheduler
                     await dbContext.SaveChangesAsync();
                 }
 
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Appointment Set Complete");
+                await WriteResponseAsync(context, 200, "application/json", "Appointment Complete");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while updating the appointment");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment");
             }
         }
         private static async Task AdjustBalance(HttpContext context)
@@ -381,8 +356,7 @@ namespace StretchScheduler
 
                 if (appt == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
                     return;
                 }
 
@@ -392,23 +366,19 @@ namespace StretchScheduler
                     var client = await dbContext.Clients.FindAsync(appt.ClientId);
                     if (client == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Client not found");
                         return;
                     }
                     client.Balance -= appt.Price ?? 0;
                     await dbContext.SaveChangesAsync();
                 }
 
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Appointment Set Complete");
+                await WriteResponseAsync(context, 200, "application/json", "Appointment Set Complete");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while updating the appointment");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment");
             }
         }
         private static async Task DeleteAppt(HttpContext context)
@@ -422,8 +392,7 @@ namespace StretchScheduler
 
                 if (appt == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
                     return;
                 }
 
@@ -433,23 +402,19 @@ namespace StretchScheduler
                     var requestedAppt = await dbContext.Appointments.FindAsync(appt.Id);
                     if (requestedAppt == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
                         return;
                     }
                     dbContext.Appointments.Remove(requestedAppt);
                     await dbContext.SaveChangesAsync();
                 }
 
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Appointment deleted successfully");
+                await WriteResponseAsync(context, 200, "application/json", "Appointment deleted successfully");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while deleting the appointment");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while deleting the appointment");
             }
         }
         private static async Task DeleteClient(HttpContext context)
@@ -463,8 +428,7 @@ namespace StretchScheduler
 
                 if (client == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid client data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid client data");
                     return;
                 }
 
@@ -474,23 +438,19 @@ namespace StretchScheduler
                     var requestedClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.Email == client.Email);
                     if (requestedClient == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Client not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Client not found");
                         return;
                     }
                     dbContext.Clients.Remove(requestedClient);
                     await dbContext.SaveChangesAsync();
                 }
 
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(client) + " deleted successfully");
+                await WriteResponseAsync(context, 200, "application/json", client);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while deleting the client");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while deleting the client");
             }
         }
     }
