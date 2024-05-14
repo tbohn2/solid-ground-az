@@ -12,10 +12,10 @@ namespace StretchScheduler
 {
     public static class AdminRoutes
     {
-
         public static void MapEndpoints(IEndpointRouteBuilder endpoints)
         {
             endpoints.MapMethods("api/{*path}", new[] { "OPTIONS" }, AllowAccess);
+            endpoints.MapGet("/api/allAppts/{month}/{year}", GetAllAppts);
             endpoints.MapGet("/api/clients", GetClients);
             endpoints.MapPost("/api/login", Login);
             endpoints.MapPost("/api/newAdmin", CreateAdmin);
@@ -57,6 +57,41 @@ namespace StretchScheduler
                 return false;
             }
 
+        }
+        private static async Task GetAllAppts(HttpContext context)
+        {
+            try
+            {
+                if (context.Request.RouteValues["month"] == null || context.Request.RouteValues["year"] == null)
+                {
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid month or year");
+                    return;
+                }
+
+                var month = Convert.ToInt32(context.Request.RouteValues["month"]);
+                var year = Convert.ToInt32(context.Request.RouteValues["year"]);
+
+
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                    var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year).Include(a => a.Client).ToListAsync();
+                    if (appts == null)
+                    {
+                        await WriteResponseAsync(context, 404, "application/json", "No appointments found");
+                        return;
+                    }
+                    else
+                    {
+                        await WriteResponseAsync(context, 200, "application/json", appts);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while getting data");
+            }
         }
         private static async Task GetClients(HttpContext context)
         {
