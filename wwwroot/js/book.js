@@ -9,9 +9,7 @@ $('#option2').attr('checked', true);
 
 async function getAppointments() {
     $('#calendar-header').after(`
-    <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>`)
+    <div class="spinner-border" role="status"></div>`)
     try {
         const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         const data = await response.json();
@@ -33,6 +31,7 @@ async function getAppointments() {
 let displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
 
 async function renderCalendar() {
+    $('#calendar-dates').empty();
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
 
     const appointments = await getAppointments();
@@ -58,7 +57,7 @@ async function renderCalendar() {
             }
             else {
                 dateDisplay.append(`<div id=${date}  class='date-display'>${date}</div>`)
-                const availableApptsInDay = appointments.filter(appt => new Date(appt.DateTime).getDate() === date && appt.Status === 0 && date >= currentDate)
+                const availableApptsInDay = appointments.filter(appt => new Date(appt.DateTime).getDate() === date)
                 if (date < currentDate && displayedMonth === currentMonth && displayedYear === currentYear || displayedMonth < currentMonth && displayedYear === currentYear || displayedYear < currentYear) {
                     dateDisplay.addClass('pastDate');
                     pastDate = true;
@@ -162,25 +161,21 @@ async function renderCalendar() {
                     }
 
                     $('#modal-body').empty()
-                    $('#modal-body').append(`
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>`)
+                    $('#modal-body').append(`<div class="spinner-border" role="status"></div>`)
 
                     try {
-                        const response = await fetch('https://localhost:5062/api/requestAppt', {
+                        const response = await fetch('https://tbohn2-001-site1.ctempurl.com/api/requestAppt', {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify(apptToRequest)
                         })
-                        if (response.status === 200) {
-                            console.log('Success:', response);
+                        if (response.ok) {
                             $('#serviceSelectionLabel').text('Appointment Requested');
                             $('#modal-body').empty();
                             $('#modal-body').append(`<div class="fs-3 m-1 text-center">Thank you for your request! Expect a response within 24 hours</div>`);
-                            getAppointments();
+                            renderCalendar();
                         }
                     } catch (error) {
                         console.error('Error:', error);
@@ -207,7 +202,6 @@ $('#prev').on('click', () => {
     }
     $('.alert').remove();
     $('.spinner-border').remove();
-    $('#calendar-dates').empty();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
     renderCalendar(displayedMonth, displayedYear);
 });
@@ -220,7 +214,6 @@ $('#next').on('click', () => {
     }
     $('.alert').remove();
     $('.spinner-border').remove();
-    $('#calendar-dates').empty();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
     renderCalendar(displayedMonth, displayedYear);
 });
