@@ -11,14 +11,20 @@ namespace StretchScheduler
             endpoints.MapGet("/api/apptsInMonth/{month}/{year}", GetAppts);
             endpoints.MapPut("/api/requestAppt", RequestAppt);
         }
+        public static async Task WriteResponseAsync(HttpContext context, int statusCode, string contentType, object data)
+        {
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = contentType;
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(data));
+            return;
+        }
         private static async Task GetAppts(HttpContext context)
         {
             try
             {
                 if (context.Request.RouteValues["month"] == null || context.Request.RouteValues["year"] == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid month or year");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid month or year");
                     return;
                 }
 
@@ -32,23 +38,19 @@ namespace StretchScheduler
                     var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year).Include(a => a.Client).ToListAsync();
                     if (appts == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("No appointments found");
+                        await WriteResponseAsync(context, 404, "application/json", "No appointments found");
                         return;
                     }
                     else
                     {
-                        context.Response.StatusCode = 200; // OK
-                        context.Response.ContentType = "application/json";
-                        await context.Response.WriteAsync(JsonConvert.SerializeObject(appts));
+                        await WriteResponseAsync(context, 200, "application/json", appts);
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while getting data");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while getting data");
             }
         }
         private static async Task RequestAppt(HttpContext context)
@@ -61,8 +63,7 @@ namespace StretchScheduler
 
                 if (appt == null || client == null)
                 {
-                    context.Response.StatusCode = 400; // Bad Request
-                    await context.Response.WriteAsync("Invalid data, please provide required appointment and client data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid data, please provide required appointment and client data");
                     return;
                 }
 
@@ -72,8 +73,7 @@ namespace StretchScheduler
                     var requestedAppt = await dbContext.Appointments.FindAsync(appt.Id);
                     if (requestedAppt == null)
                     {
-                        context.Response.StatusCode = 404; // Not Found
-                        await context.Response.WriteAsync("Appointment not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
                         return;
                     }
                     var existingClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.Email == client.Email);
@@ -96,18 +96,13 @@ namespace StretchScheduler
                     requestedAppt.Status = Appointment.StatusOptions.Requested;
                     await dbContext.SaveChangesAsync();
                 }
-
-                context.Response.StatusCode = 200; // OK
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync("Appointment requested successfully");
+                await WriteResponseAsync(context, 200, "application/json", "Appointment requested successfully");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                context.Response.StatusCode = 500; // Internal Server Error
-                await context.Response.WriteAsync("An error occurred while updating the appointment");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while requesting the appointment");
             }
         }
-
     }
 }
