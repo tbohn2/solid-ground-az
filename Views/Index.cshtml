@@ -1,5 +1,15 @@
-@page
+@page "/home"
+@{
+    ViewData["Title"] = "Nicole Olsen - Home";
+}
 
-<div class="d-flex justify-content-center align-items-center my-5">
-    <h1 class="text-light fw-light pink-border">Welcome to Stretch Me!</h1>
+<div class="d-flex flex-wrap justify-content-center align-items-center my-2">
+    <img id="group-yoga-img" class="col-6" src="~/assets/groupyoga.jpg" alt="group yoga">
+    <h1 class="col-12 my-1 fw-light text-center">Welcome!</h1>
+    <h2 class="fw-light">PRIVATE SESSIONS AVAILABLE TO BOOK</h2>
+    <div id="services" class="my-2 d-flex flex-wrap justify-content-evenly"></div>
 </div>
+
+@section Scripts {
+    <script src="~/js/services.js"></script>
+}

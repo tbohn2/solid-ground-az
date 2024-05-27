@@ -1,3 +1,7 @@
+#group-yoga-img {
+    object-fit: cover;
+}
+
 .serviceCard {
     border-radius: 10px;
     background-color: aliceblue;
@@ -6,16 +10,17 @@
 }
 
 .serviceCard:hover {
-    box-shadow: 0 0 10px 5px var(--pink);
+    box-shadow: 0 0 10px 5px var(--brown);
 }
 
 .serviceCard img {
     border-radius: 10px 0 0 10px;
     height: 250px;
+    object-fit: cover;
 }
 
 .serviceCard-button {
-    background-image: linear-gradient(to right bottom, var(--pink), var(--white));
+    background-image: linear-gradient(to right bottom, var(--brown), var(--white));
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -23,7 +28,7 @@
 }
 
 .serviceCard div div button:hover {
-    background-image: linear-gradient(to right bottom, var(--white), var(--pink));
+    background-image: linear-gradient(to right bottom, var(--white), var(--brown));
     transition: all 0.3s ease;
     cursor: pointer;
 }

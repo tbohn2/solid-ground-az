@@ -1,6 +1,61 @@
 :root {
     --pink: #db624c;
     --white: #e7f3f7;
+    --green: #a8d5ba;
+    --beige: #f0ebe4;
+    --brown: #cfa798;
+    --w: #F9F9F9;
+    --gray: #4A4A4A;
+
+    --blue: #B3C7E6;
+    --lgray: #E5E5E5;
+    --lav: #D1C4E9;
+    --sgray: #4A4A4A
+}
+
+.bg-pink {
+    background-color: var(--pink);
+}
+
+.bg-white {
+    background-color: var(--white);
+}
+
+.bg-blue {
+    background-color: var(--blue);
+}
+
+.bg-lgray {
+    background-color: var(--lgray);
+}
+
+.bg-lav {
+    background-color: var(--lav);
+}
+
+.bg-sgray {
+    background-color: var(--sgray);
+}
+
+.bg-green {
+    background-color: var(--green);
+}
+
+.bg-beige {
+    background-color: var(--beige);
+}
+
+.bg-brown {
+    background-color: var(--brown);
+}
+
+
+.bg-gray {
+    background-color: var(--gray);
+}
+
+.bg-w {
+    background-color: var(--w);
 }
 
 .body-bg {
@@ -14,6 +69,7 @@
 .body {
     font-family: 'Roboto', sans-serif;
     min-height: 100vh;
+    color: black;
 }
 
 .cloudBG {
@@ -29,7 +85,6 @@
 
 nav label {
     font-size: 32px;
-    font-weight: 100;
     cursor: pointer;
     border-top: 7px solid transparent;
 }
@@ -40,14 +95,14 @@ input[type="radio"] {
 
 input[type="radio"]:checked+label {
     border-top: 7px solid;
-    border-image: linear-gradient(to left, var(--white), var(--pink));
+    border-image: linear-gradient(to left, var(--white), var(--brown));
     border-image-slice: 1;
     border-image-repeat: stretch;
 }
 
 .pink-border {
     border: 1px solid var(--pink);
-    border-image: linear-gradient(to left, var(--white), var(--pink));
+    border-image: linear-gradient(to left, var(--white), var(--lav));
     border-image-slice: 1;
 }
 
