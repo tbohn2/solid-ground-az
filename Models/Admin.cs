@@ -7,7 +7,7 @@ namespace StretchScheduler.Models
 {
     public class Admin
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public required string Username { get; set; }
         public required string Password { get; set; }
 

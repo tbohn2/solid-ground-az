@@ -7,5 +7,6 @@ namespace StretchScheduler.Models
         public required string Email { get; set; }
         public required string Phone { get; set; }
         public int Balance { get; set; } = 0;
+        public required Guid AdminId { get; set; }
     }
 }
