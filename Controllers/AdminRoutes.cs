@@ -20,11 +20,14 @@ namespace StretchScheduler
             endpoints.MapPost("/api/login", Login);
             endpoints.MapPost("/api/newAdmin", CreateAdmin);
             endpoints.MapPost("/api/newAppts", CreateNewAppts);
+            endpoints.MapPost("/api/newApptType", CreateApptType);
             endpoints.MapPut("/api/approveAppt", ApproveAppt);
             endpoints.MapPut("/api/denyAppt", DenyAppt);
             endpoints.MapPut("/api/completeAppt", CompleteAppt);
             endpoints.MapPut("/api/adjustBalance", AdjustBalance);
+            endpoints.MapPut("/api/editApptType", EditApptType);
             endpoints.MapDelete("/api/deleteAppt", DeleteAppt);
+            endpoints.MapDelete("/api/deleteApptType", DeleteApptType);
             endpoints.MapDelete("/api/deleteClient", DeleteClient);
         }
         public static async Task WriteResponseAsync(HttpContext context, int statusCode, string contentType, object data)
@@ -34,7 +37,6 @@ namespace StretchScheduler
             await context.Response.WriteAsync(JsonConvert.SerializeObject(data));
             return;
         }
-
         private static async Task AllowAccess(HttpContext context)
         {
             context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
@@ -231,6 +233,36 @@ namespace StretchScheduler
                 await WriteResponseAsync(context, 500, "application/json", "An error occurred while creating the appointments.");
             }
         }
+        private static async Task CreateApptType(HttpContext context)
+        {
+            var authenticated = await Authenticate(context);
+            if (!authenticated) { return; }
+            var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+            try
+            {
+                var apptType = JsonConvert.DeserializeObject<ApptType>(requestBody);
+
+                if (apptType == null)
+                {
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment type data");
+                    return;
+                }
+
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                    await dbContext.ApptTypes.AddAsync(apptType);
+                    await dbContext.SaveChangesAsync();
+                }
+
+                await WriteResponseAsync(context, 201, "application/json", apptType);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while creating the appointment type");
+            }
+        }
         private static async Task ApproveAppt(HttpContext context)
         {
             var authenticated = await Authenticate(context);
@@ -266,6 +298,8 @@ namespace StretchScheduler
                         return;
                     }
 
+                    // Console.WriteLine(requestedAppt.ApptType.Name, requestedAppt.ApptType.Price, requestedAppt.ApptType.Duration); // to test
+
                     SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
                     smtpClient.Port = 587;
                     smtpClient.Credentials = new NetworkCredential(email, password);
@@ -276,7 +310,7 @@ namespace StretchScheduler
                     mailMessage.To.Add(requestedAppt.Client.Email);
                     mailMessage.Subject = "Appointment Confirmation";
                     mailMessage.Body = "Your appointment has been confirmed for " + requestedAppt.DateTime.ToLocalTime().ToString("MMMM dd, yyyy 'at' h:mm tt")
-                     + " for the following session: " + requestedAppt.Type + ". See you soon!";
+                     + " for the following session: " + requestedAppt.ApptType + ". See you soon!";
 
                     try
                     {
@@ -320,9 +354,8 @@ namespace StretchScheduler
                         await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
                         return;
                     }
-                    requestedAppt.Type = null;
-                    requestedAppt.Price = null;
-                    requestedAppt.Duration = null;
+                    requestedAppt.ApptTypeId = null;
+                    requestedAppt.ApptType = null;
                     requestedAppt.ClientId = null;
                     requestedAppt.Client = null;
                     requestedAppt.Status = Appointment.StatusOptions.Available;
@@ -346,7 +379,7 @@ namespace StretchScheduler
             {
                 var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
 
-                if (appt == null)
+                if (appt == null || appt.ApptType == null)
                 {
                     await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
                     return;
@@ -367,7 +400,7 @@ namespace StretchScheduler
                         await WriteResponseAsync(context, 404, "application/json", "Client not found");
                         return;
                     }
-                    client.Balance += requestedAppt.Price ?? 0;
+                    client.Balance += appt.ApptType.Price;
                     requestedAppt.Status = Appointment.StatusOptions.Completed;
                     await dbContext.SaveChangesAsync();
                 }
@@ -404,7 +437,7 @@ namespace StretchScheduler
                         await WriteResponseAsync(context, 404, "application/json", "Client not found");
                         return;
                     }
-                    client.Balance -= appt.Price ?? 0;
+                    client.Balance = 0;
                     await dbContext.SaveChangesAsync();
                 }
 
@@ -414,6 +447,46 @@ namespace StretchScheduler
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment");
+            }
+        }
+        private static async Task EditApptType(HttpContext context)
+        {
+            var authenticated = await Authenticate(context);
+            if (!authenticated) { return; }
+            var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+            try
+            {
+                var apptType = JsonConvert.DeserializeObject<ApptType>(requestBody);
+
+                if (apptType == null)
+                {
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment type data");
+                    return;
+                }
+
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                    var requestedApptType = await dbContext.ApptTypes.FindAsync(apptType.Id);
+                    if (requestedApptType == null)
+                    {
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment type not found");
+                        return;
+                    }
+                    requestedApptType.Name = apptType.Name;
+                    requestedApptType.Duration = apptType.Duration;
+                    requestedApptType.Price = apptType.Price;
+                    requestedApptType.Description = apptType.Description;
+                    requestedApptType.Location = apptType.Location;
+                    await dbContext.SaveChangesAsync();
+                }
+
+                await WriteResponseAsync(context, 200, "application/json", apptType);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment type");
             }
         }
         private static async Task DeleteAppt(HttpContext context)
@@ -450,6 +523,42 @@ namespace StretchScheduler
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 await WriteResponseAsync(context, 500, "application/json", "An error occurred while deleting the appointment");
+            }
+        }
+        private static async Task DeleteApptType(HttpContext context)
+        {
+            var authenticated = await Authenticate(context);
+            if (!authenticated) { return; }
+            var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+            try
+            {
+                var apptType = JsonConvert.DeserializeObject<ApptType>(requestBody);
+
+                if (apptType == null)
+                {
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment type data");
+                    return;
+                }
+
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                    var requestedApptType = await dbContext.ApptTypes.FindAsync(apptType.Id);
+                    if (requestedApptType == null)
+                    {
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment type not found");
+                        return;
+                    }
+                    dbContext.ApptTypes.Remove(requestedApptType);
+                    await dbContext.SaveChangesAsync();
+                }
+
+                await WriteResponseAsync(context, 200, "application/json", "Appointment type deleted successfully");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while deleting the appointment type");
             }
         }
         private static async Task DeleteClient(HttpContext context)

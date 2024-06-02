@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using StretchScheduler.Models;
+using static StretchScheduler.Models.Appointment;
 
 namespace StretchScheduler
 {
@@ -34,7 +35,8 @@ namespace StretchScheduler
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                    var appts = await dbContext.Appointments.Where(a => a.DateTime >= DateTime.Now && a.DateTime.Month == month && a.DateTime.Year == year && a.Status == 0).ToListAsync();
+                    var appts = await dbContext.Appointments.Where(a => a.DateTime >= DateTime.Now && a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Available
+                    || a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Firm).ToListAsync();
                     if (appts == null)
                     {
                         await WriteResponseAsync(context, 404, "application/json", "No appointments found");
@@ -82,17 +84,17 @@ namespace StretchScheduler
                         {
                             Name = client.Name,
                             Email = client.Email,
-                            Phone = client.Phone
+                            Phone = client.Phone,
+                            AdminId = client.AdminId
                         };
                         await dbContext.Clients.AddAsync(newClient);
                         existingClient = newClient;
                     }
-                    requestedAppt.Type = appt.Type;
-                    requestedAppt.Price = appt.Price;
-                    requestedAppt.Duration = appt.Duration;
+                    requestedAppt.ApptTypeId = appt.ApptTypeId;
+                    requestedAppt.ApptType = appt.ApptType;
                     requestedAppt.ClientId = existingClient.Id;
                     requestedAppt.Client = existingClient;
-                    requestedAppt.Status = Appointment.StatusOptions.Requested;
+                    requestedAppt.Status = StatusOptions.Requested;
                     await dbContext.SaveChangesAsync();
                 }
                 await WriteResponseAsync(context, 200, "application/json", "Appointment requested successfully");
