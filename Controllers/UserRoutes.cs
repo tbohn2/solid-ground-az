@@ -34,17 +34,21 @@ namespace StretchScheduler
 
                 using (var scope = context.RequestServices.CreateScope())
                 {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                    var appts = await dbContext.Appointments.Where(a => a.DateTime >= DateTime.Now && a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Available
-                    || a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Firm).ToListAsync();
-                    if (appts == null)
+                    var idString = Environment.GetEnvironmentVariable("ID");
+                    if (Guid.TryParse(idString, out Guid adminId))
                     {
-                        await WriteResponseAsync(context, 404, "application/json", "No appointments found");
-                        return;
-                    }
-                    else
-                    {
-                        await WriteResponseAsync(context, 200, "application/json", appts);
+                        var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                        var appts = await dbContext.Appointments.Where(a => a.DateTime >= DateTime.Now && a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Available && a.AdminId == adminId
+                        || a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Firm).ToListAsync();
+                        if (appts == null)
+                        {
+                            await WriteResponseAsync(context, 404, "application/json", "No appointments found");
+                            return;
+                        }
+                        else
+                        {
+                            await WriteResponseAsync(context, 200, "application/json", appts);
+                        }
                     }
                 }
             }

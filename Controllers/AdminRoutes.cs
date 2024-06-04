@@ -113,7 +113,6 @@ namespace StretchScheduler
                 await WriteResponseAsync(context, 200, "application/json", clientData);
             }
         }
-
         private static async Task Login(HttpContext context)
         {
             var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
