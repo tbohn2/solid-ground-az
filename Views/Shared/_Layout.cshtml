@@ -9,27 +9,29 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="~/css/root.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/index.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/services.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/book.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 </head>
 
-<body class="body fw-light bg-beige d-flex flex-column align-items-center">
-    <h1 class="m-0 p-0 fw-light">NICOLE OLSEN</h1>
-    <h3 class="m-0 p-0 fw-light">ON SOLID GROUND</h3>
-    <header class="col-12">
-        <nav class="col-12 d-flex justify-content-evenly align-items-center">
-            <input type="radio" class="" name="navOptions" id="option1" value="home" autocomplete="off">
+<body class="body col-12 m-0 p-0  fw-light cloudBG d-flex flex-column align-items-center">
+    <header class="col-12 bg-white d-flex flex-wrap">
+        <div class="col-4 d-flex flex-column align-items-center">
+            <h1 class="m-0 p-0 fw-light">ON SOLID GROUND</h1>
+            <h3 class="m-0 p-0 fw-light">WITH NICOLE OLSEN</h3>
+        </div>
+        <nav class="col-8 d-flex justify-content-evenly align-items-center">
+            <input type="radio" class="" name="navOptions" id="option1" value="/" autocomplete="off">
             <label for="option1">HOME</label>
             <input type="radio" class="" name="navOptions" id="option2" value="calendar" autocomplete="off">
             <label for="option2">CALENDAR</label>
         </nav>
     </header>
 
-    <main role="main">
+    <main role="main" class="col-12">
         @RenderBody()
     </main>
 
