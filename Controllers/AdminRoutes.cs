@@ -58,7 +58,6 @@ namespace StretchScheduler
                 await WriteResponseAsync(context, 401, "application/json", "Unauthorized");
                 return false;
             }
-
         }
         private static async Task GetAllAppts(HttpContext context)
         {
@@ -212,8 +211,24 @@ namespace StretchScheduler
 
                     foreach (var newAppt in newAppts)
                     {
-                        newAppt.Status = Appointment.StatusOptions.Available;
-                        await dbContext.Appointments.AddAsync(newAppt);
+                        // If there is no appointment type, the appointment is available; otherwise it is firm
+                        if (newAppt.ApptTypeId == null)
+                        {
+                            newAppt.Status = Appointment.StatusOptions.Available;
+                            await dbContext.Appointments.AddAsync(newAppt);
+                        }
+                        else
+                        {
+                            var requestedApptType = await dbContext.ApptTypes.FindAsync(newAppt.ApptTypeId);
+                            if (requestedApptType == null)
+                            {
+                                await WriteResponseAsync(context, 404, "application/json", "Appointment type not found");
+                                return;
+                            }
+                            newAppt.ApptType = requestedApptType;
+                            newAppt.Status = Appointment.StatusOptions.Firm;
+                            await dbContext.Appointments.AddAsync(newAppt);
+                        }
                     }
 
                     await dbContext.SaveChangesAsync();
