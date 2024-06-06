@@ -43,7 +43,7 @@ namespace StretchScheduler
                     {
                         var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
                         var appts = await dbContext.Appointments.Where(a => a.DateTime >= DateTime.Now && a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Available && a.AdminId == adminId
-                        || a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Firm).ToListAsync();
+                        || a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Firm).OrderBy(a => a.DateTime).ToListAsync();
                         if (appts == null)
                         {
                             await WriteResponseAsync(context, 404, "application/json", "No appointments found");
@@ -161,6 +161,12 @@ namespace StretchScheduler
                         await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
                         return;
                     }
+                    var requestedApptType = await dbContext.ApptTypes.FindAsync(appt.ApptTypeId);
+                    if (requestedApptType == null)
+                    {
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment type not found");
+                        return;
+                    }
                     var existingClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.Email == client.Email);
                     if (existingClient == null)
                     {
@@ -175,7 +181,7 @@ namespace StretchScheduler
                         existingClient = newClient;
                     }
                     requestedAppt.ApptTypeId = appt.ApptTypeId;
-                    requestedAppt.ApptType = appt.ApptType;
+                    requestedAppt.ApptType = requestedApptType;
                     requestedAppt.ClientId = existingClient.Id;
                     requestedAppt.Client = existingClient;
                     requestedAppt.Status = StatusOptions.Requested;
