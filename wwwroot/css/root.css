@@ -5,11 +5,16 @@
     --beige: #f0ebe4;
     --brown: #cfa798;
     --gray: #e6e6e6;
+    --darkgray: #9c9c9c;
     --lav: #D1C4E9;
 }
 
 .bg-white {
     background-color: var(--white);
+}
+
+.bg-darkgray {
+    background-color: var(--darkgray);
 }
 
 .bg-lav {
@@ -55,6 +60,10 @@
     min-height: 90vh;
     width: 90%;
     margin: 15px;
+}
+
+.text-darkgray {
+    color: var(--darkgray);
 }
 
 nav label {

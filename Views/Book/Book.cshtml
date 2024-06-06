@@ -1,16 +1,16 @@
-@page "/book"
+@page "/calendar"
 @{
-    ViewData["Title"] = "Book";
+    ViewData["Title"] = "Calendar";
 }
 
-<div id="book" class="my-3 col-12 d-flex justify-content-center text-light fade-in">
-    <div id="calendar" class="col-11 col-md-8 d-flex flex-column align-items-center">
-        <div id="calendar-header" class="col-12 d-flex justify-content-between align-items-center">
-            <button id="prev" class="monthNavBtn ">Prev</button>
+<div id="book" class="my-3 col-12 d-flex justify-content-center fade-in">
+    <div id="calendar" class="bg-gray rounded p-5 col-11 col-md-8 d-flex flex-column align-items-center">
+        <div id="calendar-header" class="col-12 bg-white d-flex align-items-center">
+            <button id="prev" class="monthNavBtn ">&#8592;</button>
+            <button id="next" class="monthNavBtn">&#8594;</button>
             <h1 id="month-year" class="fw-light"></h1>
-            <button id="next" class="monthNavBtn">Next</button>
         </div>
-        <div id="calendar-body" class="col-12">
+        <div id="calendar-body" class="col-12 bg-white">
             <div id="calendar-weekdays" class="d-flex justify-content-between col-12">
                 <div>Sun</div>
                 <div>Mon</div>
@@ -25,14 +25,14 @@
     </div>
 </div>
 <div class="modal fade" id="serviceSelection" tabindex="-1" aria-labelledby="serviceSelectionLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-light">
-            <div id="modal-header" class="d-flex justify-content-between m-2">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div id="modal-header" class="bg-gray text-darkgray rounded-top p-1 d-flex justify-content-between">
                 <h1 class="modal-title fs-3" id="serviceSelectionLabel"></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
-            <div id="modal-body" class="col-12 d-flex flex-column align-items-center"></div>
-            <div id="modal-footer" class="d-flex justify-content-end">
+            <div id="modal-body" class="bg-gray d-flex flex-column align-items-center"></div>
+            <div id="modal-footer" class="bg-gray rounded-bottom d-flex justify-content-end">
                 <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
