@@ -9,7 +9,7 @@ namespace StretchScheduler.Models
         public required int Price { get; set; }
         public required string Description { get; set; }
         public string? Location { get; set; }
-        public required string ImgURL { get; set; } = "./assets/services1.jpg";
+        public string? ImgURL { get; set; }
         public required Guid AdminId { get; set; }
     }
 };
