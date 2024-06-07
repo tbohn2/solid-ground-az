@@ -81,7 +81,8 @@
 }
 
 .time-option:hover {
-    color: var(--pink);
+    color: var(--gray);
+    background-color: var(--darkgray);
     transition: all 0.3s ease;
 }
 
@@ -91,19 +92,34 @@
 }
 
 .dropdown-toggle {
-    background: none !important;
-    border: 1px solid var(--white) !important;
-    border-image: linear-gradient(to left, var(--white), var(--pink)) !important;
-    border-image-slice: 1 !important;
+    background: var(--gray);
+    border: 1px solid var(--darkgray) !important;
+    color: var(--darkgray) !important;
+}
+
+.dropdown {
+    position: relative !important;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    overflow-y: auto;
+    max-height: 200px;
+    z-index: 5;
 }
 
 .dropdown-menu li {
     cursor: pointer;
-    color: var(--white);
-    background-color: rgb(112, 119, 134);
-    border: 1px solid var(--white);
-    border-image: linear-gradient(to left, var(--white), var(--pink));
-    border-image-slice: 1;
+    background-color: var(--gray);
+    border: 1px solid var(--darkgray) !important;
+    color: var(--darkgray) !important;
+}
+
+.request-btn {
+    background-color: var(--green) !important;
+    color: var(--darkgray) !important;
+    border: 1px solid var(--green) !important;
 }
 
 .spinner-border {
@@ -117,13 +133,6 @@
 
     .date-display {
         align-self: center;
-    }
-
-    .number-of-appts {
-        width: 25px;
-        height: 25px;
-        font-size: 15px;
-        font-weight: 400;
     }
 
 }

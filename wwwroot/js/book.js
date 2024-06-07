@@ -4,6 +4,10 @@ const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 let displayedYear = currentYear;
 let displayedMonth = currentMonth;
+let dateDisplay = '';
+let apptsByDate = {};
+let apptsToDisplay = [];
+let currentApptId = 0;
 
 $('#option2').attr('checked', true);
 
@@ -21,9 +25,28 @@ async function getAppointments() {
     try {
         // const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         const response = await fetch(`http://localhost:5062/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
-        const data = await response.json();
-        const appointments = data;
-        return appointments;
+        if (response.ok) {
+            const appointments = await response.json();
+            // Add to global object for quick access; allows for one loop through appointments instead of every time a date is clicked
+            appointments.forEach(appt => {
+                const date = new Date(appt.DateTime).getDate();
+
+                if (!apptsByDate[date]) {
+                    apptsByDate[date] = [];
+                }
+                apptsByDate[date].push(appt);
+            });
+            return true;
+        } else {
+            console.error('Server request failed');
+            $('.spinner-border').remove();
+            $('#month-year').after(`
+            <div class="alert alert-danger text-center m-2 p-2" role="alert">
+                Server request failed. Please try again later.
+            </div>
+            `);
+            return false;
+        }
     } catch (error) {
         console.error(error);
         $('.spinner-border').remove();
@@ -32,7 +55,7 @@ async function getAppointments() {
             Server request failed. Please try again later.
         </div>
     `);
-        return null;
+        return false;
     }
 }
 
@@ -91,71 +114,73 @@ async function submitForm(event) {
 };
 
 async function displayApptDetails(event) {
-    $('#serviceSelectionLabel').text('Select Service');
     $('#modal-body').empty();
-    const apptId = event.target.id;
-    // Appt.Status will either be 0 (available) or 4 (fixed)
-    const selectedAppt = availableApptsInDay.find(appt => appt.Id === apptId);
+    const apptId = currentApptId;
 
-    $('#modal-body').append(`<div id=dateDisplay class="fs-3 m-1 text-center">${time} | ${dateDisplay}</div>`);
+    // selectedAppt.Status will either be 0 (available) or 4 (fixed)
+    const selectedAppt = availableApptsInDay.find(appt => appt.Id == parseInt(apptId));
+    const time = new Date(selectedAppt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
+    $('#serviceSelectionLabel').text(`${selectedAppt.apptType ? selectedAppt.apptType.Name : 'Available To Book'}`);
 
-    let selectedService
-    const dropdown = $(` 
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle fs-3" type="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            Select Type
+    // Layout needs additional information for fixed appointments
+    if (selectedAppt.Status === 4) {
+        $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${time} | ${dateDisplay}</div>`);
+        return;
+    } else {
+        $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${dateDisplay} | ${time}</div>`);
+
+        let selectedService
+        // Need to populate with available services from server
+        const dropdown = $(` 
+    <div class="dropdown-center col-12 text-center my-2">
+        <button class="px-1 col-10 btn dropdown-toggle fs-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Session
         </button>
         <ul class="dropdown-menu m-0 p-0">
-            <li class="dropdown-item fs-3">$50 Private Yoga 60 min</li>
-            <li class="dropdown-item fs-3">$20 Assisted Stretch 25 min</li>
-            <li class="dropdown-item fs-3">$20 Assisted Stretch 50 min</li>
-            <li class="dropdown-item fs-3">$50 Blended Service 60 min</li>
+            <li class="dropdown-item fs-4">$50 Private Yoga 60 min</li>
+            <li class="dropdown-item fs-4">$20 Assisted Stretch 25 min</li>
+            <li class="dropdown-item fs-4">$20 Assisted Stretch 50 min</li>
+            <li class="dropdown-item fs-4">$50 Blended Service 60 min</li>
         </ul>
     </div>`);
-    $('#modal-body').append(dropdown);
-    $('.dropdown-item').on('click', (event) => {
-        selectedService = event.target.innerText;
-        $('.dropdown-toggle').text(selectedService);
-    });
-    $('#modal-body').append(`<button id=RequestBtn class="monthNavBtn mt-3">Request Appointment</button>`);
-    $('#RequestBtn').on('click', () => {
-        $('#serviceSelectionLabel').text('Enter Information');
-        $('#modal-body').empty();
-        $('#modal-body').append(`<div id=dateDisplay class="fs-3 m-1 text-center">${time} | ${dateDisplay}</div>`);
-        $('#modal-body').append(`<div id=dateDisplay class="fs-3 m-1 text-center">${selectedService}</div>`);
+        $('#modal-body').append(dropdown);
+        $('.dropdown-item').on('click', (event) => {
+            selectedService = event.target.innerText;
+            $('.dropdown-toggle').text(selectedService);
+        });
 
-        const form = $(
-            `<form class="d-flex flex-column justify-content-between">
-                <label for="nameInput" class="form-label">Name</label>
-                <input type="text" class="form-control mb-3" id="nameInput" required>
-                <label for="emailInput" class="form-label">Email address</label>
-                <input type="email" class="form-control mb-3" id="emailInput" required>
-                <label for="phoneInput" class="form-label">Phone Number (10 digits)</label>
-                <input type="text" class="form-control mb-3" id="phoneInput"
-                    pattern="[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
-                <button type="submit" class="monthNavBtn">Confirm Request</button>
-           </form>`
-        )
-        $('#modal-body').append(form);
-        form.on('submit', submitForm);
-    });
+        $('#modal-footer').prepend(`<button id="book-next" class="btn request-btn m-1">Next</button>`);
+
+        $('#book-next').on('click', () => {
+            $('#book-next').remove();
+            $('#modal-footer').prepend(`<button type="submit" id="send-request" class="btn request-btn m-1">Request Appointment</button>`);
+            $('.dropdown-center').remove();
+            $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${selectedService}</div>`);
+
+            const form = $(
+                `<form class="d-flex col-12 px-1 fs-5 text-darkgray flex-column justify-content-between">
+                    <label for="nameInput" class="form-label">Name</label>
+                    <input type="text" class="form-control mb-1" id="nameInput" required>
+                    <label for="emailInput" class="form-label">Email address</label>
+                    <input type="email" class="form-control mb-1" id="emailInput" required>
+                    <label for="phoneInput" class="form-label">Phone Number (10 digits)</label>
+                    <input type="text" class="form-control mb-1" id="phoneInput"
+                        pattern="[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+                </form>`
+            )
+            $('#modal-body').append(form);
+            form.on('submit', submitForm);
+        });
+    }
 };
 
 async function displayModal(event) {
     const date = event.target.dataset.date;
-
-    let clickedElement = $(event.target).closest('.availableDate');
-    const apptsString = clickedElement.attr('data-appts');
-    const appointments = JSON.parse(apptsString);
-
-    const dateDisplay = displayedMonth + '/' + date + '/' + displayedYear
+    availableApptsInDay = apptsByDate[date];
+    dateDisplay = new Date(displayedYear, displayedMonth - 1, date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
     $('#serviceSelectionLabel').text(dateDisplay);
-
-    // Sorting does not need to happen if the appointments are already sorted by date by server
-    const availableApptsInDay = appointments.sort((a, b) => new Date(a.DateTime) - new Date(b.DateTime));
 
     availableApptsInDay.forEach(appt => {
         const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
@@ -167,16 +192,20 @@ async function displayModal(event) {
         );
         $('#modal-body').append(timeDisplay);
     });
-    $('.time-option').on('click', displayApptDetails);
+    $('.time-option').on('click', (event) => {
+        const parent = $(event.target).closest('.time-option');
+        currentApptId = parent.attr('id');
+        displayApptDetails();
+    });
 };
 
 async function renderCalendar() {
     $('#calendar-dates').empty();
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
 
-    const appointments = await getAppointments();
-    if (appointments === null) { return; }
-    if (appointments.length === 0) {
+    const appointmentsExist = await getAppointments();
+    if (appointmentsExist === false) { return; }
+    if (apptsByDate.length === 0) {
         $('#month-year').after(`
         <div class="alert alert-info text-center m-2 p-2" role="alert">
             No appointments available this month.
@@ -195,7 +224,7 @@ async function renderCalendar() {
             }
             else {
                 dateDisplay.append(`<div id=${date} data-date=${date} class='date-display'>${date}</div>`)
-                const availableApptsInDay = appointments.filter(appt => new Date(appt.DateTime).getDate() === date)
+                const availableApptsInDay = apptsByDate[date] || [];
                 if (date < currentDate && displayedMonth === currentMonth && displayedYear === currentYear || displayedMonth < currentMonth && displayedYear === currentYear || displayedYear < currentYear) {
                     dateDisplay.addClass('pastDate');
                     pastDate = true;
@@ -204,7 +233,6 @@ async function renderCalendar() {
                     if (mobile === true) {
                         dateDisplay.attr('data-bs-toggle', 'modal');
                         dateDisplay.attr('data-bs-target', '#serviceSelection');
-                        dateDisplay.attr('data-appts', JSON.stringify(availableApptsInDay));
                         dateDisplay.addClass('availableDate');
                         appointmentsDisplay = $('<div class="d-flex justify-content-center align-items-center"></div>');
                         availableApptsInDay.forEach(appt => {
@@ -212,13 +240,13 @@ async function renderCalendar() {
                         });
                         dateDisplay.append(appointmentsDisplay);
                     } else {
-                        appointmentsDisplay = $(`<div data-date=${date} class="col-12"></div>`);
+                        appointmentsDisplay = $(`<div class="col-12"></div>`);
 
                         availableApptsInDay.forEach(appt => {
                             const apptName = appt.apptType ? appt.apptType.Name : 'Available';
                             const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-                            appointmentsDisplay.append(`<div id=${appt.Id} data-bs-toggle='modal' data-bs-target='#serviceSelection' class='appt-time'>${apptTime} ${apptName}</div>`)
+                            appointmentsDisplay.append(`<div id=${appt.Id} data-date=${date} data-bs-toggle='modal' data-bs-target='#serviceSelection' class='appt-time'>${apptTime} ${apptName}</div>`)
                         });
                         dateDisplay.append(appointmentsDisplay);
                     }
@@ -229,10 +257,20 @@ async function renderCalendar() {
         $('#calendar-dates').append(weekDisplay);
     });
     if (mobile === true) { $('.availableDate').on('click', displayModal) }
-    else { $('.appt-time').on('click', displayApptDetails); }
+    else {
+        $('.appt-time').on('click', (event) => {
+            currentApptId = event.target.id;
+            const date = event.target.dataset.date;
+            availableApptsInDay = apptsByDate[date];
+            dateDisplay = new Date(displayedYear, displayedMonth - 1, date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            displayApptDetails(event);
+        });
+    }
 }
 
 $('#serviceSelection').on('hidden.bs.modal', () => {
+    $('#book-next').remove();
+    $('#send-request').remove();
     $('#serviceSelectionLabel').empty();
     $('#modal-body').empty();
 });
