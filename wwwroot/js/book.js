@@ -8,17 +8,9 @@ let dateDisplay = '';
 let apptsByDate = {};
 let apptsToDisplay = [];
 let currentApptId = 0;
+let mobile = window.innerWidth < 768 ? true : false;
 
 $('#option2').attr('checked', true);
-
-let mobile = false
-
-function checkScreenWidth() {
-    var width = window.innerWidth;
-    if (width < 768) {
-        mobile = true;
-    }
-}
 
 async function getAppointments() {
     $('#month-year').after(`<div class="spinner-border" role="status"></div>`)
@@ -299,5 +291,11 @@ $('#next').on('click', () => {
     renderCalendar(displayedMonth, displayedYear);
 });
 
-checkScreenWidth();
 renderCalendar();
+window.addEventListener('resize', () => {
+    let isMobile = window.innerWidth < 768 ? true : false;
+    if (isMobile !== mobile) {
+        renderCalendar();
+        mobile = !mobile;
+    }
+});

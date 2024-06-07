@@ -29,16 +29,7 @@ const services = [
     },
 ]
 
-let screenSize
-
-function checkScreenWidth() {
-    var width = window.innerWidth;
-    if (width < 768) {
-        screenSize = "mobile"
-    }
-}
-
-checkScreenWidth();
+let mobile = window.innerWidth < 768 ? true : false;
 
 $('#option1').attr('checked', true);
 
@@ -73,4 +64,10 @@ for (let i = 0; i < services.length; i++) {
     $('#services').append(card)
 }
 
-window.addEventListener('resize', checkScreenWidth);
+window.addEventListener('resize', () => {
+    let isMobile = window.innerWidth < 768 ? true : false;
+    if (isMobile !== mobile) {
+        // Render services again
+        mobile = !mobile;
+    }
+});
