@@ -1,73 +1,48 @@
-const services = [
-    {
-        name: '1 HOUR PRIVATE YOGA',
-        description: 'Move through shapes and postures to benefit you individually',
-        price: 50,
-        time: 60,
-        imageURL: './assets/services1.jpg'
-    },
-    {
-        name: '25 MIN ASSISTED STRETCH',
-        description: 'Customized assisted stretch',
-        price: 20,
-        time: 25,
-        imageURL: './assets/services2.jpg'
-    },
-    {
-        name: '50 MIN ASSISTED STRETCH',
-        description: 'Customized assisted stretch',
-        price: 40,
-        time: 50,
-        imageURL: './assets/services3.jpg'
-    },
-    {
-        name: 'BLENDED SERVICE',
-        description: 'Combined assisted stretch, ball rolling, and yoga',
-        price: 50,
-        time: 60,
-        imageURL: './assets/services4.jpg'
-    },
-]
+import { privateServices } from './index.js';
 
 let mobile = window.innerWidth < 768 ? true : false;
 
 $('#option1').attr('checked', true);
+function renderServices() {
 
-for (let i = 0; i < services.length; i++) {
-    let card
-    if (screenSize === 'mobile') {
-        card = `
+    privateServices.forEach(service => {
+        let card
+        if (mobile) {
+            card = `
         <div class="serviceCard my-3 col-10 d-flex flex-column fade-top">
-            <img class="col-12" src="${services[i].imageURL}" alt="yoga">
-                <h3 class="mt-3 align-self-center text-center">${services[i].name}</h3>
-                <p class="m-2 fs-5 align-self-center">${services[i].description}</p>
+            <img class="col-12" src="${service.ImgURL}" alt="yoga">
+                <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
+                <p class="m-2 fs-5 align-self-center">${service.Description}</p>
                 <div class="d-flex align-items-center justify-content-between col-12">
-                    <p class="col-8 m-0 text-center">$${services[i].price} | ${services[i].time} min</p>
+                    <p class="col-8 m-0 text-center">$${service.Price} | ${service.Duration} min</p>
                     <button class="serviceCard-button col-4">Book</button>
                 </div>
         </div>`
-    }
-    else {
-        card = `
+        }
+        else {
+            card = `
         <div class="serviceCard my-3 col-10 col-lg-5 d-flex fade-top">
-            <img class="col-5" loading="lazy" src="${services[i].imageURL}" alt="yoga">
+            <img class="col-5" loading="lazy" src="${service.ImgURL}" alt="yoga">
             <div class="col-7 d-flex flex-column align-items-start justify-content-between">
-                <h3 class="mt-3 align-self-center text-center">${services[i].name}</h3>
-                <p class="m-2 fs-5 align-self-center">${services[i].description}</p>
+                <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
+                <p class="m-2 fs-5 align-self-center">${service.Description}</p>
                 <div class="d-flex align-items-center justify-content-between col-12">
-                    <p class="col-8 m-0 text-center">$${services[i].price} | ${services[i].time} min</p>
+                    <p class="col-8 m-0 text-center">$${service.Price} | ${service.Duration} min</p>
                     <button class="serviceCard-button col-4">Book</button>
                 </div>
             </div>
         </div>`
-    }
-    $('#services').append(card)
-}
+        }
+        $('#services').append(card)
+    })
+};
+
+renderServices();
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
     if (isMobile !== mobile) {
-        // Render services again
         mobile = !mobile;
+        renderServices();
     }
 });
