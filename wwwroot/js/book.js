@@ -195,17 +195,6 @@ async function renderCalendar() {
     $('#calendar-dates').empty();
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
 
-    const appointmentsExist = await getAppointments();
-    if (appointmentsExist === false) { return; }
-    if (apptsByDate.length === 0) {
-        $('#month-year').after(`
-        <div class="alert alert-info text-center m-2 p-2" role="alert">
-            No appointments available this month.
-        </div>
-    `);
-    }
-    $('.spinner-border').remove();
-
     displayedDates.forEach(week => {
         let weekDisplay = $('<div class="d-flex fade-in"></div>');
         week.forEach(date => {
@@ -226,13 +215,13 @@ async function renderCalendar() {
                         dateDisplay.attr('data-bs-toggle', 'modal');
                         dateDisplay.attr('data-bs-target', '#serviceSelection');
                         dateDisplay.addClass('availableDate');
-                        appointmentsDisplay = $('<div class="d-flex justify-content-center align-items-center"></div>');
+                        appointmentsDisplay = $('<div class="d-flex"></div>');
                         availableApptsInDay.forEach(appt => {
-                            appointmentsDisplay.append(`<div data-date=${date} class='fs-1'>.</div>`)
+                            appointmentsDisplay.append(`<div data-date=${date} class='appt-dot'>.</div>`)
                         });
                         dateDisplay.append(appointmentsDisplay);
                     } else {
-                        appointmentsDisplay = $(`<div class="col-12"></div>`);
+                        appointmentsDisplay = $(`<div class="col-12 appts-container"></div>`);
 
                         availableApptsInDay.forEach(appt => {
                             const apptName = appt.apptType ? appt.apptType.Name : 'Available';
@@ -260,6 +249,20 @@ async function renderCalendar() {
     }
 }
 
+async function checkApptsAndRender() {
+    const appointmentsExist = await getAppointments();
+    if (appointmentsExist === false) { return; }
+    if (apptsByDate.length === 0) {
+        $('#month-year').after(`
+            <div class="alert alert-info text-center m-2 p-2" role="alert">
+            No appointments available this month.
+            </div>
+            `);
+    }
+    $('.spinner-border').remove();
+    renderCalendar();
+}
+
 $('#serviceSelection').on('hidden.bs.modal', () => {
     $('#book-next').remove();
     $('#send-request').remove();
@@ -276,7 +279,7 @@ $('#prev').on('click', () => {
     $('.alert').remove();
     $('.spinner-border').remove();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
-    renderCalendar(displayedMonth, displayedYear);
+    checkApptsAndRender();
 });
 
 $('#next').on('click', () => {
@@ -288,14 +291,15 @@ $('#next').on('click', () => {
     $('.alert').remove();
     $('.spinner-border').remove();
     displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
-    renderCalendar(displayedMonth, displayedYear);
+    checkApptsAndRender();
 });
 
-renderCalendar();
+checkApptsAndRender();
+
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
     if (isMobile !== mobile) {
-        renderCalendar();
         mobile = !mobile;
+        renderCalendar();
     }
 });

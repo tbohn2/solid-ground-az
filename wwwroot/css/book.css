@@ -28,6 +28,17 @@
     border: 1px solid var(--gray);
 }
 
+.appts-container {
+    height: 70%;
+    overflow-y: auto;
+}
+
+.appt-dot {
+    position: relative;
+    bottom: 30px;
+    font-size: 50px;
+}
+
 .availableDate:hover {
     border: 1px solid var(--brown);
     box-shadow: 0 0 10px var(--brown);
@@ -70,6 +81,15 @@
 
 #modal-header {
     border-bottom: 1px solid var(--darkgray);
+    color: var(--white);
+    background-color: var(--purple);
+}
+
+.btn-close {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    color: var(--white) !important;
 }
 
 .time-option {
@@ -93,8 +113,8 @@
 
 .dropdown-toggle {
     background: var(--gray);
-    border: 1px solid var(--darkgray) !important;
-    color: var(--darkgray) !important;
+    border: 1px solid var(--purple) !important;
+    color: var(--purple) !important;
 }
 
 .dropdown {
@@ -117,8 +137,8 @@
 }
 
 .request-btn {
-    background-color: var(--green) !important;
-    color: var(--darkgray) !important;
+    background-color: rgb(88, 92, 126) !important;
+    color: var(--white) !important;
     border: 1px solid var(--green) !important;
 }
 
