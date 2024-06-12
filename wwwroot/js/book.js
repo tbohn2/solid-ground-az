@@ -13,6 +13,7 @@ let mobile = window.innerWidth < 768 ? true : false;
 $('#option2').attr('checked', true);
 
 async function getAppointments() {
+    apptsByDate = {};
     $('#month-year').after(`<div class="spinner-border" role="status"></div>`)
     try {
         // const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
@@ -252,7 +253,7 @@ async function renderCalendar() {
 async function checkApptsAndRender() {
     const appointmentsExist = await getAppointments();
     if (appointmentsExist === false) { return; }
-    if (apptsByDate.length === 0) {
+    if (JSON.stringify(apptsByDate) === "{}") {
         $('#month-year').after(`
             <div class="alert alert-info text-center m-2 p-2" role="alert">
             No appointments available this month.
