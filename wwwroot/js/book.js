@@ -1,3 +1,4 @@
+import { privateServices } from './index.js';
 const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
 const currentDate = new Date().getDate();
 const currentYear = new Date().getFullYear();
@@ -6,9 +7,12 @@ let displayedYear = currentYear;
 let displayedMonth = currentMonth;
 let dateDisplay = '';
 let apptsByDate = {};
-let apptsToDisplay = [];
+let availableApptsInDay = [];
 let currentApptId = 0;
 let mobile = window.innerWidth < 768 ? true : false;
+
+
+console.log(privateServices);
 
 $('#option2').attr('checked', true);
 
@@ -211,6 +215,9 @@ async function renderCalendar() {
                     dateDisplay.addClass('pastDate');
                     pastDate = true;
                 }
+
+                let appointmentsDisplay;
+
                 if (availableApptsInDay.length != 0 && !pastDate) {
                     if (mobile === true) {
                         dateDisplay.attr('data-bs-toggle', 'modal');
