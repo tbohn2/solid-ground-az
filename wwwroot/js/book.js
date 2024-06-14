@@ -212,7 +212,6 @@ async function renderCalendar() {
                 dateDisplay.append(`<div id=${date} data-date=${date} class='date-display'>${date}</div>`)
                 const availableApptsInDay = apptsByDate[date] || [];
                 if (date < currentDate && displayedMonth === currentMonth && displayedYear === currentYear || displayedMonth < currentMonth && displayedYear === currentYear || displayedYear < currentYear) {
-                    dateDisplay.addClass('pastDate');
                     pastDate = true;
                 }
 

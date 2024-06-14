@@ -54,14 +54,6 @@
     align-self: flex-start;
 }
 
-.pastDate {
-    color: black;
-}
-
-.currentDay {
-    border: 3px solid var(--pink);
-}
-
 .appt-time {
     font-size: 15px;
     white-space: nowrap;
