@@ -9,10 +9,9 @@ let dateDisplay = '';
 let apptsByDate = {};
 let availableApptsInDay = [];
 let currentApptId = 0;
+let selectedServiceId = 0;
+let selectedService = '';
 let mobile = window.innerWidth < 768 ? true : false;
-
-
-console.log(privateServices);
 
 $('#option2').attr('checked', true);
 
@@ -64,24 +63,14 @@ async function submitForm(event) {
     const name = $('#nameInput').val();
     const email = $('#emailInput').val();
     const phone = $('#phoneInput').val();
-    selectedService = selectedService.split(' ');
-    const price = parseInt(selectedService[0].slice(1))
-    const duration = parseInt(selectedService[selectedService.length - 2] + ' ' + selectedService[selectedService.length - 1]);
-    let type = '';
-    for (let i = 0; i < selectedService.length; i++) {
-        if (!selectedService[i].includes('min') && !selectedService[i].match(/[0 - 9]/)) {
-            type += ' ' + selectedService[i];
-        }
-    }
 
-    const apptToRequest = {
-        Id: selectedAppt.Id,
+
+    const data = {
+        Id: currentApptId,
         Name: name,
         Email: email,
         Phone: phone,
-        Type: type,
-        Price: price,
-        Duration: duration,
+        ApptTypeId: selectedServiceId
     }
 
     $('#modal-body').empty()
@@ -94,13 +83,13 @@ async function submitForm(event) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(apptToRequest)
+            body: JSON.stringify(data)
         })
         if (response.ok) {
             $('#serviceSelectionLabel').text('Appointment Requested');
             $('#modal-body').empty();
             $('#modal-body').append(`<div class="fs-3 m-1 text-center">Thank you for your request! Expect a response within 24 hours</div>`);
-            renderCalendar();
+            checkApptsAndRender();
         }
     } catch (error) {
         console.error('Error:', error);
@@ -127,22 +116,20 @@ async function displayApptDetails(event) {
     } else {
         $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${dateDisplay} | ${time}</div>`);
 
-        let selectedService
-        // Need to populate with available services from server
         const dropdown = $(` 
-    <div class="dropdown-center col-12 text-center my-2">
-        <button class="px-1 col-10 btn dropdown-toggle fs-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Select Session
-        </button>
-        <ul class="dropdown-menu m-0 p-0">
-            <li class="dropdown-item fs-4">$50 Private Yoga 60 min</li>
-            <li class="dropdown-item fs-4">$20 Assisted Stretch 25 min</li>
-            <li class="dropdown-item fs-4">$20 Assisted Stretch 50 min</li>
-            <li class="dropdown-item fs-4">$50 Blended Service 60 min</li>
-        </ul>
-    </div>`);
+        <div class="dropdown-center col-12 text-center my-2">
+            <button class="px-1 col-10 btn dropdown-toggle fs-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Session
+            </button>
+            <ul class="dropdown-menu m-0 p-0">
+                ${privateServices.map(service => {
+            return `<li key=${service.Id} class="dropdown-item fs-4">$${service.Price} ${service.Name} ${service.Duration} min</li>`
+        }).join('')}
+            </ul>
+        </div>`);
         $('#modal-body').append(dropdown);
         $('.dropdown-item').on('click', (event) => {
+            selectedServiceId = event.target.getAttribute('key');
             selectedService = event.target.innerText;
             $('.dropdown-toggle').text(selectedService);
         });
@@ -167,7 +154,7 @@ async function displayApptDetails(event) {
                 </form>`
             )
             $('#modal-body').append(form);
-            form.on('submit', submitForm);
+            $('#send-request').on('click', submitForm);
         });
     }
 };
