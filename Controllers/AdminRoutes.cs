@@ -16,6 +16,7 @@ namespace StretchScheduler
         {
             endpoints.MapMethods("api/{*path}", new[] { "OPTIONS" }, AllowAccess);
             endpoints.MapGet("/api/allAppts/{month}/{year}", GetAllAppts);
+            endpoints.MapGet("/api/allServices", GetAllServices);
             endpoints.MapGet("/api/clients", GetClients);
             endpoints.MapPost("/api/login", Login);
             endpoints.MapPost("/api/newAdmin", CreateAdmin);
@@ -26,6 +27,7 @@ namespace StretchScheduler
             endpoints.MapPut("/api/completeAppt", CompleteAppt);
             endpoints.MapPut("/api/adjustBalance", AdjustBalance);
             endpoints.MapPut("/api/editApptType", EditApptType);
+            endpoints.MapPut("/api/editAppt", EditAppt);
             endpoints.MapDelete("/api/deleteAppt", DeleteAppt);
             endpoints.MapDelete("/api/deleteApptType", DeleteApptType);
             endpoints.MapDelete("/api/deleteClient", DeleteClient);
@@ -61,6 +63,8 @@ namespace StretchScheduler
         }
         private static async Task GetAllAppts(HttpContext context)
         {
+            var authenticated = await Authenticate(context);
+            if (!authenticated) { return; }
             try
             {
                 if (context.Request.RouteValues["month"] == null || context.Request.RouteValues["year"] == null)
@@ -85,6 +89,37 @@ namespace StretchScheduler
                     else
                     {
                         await WriteResponseAsync(context, 200, "application/json", appts);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while getting data");
+            }
+        }
+        private static async Task GetAllServices(HttpContext context)
+        {
+            var authenticated = await Authenticate(context);
+            if (!authenticated) { return; }
+            try
+            {
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var idString = Environment.GetEnvironmentVariable("ID");
+                    if (Guid.TryParse(idString, out Guid adminId))
+                    {
+                        var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                        var services = await dbContext.ApptTypes.Where(a => a.AdminId == adminId).ToListAsync();
+                        if (services == null)
+                        {
+                            await WriteResponseAsync(context, 404, "application/json", "No services found");
+                            return;
+                        }
+                        else
+                        {
+                            await WriteResponseAsync(context, 200, "application/json", services);
+                        }
                     }
                 }
             }
@@ -138,7 +173,7 @@ namespace StretchScheduler
 
                     var jwtToken = admin.GenerateJwtToken("ouP12@fsNv#27G48E1l1e53T59l8V0Af", "http://localhost:5062", "http://localhost:5173", 60);
 
-                    await WriteResponseAsync(context, 200, "application/json", new { token = jwtToken });
+                    await WriteResponseAsync(context, 200, "application/json", new { id = admin.Id, token = jwtToken });
                 }
             }
             catch (Exception ex)
@@ -226,15 +261,20 @@ namespace StretchScheduler
                                 return;
                             }
                             newAppt.ApptType = requestedApptType;
+                            // If the appointment type is not private, the appointment is firm 
+                            if (requestedApptType.Private) {
+                                newAppt.Status = Appointment.StatusOptions.Available;
+                            }
+                            else {
                             newAppt.Status = Appointment.StatusOptions.Firm;
+                            }
                             await dbContext.Appointments.AddAsync(newAppt);
                         }
                     }
-
                     await dbContext.SaveChangesAsync();
                 }
 
-                await WriteResponseAsync(context, 201, "application/json", newAppts);
+                await WriteResponseAsync(context, 201, "application/json", "Successfully created appointments");
             }
             catch (DbUpdateException ex)
             {
@@ -501,6 +541,47 @@ namespace StretchScheduler
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment type");
+            }
+        }
+        private static async Task EditAppt(HttpContext context)
+        {
+            var authenticated = await Authenticate(context);
+            if (!authenticated) { return; }
+            var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
+            try
+            {
+                var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
+
+                if (appt == null)
+                {
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
+                    return;
+                }
+
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                    var requestedAppt = await dbContext.Appointments.FindAsync(appt.Id);
+                    if (requestedAppt == null)
+                    {
+                        await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
+                        return;
+                    }
+                    requestedAppt.DateTime = appt.DateTime;
+                    requestedAppt.ApptTypeId = appt.ApptTypeId;
+                    requestedAppt.ApptType = appt.ApptType;
+                    requestedAppt.ClientId = appt.ClientId;
+                    requestedAppt.Client = appt.Client;
+                    requestedAppt.Status = appt.Status;
+                    await dbContext.SaveChangesAsync();
+                }
+
+                await WriteResponseAsync(context, 200, "application/json", appt);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                await WriteResponseAsync(context, 500, "application/json", "An error occurred while updating the appointment");
             }
         }
         private static async Task DeleteAppt(HttpContext context)
