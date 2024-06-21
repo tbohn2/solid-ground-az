@@ -262,11 +262,13 @@ namespace StretchScheduler
                             }
                             newAppt.ApptType = requestedApptType;
                             // If the appointment type is not private, the appointment is firm 
-                            if (requestedApptType.Private) {
+                            if (requestedApptType.Private)
+                            {
                                 newAppt.Status = Appointment.StatusOptions.Available;
                             }
-                            else {
-                            newAppt.Status = Appointment.StatusOptions.Firm;
+                            else
+                            {
+                                newAppt.Status = Appointment.StatusOptions.Firm;
                             }
                             await dbContext.Appointments.AddAsync(newAppt);
                         }
@@ -568,11 +570,6 @@ namespace StretchScheduler
                         return;
                     }
                     requestedAppt.DateTime = appt.DateTime;
-                    requestedAppt.ApptTypeId = appt.ApptTypeId;
-                    requestedAppt.ApptType = appt.ApptType;
-                    requestedAppt.ClientId = appt.ClientId;
-                    requestedAppt.Client = appt.Client;
-                    requestedAppt.Status = appt.Status;
                     await dbContext.SaveChangesAsync();
                 }
 
