@@ -57,7 +57,7 @@ namespace StretchScheduler
             }
             else
             {
-                await WriteResponseAsync(context, 401, "application/json", "Unauthorized");
+                await WriteResponseAsync(context, 401, "application/json", "Unauthorized. Refresh the page and log in.");
                 return false;
             }
         }
@@ -533,7 +533,10 @@ namespace StretchScheduler
                     requestedApptType.Duration = apptType.Duration;
                     requestedApptType.Price = apptType.Price;
                     requestedApptType.Description = apptType.Description;
-                    requestedApptType.Location = apptType.Location;
+                    requestedApptType.LocationName = apptType.LocationName;
+                    requestedApptType.LocationAddress = apptType.LocationAddress;
+                    requestedApptType.Private = apptType.Private;
+                    requestedApptType.ImgURL = apptType.ImgURL;
                     await dbContext.SaveChangesAsync();
                 }
 
@@ -569,7 +572,15 @@ namespace StretchScheduler
                         await WriteResponseAsync(context, 404, "application/json", "Appointment not found");
                         return;
                     }
+
                     requestedAppt.DateTime = appt.DateTime;
+                    if (requestedAppt.ApptTypeId != appt.ApptTypeId)
+                    {
+                        requestedAppt.ApptTypeId = appt.ApptTypeId;
+                        var requestedApptType = await dbContext.ApptTypes.FindAsync(appt.ApptTypeId);
+                        if (requestedApptType != null) { requestedAppt.ApptType = requestedApptType; }
+                    }
+
                     await dbContext.SaveChangesAsync();
                 }
 
