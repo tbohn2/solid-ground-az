@@ -8,7 +8,8 @@ namespace StretchScheduler.Models
         public required int Duration { get; set; }
         public required int Price { get; set; }
         public required string Description { get; set; }
-        public string? Location { get; set; }
+        public string? LocationName { get; set; }
+        public string? LocationAddress { get; set; }
         public string? ImgURL { get; set; }
         public required Guid AdminId { get; set; }
     }
