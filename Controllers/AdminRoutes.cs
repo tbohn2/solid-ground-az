@@ -80,7 +80,7 @@ namespace StretchScheduler
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                    var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year).Include(a => a.Client).ToListAsync();
+                    var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year).Include(a => a.Client).OrderBy(a => a.DateTime).ToListAsync();
                     if (appts == null)
                     {
                         await WriteResponseAsync(context, 404, "application/json", "No appointments found");
@@ -646,6 +646,14 @@ namespace StretchScheduler
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+
+                    var appts = await dbContext.Appointments.Where(a => a.ApptTypeId == apptType.Id).ToListAsync();
+                    if (appts.Count != 0)
+                    {
+                        await WriteResponseAsync(context, 400, "application/json", "This service is currently in use. Please cancel all appointments before deleting the service.");
+                        return;
+                    }
+
                     var requestedApptType = await dbContext.ApptTypes.FindAsync(apptType.Id);
                     if (requestedApptType == null)
                     {
@@ -682,6 +690,14 @@ namespace StretchScheduler
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+
+                    var appts = await dbContext.Appointments.Where(a => a.ClientId == client.Id).ToListAsync();
+                    if (appts.Count != 0)
+                    {
+                        await WriteResponseAsync(context, 400, "application/json", "This client has existing appointments. Please delete all appointments before deleting the client.");
+                        return;
+                    }
+
                     var requestedClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.Email == client.Email);
                     if (requestedClient == null)
                     {
