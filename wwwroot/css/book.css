@@ -12,12 +12,12 @@
 }
 
 .monthNavBtn:hover {
-    color: var(--pink);
+    color: var(--purple);
     transition: all 0.3s ease;
 }
 
 .monthNavBtn:active {
-    background-color: var(--pink);
+    background-color: var(--purple);
 }
 
 .date {
@@ -47,7 +47,7 @@
 }
 
 .availableDate:active {
-    background-color: var(--pink);
+    background-color: var(--purple);
 }
 
 .date-display {
@@ -100,7 +100,7 @@
 
 .time-option:active {
     color: var(--white);
-    background-color: var(--pink);
+    background-color: var(--purple);
 }
 
 .dropdown-toggle {
@@ -135,7 +135,7 @@
 }
 
 .spinner-border {
-    color: var(--pink);
+    color: var(--purple);
 }
 
 @media screen and (max-width: 768px) {

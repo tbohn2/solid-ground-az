@@ -2,11 +2,9 @@ $(document).ready(function () {
     $('input[name="navOptions"]').change(
         function () {
             var pageToLoad = $(this).val();
-            console.log(pageToLoad);
             window.location.assign(pageToLoad);
         });
 });
-
 
 async function getServices() {
     try {
@@ -14,7 +12,6 @@ async function getServices() {
         const response = await fetch(`http://localhost:5062/api/services`);
         if (response.ok) {
             const services = await response.json();
-            console.log(services);
             return services;
         } else {
             // Need to display an error message to the user

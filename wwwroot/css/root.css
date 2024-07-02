@@ -1,9 +1,7 @@
 :root {
-    --pink: #db624c;
-    --white: #e7f3f7;
+    --white: #f3eeee;
     --green: #a8d5ba;
     --beige: #f0ebe4;
-    --brown: #cfa798;
     --gray: #e6e6e6;
     --darkgray: #838383;
     --lav: #D1C4E9;
@@ -22,16 +20,8 @@
     background-color: var(--lav);
 }
 
-.bg-green {
-    background-color: var(--green);
-}
-
 .bg-beige {
     background-color: var(--beige);
-}
-
-.bg-brown {
-    background-color: var(--brown);
 }
 
 .bg-gray {
@@ -67,10 +57,14 @@
     color: var(--darkgray);
 }
 
+.text-purple {
+    color: var(--purple);
+}
+
 nav label {
     font-size: 24px;
     cursor: pointer;
-    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
 }
 
 input[type="radio"] {
@@ -78,14 +72,27 @@ input[type="radio"] {
 }
 
 input[type="radio"]:checked+label {
-    border-top: 7px solid;
-    border-image: linear-gradient(to left, var(--white), var(--brown));
+    border-bottom: 5px solid;
+    border-image: linear-gradient(to left, var(--white), var(--purple));
     border-image-slice: 1;
     border-image-repeat: stretch;
 }
 
-.pink-border {
-    border: 1px solid var(--pink);
+.custom-btn {
+    background-color: var(--purple);
+    border: 1px solid var(--purple);
+    border-radius: 7px;
+    color: var(--white);
+}
+
+.custom-btn:hover {
+    background-color: var(--white);
+    color: var(--purple);
+    transition: all 0.3s ease;
+}
+
+.purple-border {
+    border: 1px solid var(--purple);
     border-image: linear-gradient(to left, var(--white), var(--lav));
     border-image-slice: 1;
 }
