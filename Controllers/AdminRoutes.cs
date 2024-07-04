@@ -234,48 +234,35 @@ namespace StretchScheduler
                 // Deserializes the JSON request body and create an array of appointments
                 var newAppts = JsonConvert.DeserializeObject<List<Appointment>>(requestBody);
 
-                if (newAppts == null || !newAppts.Any())
+                if (newAppts == null || newAppts.Count == 0)
                 {
-                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "No appointments to add");
                     return;
                 }
 
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                    ApptType? newApptType = null;
+
+                    if (newAppts[0].ApptTypeId != null)
+                    {
+                        var requestedApptType = await dbContext.ApptTypes.FindAsync(newAppts[0].ApptTypeId);
+                        if (requestedApptType == null)
+                        {
+                            await WriteResponseAsync(context, 404, "application/json", "Appointment type not found");
+                            return;
+                        }
+                        newApptType = requestedApptType;
+                    }
 
                     foreach (var newAppt in newAppts)
                     {
-                        // If there is no appointment type, the appointment is available; otherwise it is firm
-                        if (newAppt.ApptTypeId == null)
-                        {
-                            newAppt.Status = Appointment.StatusOptions.Available;
-                            await dbContext.Appointments.AddAsync(newAppt);
-                        }
-                        else
-                        {
-                            var requestedApptType = await dbContext.ApptTypes.FindAsync(newAppt.ApptTypeId);
-                            if (requestedApptType == null)
-                            {
-                                await WriteResponseAsync(context, 404, "application/json", "Appointment type not found");
-                                return;
-                            }
-                            newAppt.ApptType = requestedApptType;
-                            // If the appointment type is not private, the appointment is firm 
-                            if (requestedApptType.Private)
-                            {
-                                newAppt.Status = Appointment.StatusOptions.Available;
-                            }
-                            else
-                            {
-                                newAppt.Status = Appointment.StatusOptions.Firm;
-                            }
-                            await dbContext.Appointments.AddAsync(newAppt);
-                        }
+                        newAppt.ApptType = newApptType;
+                        await dbContext.Appointments.AddAsync(newAppt);
                     }
                     await dbContext.SaveChangesAsync();
                 }
-
                 await WriteResponseAsync(context, 201, "application/json", "Successfully created appointments");
             }
             catch (DbUpdateException ex)
