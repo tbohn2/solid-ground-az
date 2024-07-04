@@ -107,11 +107,19 @@ async function displayApptDetails(event) {
     const selectedAppt = availableApptsInDay.find(appt => appt.Id == parseInt(apptId));
     const time = new Date(selectedAppt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-    $('#serviceSelectionLabel').text(`${selectedAppt.apptType ? selectedAppt.apptType.Name : 'Available To Book'}`);
+    $('#serviceSelectionLabel').text(`${selectedAppt.ApptType ? selectedAppt.ApptType.Name : 'Available To Book'}`);
 
-    // Layout needs additional information for fixed appointments
     if (selectedAppt.Status === 4) {
-        $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${time} | ${dateDisplay}</div>`);
+        const locationName = selectedAppt.ApptType.LocationName || 'TBD';
+        const locationAddress = selectedAppt.ApptType.LocationAddress || 'TBD';
+        $('#modal-body').append(`
+            <div class="col-12 px-1 fs-4 text-center text-darkgray">${dateDisplay} | ${time}</div>
+            <div class="col-10 px-1 fs-4 text-darkgray">Location: ${locationName}</div>
+            <div class="col-10 px-1 fs-4 text-darkgray">Address: ${locationAddress}</div>
+            <div class="col-10 px-1 fs-4 text-darkgray">Description: ${selectedAppt.ApptType.Description}</div>
+            `
+
+        );
         return;
     } else {
         $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${dateDisplay} | ${time}</div>`);
@@ -170,7 +178,7 @@ async function displayModal(event) {
         const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         const timeDisplay = $(
             `<div id=${appt.Id} class="col-12 p-1 time-option">
-                <h3 class="m-0">${appt.apptType ? appt.apptType.Name : 'Available To Book Private Session'}</h3>
+                <h3 class="m-0">${appt.ApptType ? appt.ApptType.Name : 'Available To Book Private Session'}</h3>
                 <p class="m-0">${apptTime}</p>
             </div>`
         );
@@ -218,7 +226,7 @@ async function renderCalendar() {
                         appointmentsDisplay = $(`<div class="col-12 appts-container"></div>`);
 
                         availableApptsInDay.forEach(appt => {
-                            const apptName = appt.apptType ? appt.apptType.Name : 'Available';
+                            const apptName = appt.ApptType ? appt.ApptType.Name : 'Available';
                             const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
                             appointmentsDisplay.append(`<div id=${appt.Id} data-date=${date} data-bs-toggle='modal' data-bs-target='#serviceSelection' class='appt-time'>${apptTime} ${apptName}</div>`)
