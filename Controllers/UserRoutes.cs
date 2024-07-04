@@ -43,7 +43,7 @@ namespace StretchScheduler
                     {
                         var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
                         var appts = await dbContext.Appointments.Where(a => a.DateTime >= DateTime.Now && a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Available && a.AdminId == adminId
-                        || a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Firm).OrderBy(a => a.DateTime).ToListAsync();
+                        || a.DateTime.Month == month && a.DateTime.Year == year && a.Status == StatusOptions.Firm).OrderBy(a => a.DateTime).Include(a => a.ApptType).ToListAsync();
                         if (appts == null)
                         {
                             await WriteResponseAsync(context, 404, "application/json", "No appointments found");
