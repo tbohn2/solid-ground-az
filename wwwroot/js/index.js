@@ -23,12 +23,12 @@ function renderNav() {
             </ul>
         </div>
     ` : `
-        <input type="radio" class="" name="navOptions" id="option1" value="/" autocomplete="off">
-        <label for="option1">HOME</label>
-        <input type="radio" class="" name="navOptions" id="option2" value="calendar" autocomplete="off">
-        <label for="option2">CALENDAR</label>
-        <input type="radio" class="" name="navOptions" id="option3" value="contact" autocomplete="off">
-        <label for="option3">CONTACT</label>
+        <input type="radio" name="navOptions" id="option1" value="/" autocomplete="off">
+        <label for="option1" class="text-purple fs-4">HOME</label>
+        <input type="radio" name="navOptions" id="option2" value="calendar" autocomplete="off">
+        <label for="option2" class="text-purple fs-4">CALENDAR</label>
+        <input type="radio" name="navOptions" id="option3" value="contact" autocomplete="off">
+        <label for="option3" class="text-purple fs-4">CONTACT</label>
     `
     $('.navbar').append(nav);
 }

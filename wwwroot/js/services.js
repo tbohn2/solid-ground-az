@@ -28,7 +28,7 @@ function renderServices() {
                     <div class="col-7 d-flex flex-column align-items-center justify-content-between">
                         <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
                         <p class="col-6 m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <p class="m-2 fs-5 align-self-center flex-grow-1">${service.Description}</p>
+                        <p class="serviceDescription mx-2 fs-5 align-self-center">${service.Description}</p>
                         <button class="serviceCard-button col-12">View Calendar</button>                        
                     </div>
                 </div>`;
@@ -42,6 +42,17 @@ function renderServices() {
     $('.serviceCard-button').on('click', function () {
         console.log('View Calendar button clicked');
         window.location.assign('./calendar');
+    });
+
+    $('.serviceDescription').on('click', function (event) {
+        $('#descriptionDisplay').remove();
+        const descDisplay = `<div id="descriptionDisplay">${this.innerText}</div>`
+        $(this).append(descDisplay);
+        event.stopPropagation();
+    });
+
+    $(document).on('click', function () {
+        $('#descriptionDisplay').remove();
     });
 };
 

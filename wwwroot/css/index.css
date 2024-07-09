@@ -1,25 +1,25 @@
-#group-yoga-img {
+#main-page-nicole {
     width: 100%;
-    height: 70vh;
+    height: 80vh;
     object-fit: cover;
     object-position: center 70%;
 }
 
 #transition-img {
     position: absolute;
-    top: 70%;
-    height: 30vh;
+    top: 80%;
+    height: 60vh;
     z-index: 0;
 }
 
 #welcome {
     z-index: 1 !important;
-    background-color: var(--white);
 }
 
 .serviceCard {
     border-radius: 10px;
-    background-color: var(--white);
+    border: 1px solid var(--lav);
+    background-color: var(--lav);
     transition: all 0.3s ease;
 }
 
@@ -30,9 +30,36 @@
     object-position: center 75%;
 }
 
+.serviceDescription {
+    position: relative;
+    cursor: pointer;
+    height: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+#descriptionDisplay {
+    width: 300px;
+    cursor: pointer;
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px;
+    border-radius: 10px;
+    z-index: 1;
+    background-color: var(--lav);
+}
+
 .serviceCard-button {
-    background-image: linear-gradient(to right bottom, var(--purple), var(--white));
+    background-image: linear-gradient(to right bottom, var(--purple), var(--lav));
     border: none;
+    color: var(--purple);
     border-radius: 5px;
     padding: 10px 20px;
     font-size: 20px;
