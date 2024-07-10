@@ -47,7 +47,11 @@
     color: black;
 }
 
-.whiteBG {
+.libre {
+    font-family: 'Libre Baskerville', serif;
+}
+
+.marble-bg {
     background-image: url('../assets/whiteBG.jpg');
     background-size: cover;
     background-repeat: no-repeat;

@@ -16,6 +16,10 @@
     z-index: 1 !important;
 }
 
+.view-calendar:hover {
+    background-color: var(--white);
+}
+
 .serviceCard {
     width: 600px;
     height: 275px;
@@ -58,7 +62,7 @@
 .displayDescription {
     position: absolute;
     color: var(--purple);
-    padding: 2px 15px 15px 19px;
+    padding: 2px 15px 15px 15px;
     width: 100%;
     top: 87px;
     left: 47.75%;
