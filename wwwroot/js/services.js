@@ -3,6 +3,7 @@ import { privateServices } from './index.js';
 let mobile = window.innerWidth < 768 ? true : false;
 
 $('#option1').attr('checked', true);
+
 function renderServices() {
     const servicesContainer = $('#services');
     servicesContainer.empty();

@@ -186,6 +186,15 @@
     object-position: center 70%;
 }
 
+.gallery-img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 10px;
+    margin: 10px;
+}
+
 @media screen and (max-width: 768px) {
     nav {
         position: absolute !important;
