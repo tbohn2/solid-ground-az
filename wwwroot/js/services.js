@@ -11,31 +11,18 @@ function renderServices() {
     const serviceCards = privateServices.map(service => {
         let card;
         const imgURL = '.' + service.ImgURL.slice(5);
-        if (mobile) {
-            card = `
-                <div class="serviceCard my-3 col-10 d-flex flex-column fade-top">
-                    <img class="col-12" src="${imgURL}" alt="yoga">
-                    <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
-                    <p class="m-2 fs-5 align-self-center">${service.Description}</p>
-                    <div class="d-flex align-items-center justify-content-between col-12">
-                        <p class="col-8 m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <button class="serviceCard-button col-4">View Calendar</button>
-                    </div>
-                </div>`;
-        } else {
-            card = `
+        card = `
                 <div class="serviceCard my-3 d-flex fade-top">
                     <img class="col-4" src="${imgURL}" alt="yoga">
                     <div class="position-relative d-flex flex-column align-items-center justify-content-between">
                         <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
                         <p class="m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <p class="serviceDescription mx-2 mb-0 fs-5 align-self-start">${service.Description}</p>
-                        <p id=${service.Id + 'desc'} class="service-read-more my-0 mx-2 fs-5 align-self-start">Read More</p>
-                        <p id=${service.Id + 'descDisplay'} class="displayDescription mx-2 fs-5 align-self-center">${service.Description}</p>
+                        <p class="serviceDescription ms-4 mb-0 fs-5 align-self-start">${service.Description}</p>
+                        <p id=${service.Id + 'desc'} class="service-read-more my-0 ms-4 fs-5 align-self-start">Read More</p>
+                        <p id=${service.Id + 'descDisplay'} class="displayDescription ms-4 fs-5 align-self-start">${service.Description}</p>
                         <button class="serviceCard-button">View Calendar</button>                        
                     </div>
                 </div>`;
-        }
         return card;
     }).join(''); // Join all cards into a single string
 

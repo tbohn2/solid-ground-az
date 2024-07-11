@@ -14,11 +14,11 @@ function renderNav() {
         <div class="dropdown-center">
             <span class="navbar-toggler-icon fs-5" data-bs-toggle="dropdown" aria-expanded="false"></span>
             <ul class="dropdown-menu dropdown-menu-end m-0 p-0">
-            <li class='text-center bg-white'><a class="text-dark text-decoration-none fs-4" href="/">Home</a>
+            <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/">Home</a>
             </li>
-            <li class='text-center bg-white'><a class="text-dark text-decoration-none fs-4"
+            <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4"
             href="/calendar">Calendar</a></li>
-            <li class='text-center bg-white'><a class="text-dark text-decoration-none fs-4"
+            <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4"
             href="/contact">Contact</a></li>
             </ul>
         </div>
