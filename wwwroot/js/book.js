@@ -10,7 +10,7 @@ let apptsByDate = {};
 let availableApptsInDay = [];
 let currentApptId = 0;
 let selectedServiceId = 0;
-let selectedService = '';
+let selectedService = 'Select Service';
 let mobile = window.innerWidth < 768 ? true : false;
 
 $('#option2').attr('checked', true);
@@ -60,18 +60,12 @@ let displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, d
 
 async function submitForm(event) {
     event.preventDefault();
-    const name = $('#nameInput').val();
-    const email = $('#emailInput').val();
-    const phone = $('#phoneInput').val();
-
-
-    const data = {
-        Id: currentApptId,
-        Name: name,
-        Email: email,
-        Phone: phone,
-        ApptTypeId: selectedServiceId
-    }
+    const Id = parseInt(currentApptId);
+    const Name = $('#nameInput').val();
+    const Email = $('#emailInput').val();
+    const Phone = $('#phoneInput').val();
+    const ApptTypeId = parseInt(selectedServiceId);
+    const data = { Id, Name, Email, Phone, ApptTypeId }
 
     $('#modal-body').empty()
     $('#modal-body').append(`<div class="spinner-border" role="status"></div>`)
@@ -110,45 +104,88 @@ async function displayApptDetails(event) {
     $('#serviceSelectionLabel').text(`${selectedAppt.ApptType ? selectedAppt.ApptType.Name : 'Available To Book'}`);
 
     if (selectedAppt.Status === 4) {
-        const locationName = selectedAppt.ApptType.LocationName || 'TBD';
-        const locationAddress = selectedAppt.ApptType.LocationAddress || 'TBD';
+        const locationName = selectedAppt.ApptType.LocationName || 'Location Name TBD';
+        const locationAddress = selectedAppt.ApptType.LocationAddress || 'Address TBD';
         $('#modal-body').append(`
-            <div class="col-12 px-1 fs-4 text-center text-darkgray">${dateDisplay} | ${time}</div>
-            <div class="col-10 px-1 fs-4 text-darkgray">Location: ${locationName}</div>
-            <div class="col-10 px-1 fs-4 text-darkgray">Address: ${locationAddress}</div>
-            <div class="col-10 px-1 fs-4 text-darkgray">Description: ${selectedAppt.ApptType.Description}</div>
+            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
+                <img class="icon" src="./assets/calendarIcon.png" alt="Calendar Icon By Freepik">
+                <div class="px-1 text-center">${dateDisplay}</div>            
+            </div>
+            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
+                <img class="icon" src="./assets/clockIcon.png" alt="Calendar Icon By Freepik">
+                <div class="px-1 text-center">${time}</div>            
+            </div>
+            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
+                <img class="icon" src="./assets/locationIcon.png" alt="Calendar Icon By Freepik">
+                <div class="px-1 text-center">${locationName}</div>            
+            </div>                                    
+            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
+                <img class="icon" src="./assets/locationIcon.png" alt="Calendar Icon By Freepik">
+                <div class="px-1 text-center">${locationAddress}</div>            
+            </div>                                    
+            <div class="col-12 ms-5 fs-4 text-darkgray">${selectedAppt.ApptType.Description}</div>
             `
-
         );
         return;
     } else {
-        $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${dateDisplay} | ${time}</div>`);
+        function renderServiceDetails(serviceId) {
+            $('#service-details').remove();
+            const service = privateServices.find(service => service.Id == serviceId);
+            const imgURL = '.' + service.ImgURL.slice(5);
+            const serviceDetails = $(`
+                <div id="service-details" class="col-12 d-flex flex-column align-items-center fade-in">
+                    <img class="col-2" src="${imgURL}" alt="yoga">
+                    <div class="mx-5 fs-4 text-darkgray">${service.Description}</div>
+                </div>
+                `);
+            $('#modal-body').append(serviceDetails);
+        }
+
+        $('#modal-body').append(`
+            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
+                <img class="icon" src="./assets/calendarIcon.png" alt="Calendar Icon By Freepik">
+                <div class="px-1 text-center">${dateDisplay}</div>            
+            </div>
+            <div id="service-time" class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
+                <img class="icon" src="./assets/clockIcon.png" alt="Calendar Icon By Freepik">
+                <div class="px-1 text-center">${time}</div>            
+            </div>
+            `);
+
+        const serviceIdToBook = localStorage.getItem('bookServiceId');
+        if (serviceIdToBook) {
+            renderServiceDetails(serviceIdToBook);
+            selectedServiceId = serviceIdToBook;
+            selectedService = privateServices.find(service => service.Id == selectedServiceId).Name;
+        }
 
         const dropdown = $(` 
         <div class="dropdown-center col-12 text-center my-2">
             <button class="px-1 col-10 btn dropdown-toggle fs-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Select Session
+                ${selectedService}
             </button>
             <ul class="dropdown-menu m-0 p-0">
-                ${privateServices.map(service => {
-            return `<li key=${service.Id} class="dropdown-item fs-4">$${service.Price} ${service.Name} ${service.Duration} min</li>`
-        }).join('')}
+                ${privateServices.map(service => `<li key=${service.Id} class="dropdown-item fs-4">${service.Name}</li>`).join('')}
             </ul>
         </div>`);
-        $('#modal-body').append(dropdown);
+
+        $('#service-time').after(dropdown);
+
         $('.dropdown-item').on('click', (event) => {
             selectedServiceId = event.target.getAttribute('key');
             selectedService = event.target.innerText;
             $('.dropdown-toggle').text(selectedService);
+            renderServiceDetails(selectedServiceId);
         });
 
         $('#modal-footer').prepend(`<button id="book-next" class="btn request-btn m-1">Next</button>`);
 
         $('#book-next').on('click', () => {
+            localStorage.removeItem('bookServiceId');
             $('#book-next').remove();
             $('#modal-footer').prepend(`<button type="submit" id="send-request" class="btn request-btn m-1">Request Appointment</button>`);
             $('.dropdown-center').remove();
-            $('#modal-body').append(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${selectedService}</div>`);
+            $('#service-time').after(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${selectedService}</div>`);
 
             const form = $(
                 `<form class="d-flex col-12 px-1 fs-5 text-darkgray flex-column justify-content-between">

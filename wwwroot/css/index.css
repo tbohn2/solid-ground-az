@@ -8,7 +8,7 @@
 #transition-img {
     position: absolute;
     top: 80%;
-    height: 60vh;
+    height: 40vh;
     z-index: 0;
 }
 
@@ -21,17 +21,17 @@
 }
 
 .serviceCard {
-    width: 600px;
-    height: 275px;
+    border-top: 2px solid var(--purple);
+    border-bottom: 2px solid var(--purple);
+    width: 90%;
+    height: 175px;
     margin: 20px;
-    border-radius: 10px;
-    color: var(--white);
-    background-color: var(--purple);
+    color: var(--purple);
+    background-color: var(--gray);
     transition: all 0.3s ease;
 }
 
 .serviceCard img {
-    border-radius: 10px 0 0 10px;
     height: 100%;
     object-fit: cover;
     object-position: center 75%;
@@ -45,8 +45,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    line-clamp: 3;
-    -webkit-line-clamp: 3;
+    line-clamp: 1;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     transition: overflow 0.5s ease;
 }
@@ -62,16 +62,15 @@
 .displayDescription {
     position: absolute;
     color: var(--purple);
-    padding: 2px 15px 15px 15px;
+    padding: 10px 25px;
     width: 100%;
-    top: 87px;
-    left: 47.75%;
+    top: 70px;
+    left: 48%;
     transform: translateX(-50%);
     z-index: 10;
     border: 1px solid var(--purple);
     border-radius: 10px;
     background-color: var(--lav);
-    cursor: pointer;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.35s ease, visibility 0.35s ease;
@@ -105,18 +104,19 @@
 
 .serviceCard-button {
     /* background-image: linear-gradient(to right bottom, var(--white), var(--purple)); */
-    background-color: var(--lav);
+    /* background-color: var(--lav);
     border: none;
     color: var(--purple);
     border-radius: 10px;
     padding: 5px 20px;
     margin: 5px;
     font-size: 20px;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; */
 }
 
 .serviceCard-button:hover {
-    background-image: linear-gradient(to right bottom, var(--white), var(--purple));
+    text-decoration: underline;
+    /* background-image: linear-gradient(to right bottom, var(--white), var(--purple)); */
     cursor: pointer;
 }
 

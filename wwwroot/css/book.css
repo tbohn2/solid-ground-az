@@ -77,6 +77,10 @@
     background-color: var(--purple);
 }
 
+.icon {
+    height: 20px;
+}
+
 .btn-close {
     position: absolute;
     top: 3px;
@@ -129,9 +133,14 @@
 }
 
 .request-btn {
-    background-color: rgb(88, 92, 126) !important;
+    background-color: var(--purple) !important;
     color: var(--white) !important;
-    border: 1px solid var(--green) !important;
+}
+
+.request-btn:hover {
+    border: 1px solid var(--purple) !important;
+    background-color: var(--lav) !important;
+    color: var(--purple) !important;
 }
 
 .spinner-border {

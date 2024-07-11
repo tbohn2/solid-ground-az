@@ -5,7 +5,7 @@
     --gray: #e6e6e6;
     --darkgray: #838383;
     --lav: #ede9f3;
-    --purple: #585C7E;
+    --purple: #5c4888;
 }
 
 .bg-white {
@@ -49,6 +49,10 @@
 
 .libre {
     font-family: 'Libre Baskerville', serif;
+}
+
+.league {
+    font-family: "League Spartan", sans-serif;
 }
 
 .marble-bg {

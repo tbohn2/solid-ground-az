@@ -12,15 +12,14 @@ function renderServices() {
         let card;
         const imgURL = '.' + service.ImgURL.slice(5);
         card = `
-                <div class="serviceCard my-3 d-flex fade-top">
-                    <img class="col-4" src="${imgURL}" alt="yoga">
-                    <div class="position-relative d-flex flex-column align-items-center justify-content-between">
+                <div class="serviceCard league my-3 d-flex fade-top">
+                    <img class="col-2" src="${imgURL}" alt="yoga">
+                    <div class="col-10 position-relative d-flex flex-column align-items-center justify-content-between">
                         <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
                         <p class="m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <p class="serviceDescription ms-4 mb-0 fs-5 align-self-start">${service.Description}</p>
-                        <p id=${service.Id + 'desc'} class="service-read-more my-0 ms-4 fs-5 align-self-start">Read More</p>
+                        <p id=${service.Id + 'desc'} class="serviceDescription ms-4 mb-0 fs-5 align-self-start">${service.Description}</p>
                         <p id=${service.Id + 'descDisplay'} class="displayDescription ms-4 fs-5 align-self-start">${service.Description}</p>
-                        <button class="serviceCard-button">View Calendar</button>                        
+                        <p id=${service.Id + 'book'} class="serviceCard-button align-self-end mx-5 my-3 fs-5">Book</p>                        
                     </div>
                 </div>`;
         return card;
@@ -30,21 +29,41 @@ function renderServices() {
 
     // Add event listeners to all buttons
     $('.serviceCard-button').on('click', function () {
-        console.log('View Calendar button clicked');
+        const serviceId = $(this).attr('id').slice(0, -4);
+        localStorage.setItem('bookServiceId', serviceId);
         window.location.assign('./calendar');
     });
 
-    $('.service-read-more').on('click', function (event) {
+    $('.serviceDescription').on("mouseenter",
+        function (event) {
+            let id = event.target.id;
+            $('#' + id + 'Display').addClass('show');
+            $('#overlay').addClass('show');
+            event.stopPropagation();
+        },
+    )
+    $('#overlay').on("mouseenter",
+        function (event) {
+            $('.displayDescription.show').removeClass('show');
+            $('.displayRollModel.show').removeClass('show');
+            $('#overlay').removeClass('show');
+            event.stopPropagation();
+        }
+    );
+
+    $('.serviceDescription').on('click', function (event) {
+        $(this).addClass('text-decoration-underline');
         let id = event.target.id;
-        $('#' + id + 'Display').toggleClass('show');
-        $('#overlay').toggleClass('show');
+        $('#' + id + 'Display').addClass('show');
+        $('#overlay').addClass('show');
         event.stopPropagation();
     });
 
     $('.displayDescription').on('click', function (event) {
         let id = event.target.id;
-        $('#' + id).toggleClass('show');
-        $('#overlay').toggleClass('show');
+        $('#' + id).removeClass('show');
+        $('#overlay').removeClass('show');
+        $('.serviceDescription.text-decoration-underline').removeClass('text-decoration-underline');
         event.stopPropagation();
     }
     );
@@ -54,11 +73,7 @@ $('#overlay').on('click', function () {
     $('.displayDescription.show').removeClass('show');
     $('.displayRollModel.show').removeClass('show');
     $('#overlay').removeClass('show');
-});
-
-$('.view-calendar').on('click', function () {
-    console.log('View Calendar button clicked');
-    window.location.assign('./calendar');
+    $('.serviceDescription.text-decoration-underline').removeClass('text-decoration-underline');
 });
 
 renderServices();
