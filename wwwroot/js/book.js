@@ -123,7 +123,7 @@ async function displayApptDetails(event) {
                 <img class="icon" src="./assets/locationIcon.png" alt="Calendar Icon By Freepik">
                 <div class="px-1 text-center">${locationAddress}</div>            
             </div>                                    
-            <div class="col-12 ms-5 fs-4 text-darkgray">${selectedAppt.ApptType.Description}</div>
+            <div class="mx-5 fs-4 text-darkgray">${selectedAppt.ApptType.Description}</div>
             `
         );
         return;

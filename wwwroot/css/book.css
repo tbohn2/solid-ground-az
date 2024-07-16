@@ -13,6 +13,7 @@
 
 .monthNavBtn:hover {
     color: var(--purple);
+    background-color: var(--lav);
     transition: all 0.3s ease;
 }
 
@@ -145,6 +146,15 @@
 
 .spinner-border {
     color: var(--purple);
+}
+
+#freepik-link {
+    text-decoration: none;
+    color: var(--darkgray);
+}
+
+#freepik-link:hover {
+    text-decoration: underline;
 }
 
 @media screen and (max-width: 768px) {
