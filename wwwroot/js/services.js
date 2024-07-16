@@ -7,19 +7,39 @@ $('#option1').attr('checked', true);
 function renderServices() {
     const servicesContainer = $('#services');
     servicesContainer.empty();
-
+    if (mobile) { $('#meet-container').addClass('flex-column-reverse') }
+    else { $('#meet-container').removeClass('flex-column-reverse'); }
     const serviceCards = privateServices.map(service => {
         let card;
         const imgURL = '.' + service.ImgURL.slice(5);
-        card = `
+        mobile ?
+            card = `
                 <div class="serviceCard league my-3 d-flex fade-top">
-                    <img class="col-2" src="${imgURL}" alt="yoga">
-                    <div class="col-10 position-relative d-flex flex-column align-items-center justify-content-between">
+                    <img class="col-2 col-xl-1" src="${imgURL}" alt="yoga">
+                    <div class="py-1 col-10 col-xl-11 position-relative d-flex flex-column justify-content-evenly">
+                        <div class="px-2 d-flex align-items-center justify-content-between">
+                            <h3 class="m-0">${service.Name}</h3>
+                            <p class="m-0">$${service.Price} | ${service.Duration} min</p>                        
+                        </div>
+                        <div class="col-12 d-flex px-2">
+                            <p id=${service.Id + 'desc'} class="serviceDescription col-10 fs-4">${service.Description}</p>
+                            <p id=${service.Id + 'book'} class="serviceCard-button text-center col-2 fs-5">Book</p>                        
+                        </div>
+                        <p id=${service.Id + 'descDisplay'} class="displayDescription col-10 ms-4 fs-4 align-self-start">${service.Description}</p>
+                    </div>
+                </div>`
+            :
+            card = `
+                <div class="serviceCard league my-3 d-flex fade-top">
+                    <img class="col-2 col-xl-1" src="${imgURL}" alt="yoga">
+                    <div class="col-10 col-xl-11 position-relative d-flex flex-column align-items-center justify-content-between">
                         <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
                         <p class="m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <p id=${service.Id + 'desc'} class="serviceDescription ms-4 mb-0 fs-5 align-self-start">${service.Description}</p>
-                        <p id=${service.Id + 'descDisplay'} class="displayDescription ms-4 fs-5 align-self-start">${service.Description}</p>
-                        <p id=${service.Id + 'book'} class="serviceCard-button align-self-end mx-5 my-3 fs-5">Book</p>                        
+                        <div class="col-12 d-flex mb-4">
+                            <p id=${service.Id + 'desc'} class="serviceDescription col-10 ms-4 mb-0 fs-4">${service.Description}</p>
+                            <p id=${service.Id + 'book'} class="serviceCard-button text-center col-2 fs-5">Book</p>                        
+                        </div>
+                        <p id=${service.Id + 'descDisplay'} class="displayDescription col-10 ms-4 fs-4 align-self-start">${service.Description}</p>
                     </div>
                 </div>`;
         return card;
