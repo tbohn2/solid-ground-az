@@ -8,6 +8,10 @@
     --purple: #5c4888;
 }
 
+body {
+    overflow-x: hidden;
+}
+
 .bg-white {
     background-color: var(--white);
 }

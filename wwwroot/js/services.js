@@ -30,18 +30,18 @@ function renderServices() {
                 </div>`
             :
             card = `
-                <div class="serviceCard league my-3 d-flex fade-top">
-                    <img class="col-2 col-xl-1" src="${imgURL}" alt="yoga">
-                    <div class="col-10 col-xl-11 position-relative d-flex flex-column align-items-center justify-content-between">
+                <div class="serviceCard col-10 league my-3 d-flex fade-top">
+                    <img class="col-3 col-xl-3" src="${imgURL}" alt="yoga">
+                    <div class="col-8 col-xl-8 position-relative d-flex flex-column align-items-center justify-content-start">
                         <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
                         <p class="m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <div class="col-12 d-flex mb-4">
-                            <p id=${service.Id + 'desc'} class="serviceDescription col-10 ms-4 mb-0 fs-4">${service.Description}</p>
-                            <p id=${service.Id + 'book'} class="serviceCard-button text-center col-2 fs-5">Book</p>                        
-                        </div>
-                        <p id=${service.Id + 'descDisplay'} class="displayDescription col-10 ms-4 fs-4 align-self-start">${service.Description}</p>
+                        <p id=${service.Id + 'desc'} class="serviceDescription col-10 mb-0 fs-4">${service.Description}</p>
+                        <p id=${service.Id + 'descDisplay'} class="displayDescription col-10 fs-4 align-self-start">${service.Description}</p>
                     </div>
-                </div>`;
+                    <div class="col-1 d-flex align-items-end justify-content-center">
+                        <p id=${service.Id + 'book'} class="serviceCard-button fw-bold fs-5">Book</p>                        
+                    </div>
+                    </div>`;
         return card;
     }).join(''); // Join all cards into a single string
 

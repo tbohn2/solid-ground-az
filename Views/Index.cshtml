@@ -3,28 +3,40 @@
     ViewData["Title"] = "Nicole Olsen - Home";
 }
 
-<div class="fade-in marble-bg d-flex flex-wrap justify-content-center align-items-center">
+<div class="fade-in overflow-x-hidden marble-bg d-flex flex-wrap justify-content-center align-items-center">
     <img id="main-page-nicole" src="~/assets/main-page-nicole.jpg" alt="group yoga">
     <img id="transition-img" class="col-12" src="~/assets/transition.png" alt="transition">
-    <div id="welcome" class="bg-lav col-12 d-flex flex-column align-items-center mb-5">
+    <div id="welcome" class="bg-lav col-12 d-flex flex-column align-items-center pt-3">
         <div class="d-flex flex-column align-items-center col-xl-8 col-lg-9 col-10">
             <h1 class="libre">Welcome</h1>
             <p class="fs-5 league">Welcome to SolidGround! Unlike traditional fitness based programs that emphasize
                 intense
                 physical exertion, I invite you to make incremental changes
                 that help you connect with you whole self.
-                My approach is disigned to help you achieve long-term results while embracing your unique journey
+                My approach is designed to help you achieve long-term results while embracing your unique journey
                 towards
                 self-love and acceptance.
             </p>
         </div>
     </div>
-    <div class="mt-5">
-        <h2 class="text-purple text-center league mt-5">Bookable Sessions</h2>
+    <div id="private-sessions" class="marble-bg pb-3">
+        <h2 class="text-purple text-center league">Book a Private Session</h2>
         <div id="services" class="my-2 d-flex flex-wrap justify-content-evenly"></div>
     </div>
     <div id='overlay'></div>
-    <div id="roll-model" class="bg-lav px-3 py-5 d-flex flex-wrap justify-content-evenly align-items-center">
+     <div id="meet-container" class="bg-lav d-flex justify-content-evenly align-items-center py-5 px-3 col-12">
+        <div id="meet-nicole" class="py-3 d-flex flex-column align-items-center justify-content-center col-md-5 col-10">
+            <h2 class="text-center libre">MEET NICOLE</h2>
+            <p class="rounded text-center fs-5">
+                I am a the cooliest person ever. I am a the cooliest person ever. I am a the cooliest person ever. I am
+                a master of the Roll Model® Method and I am here to help you feel better in your body
+                I am a the cooliest person ever. I am a the cooliest person ever. I am a the cooliest person ever. I am
+                a master of the Roll Model® Method and I am here to help you feel better in your body
+            </p>
+        </div>
+        <img id="portrait" src="~/assets/portrait.jpg" alt="nicole-portrait">
+    </div>
+    <div id="roll-model" class="bg-white px-3 py-5 d-flex flex-wrap justify-content-evenly align-items-center">
         <img id="roll-model-img" src="./assets/balls.jpg" alt="yoga-balls">
         <div class="px-5 col-12 col-lg-7 d-flex flex-column">
             <h2 class="roll-model-h2 mt-3">WHAT IS THE ROLL MODEL® METHOD?</h2>
@@ -79,19 +91,7 @@
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-evenly align-items-center bg-white py-5 col-12">
-        <div id="meet-nicole" class="d-flex flex-column align-items-center justify-content-center">
-            <h2 class="text-center libre">MEET NICOLE</h2>
-            <p class="rounded text-center fs-5">
-                I am a the cooliest person ever. I am a the cooliest person ever. I am a the cooliest person ever. I am
-                a master of the Roll Model® Method and I am here to help you feel better in your body
-                I am a the cooliest person ever. I am a the cooliest person ever. I am a the cooliest person ever. I am
-                a master of the Roll Model® Method and I am here to help you feel better in your body
-            </p>
-        </div>
-        <img id="portrait" src="~/assets/portrait.jpg" alt="nicole-portrait">
-    </div>
-    <div id="gallery" class="d-flex flex-wrap justify-content-evenly py-3 bg-lav">
+       <div id="gallery" class="d-flex flex-wrap justify-content-evenly py-3 marble-bg">
         <img class="gallery-img" src="./assets/gallery1.jpg" alt="yoga-gallery1">
         <img class="gallery-img" src="./assets/gallery3.jpg" alt="yoga-gallery3">
         <img class="gallery-img" src="./assets/gallery7.jpg" alt="yoga-gallery7">
