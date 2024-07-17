@@ -3,15 +3,15 @@
     ViewData["Title"] = "Contact";
 }
 
-<div class="fade-in d-flex my-5 flex-column align-items-center">
-    <h1 class="text-light">LET'S CONNECT</h1>
+<div class="fade-in d-flex py-5 my-3 flex-column align-items-center">
+    <h1 class="text-purple libre">LET'S CONNECT</h1>
     <form id="contactForm"
-        class="fs-5 bg-white rounded d-flex flex-wrap justify-content-center col-xxl-6 col-8 border border-light p-2 row g-1">
-        <div class="mb-3 col-6">
+        class="fs-5 bg-lav text-purple rounded d-flex flex-wrap justify-content-center col-xxl-6 col-8 p-2 row g-1">
+        <div class="mb-3">
             <label class="form-label">FIRST NAME</label>
             <input id="firstname" name="firstname" class="form-control" placeholder="Jane" required />
         </div>
-        <div class="mb-3 col-6">
+        <div class="mb-3">
             <label class="form-label">LAST NAME</label>
             <input id="lastname" name="lastname" class="form-control" placeholder="Doe" required />
         </div>
@@ -23,12 +23,13 @@
         <div class="mb-3 col-12">
             <label class="form-label">MESSAGE</label>
             <textarea id="message" name="message" class="form-control"
-                placeholder="Questions, comments, or just want to say hello? I'd love to hear from you!" rows="3"
+                placeholder="Questions, comments, or just want to say hello? I'd love to hear from you!" rows="10"
                 required></textarea>
         </div>
         <button type="submit" id="form-btn" class="custom-btn col-4 col-sm-3 align-self-start">Submit</button>
     </form>
+</div>
 
-    @section Scripts {
-        <script src="~/js/contact.js"></script>
-    }
+@section Scripts {
+    <script src="~/js/contact.js"></script>
+}
