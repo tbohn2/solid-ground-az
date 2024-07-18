@@ -1,4 +1,4 @@
-import { privateServices } from './index.js';
+import { privateServices } from './root.js';
 const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
 const currentDate = new Date().getDate();
 const currentYear = new Date().getFullYear();
@@ -12,8 +12,6 @@ let currentApptId = 0;
 let selectedServiceId = 0;
 let selectedService = 'Select Service';
 let mobile = window.innerWidth < 768 ? true : false;
-
-$('#option2').attr('checked', true);
 
 async function getAppointments() {
     apptsByDate = {};

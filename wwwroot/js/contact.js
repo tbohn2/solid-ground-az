@@ -1,5 +1,3 @@
-$('#option3').attr('checked', true);
-
 $('#contactForm').submit(async function (e) {
     e.preventDefault();
     $('#form-btn').empty();
