@@ -519,6 +519,7 @@ namespace StretchScheduler
                     requestedApptType.Name = apptType.Name;
                     requestedApptType.Duration = apptType.Duration;
                     requestedApptType.Price = apptType.Price;
+                    requestedApptType.ShortDescription = apptType.ShortDescription;
                     requestedApptType.Description = apptType.Description;
                     requestedApptType.LocationName = apptType.LocationName;
                     requestedApptType.LocationAddress = apptType.LocationAddress;

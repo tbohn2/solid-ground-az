@@ -20,7 +20,7 @@ function renderServices() {
                             <p class="m-0">$${service.Price} | ${service.Duration} min</p>                        
                         </div>
                         <div class="col-12 d-flex px-2">
-                            <p id=${service.Id + 'desc'} class="serviceDescription col-10 fs-4">${service.Description}</p>
+                            <p id=${service.Id + 'desc'} class="serviceDescription col-10 fs-4">${service.ShortDescription}</p>
                             <p id=${service.Id + 'book'} class="serviceCard-button text-center col-2 fs-5">Book</p>                        
                         </div>
                         <p id=${service.Id + 'descDisplay'} class="displayDescription col-10 ms-4 fs-4 align-self-start">${service.Description}</p>
@@ -33,7 +33,7 @@ function renderServices() {
                     <div class="col-8 col-xl-9 position-relative d-flex flex-column align-items-center justify-content-start">
                         <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
                         <p class="m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <p id=${service.Id + 'desc'} class="serviceDescription col-10 mb-0 fs-4">${service.Description}</p>
+                        <p id=${service.Id + 'desc'} class="serviceDescription col-10 mb-0 fs-4">${service.ShortDescription}</p>
                         <p id=${service.Id + 'descDisplay'} class="displayDescription col-10 fs-4 align-self-start">${service.Description}</p>
                     </div>
                     <div class="col-1 d-flex align-items-end justify-content-center">
