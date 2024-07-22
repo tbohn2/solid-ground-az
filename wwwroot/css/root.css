@@ -6,6 +6,7 @@
     --darkgray: #838383;
     --lav: #ede9f3;
     --purple: #5c4888;
+    --purple2: #a194eb;
 }
 
 body {
@@ -26,6 +27,10 @@ body {
 
 .bg-purple {
     background-color: var(--purple);
+}
+
+.bg-purple2 {
+    background-color: var(--purple2);
 }
 
 .bg-beige {
@@ -114,6 +119,15 @@ input[type="radio"]:checked+label {
     border: 1px solid var(--purple);
     border-image: linear-gradient(to left, var(--white), var(--lav));
     border-image-slice: 1;
+}
+
+#photographer-link {
+    text-decoration: none;
+    color: var(--purple);
+}
+
+#photographer-link:hover {
+    text-decoration: underline;
 }
 
 @keyframes fade-in {
