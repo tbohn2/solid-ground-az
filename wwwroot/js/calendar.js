@@ -228,6 +228,7 @@ async function displayModal(event) {
 
 async function renderCalendar() {
     $('#calendar-dates').empty();
+    mobile ? $('#calendar-header').addClass('flex-column-reverse') : $('#calendar-header').removeClass('flex-column-reverse');
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
 
     displayedDates.forEach(week => {
