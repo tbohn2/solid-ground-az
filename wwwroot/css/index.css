@@ -226,6 +226,11 @@
 
     }
 
+    #portrait {
+        width: 350px;
+        height: 350px;
+    }
+
     #roll-model-img {
         width: 350px;
         height: 250px;
