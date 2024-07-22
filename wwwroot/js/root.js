@@ -1,20 +1,3 @@
-$(document).ready(function () {
-    $('input[name="navOptions"]').change(
-        function () {
-            var pageToLoad = $(this).val();
-            window.location.assign(pageToLoad);
-        });
-    if (window.location.pathname === '/contact') {
-        $('#option3').attr('checked', true);
-    }
-    else if (window.location.pathname === '/calendar') {
-        $('#option2').attr('checked', true);
-    }
-    else {
-        $('#option1').attr('checked', true);
-    }
-});
-
 let mobile = window.innerWidth < 768 ? true : false;
 
 function renderNav() {
@@ -40,6 +23,23 @@ function renderNav() {
         <label for="option3" class="text-purple fs-4">CONTACT</label>
     `
     $('.navbar').append(nav);
+
+    $(document).ready(function () {
+        $('input[name="navOptions"]').change(
+            function () {
+                var pageToLoad = $(this).val();
+                window.location.assign(pageToLoad);
+            });
+        if (window.location.pathname === '/contact') {
+            $('#option3').attr('checked', true);
+        }
+        else if (window.location.pathname === '/calendar') {
+            $('#option2').attr('checked', true);
+        }
+        else {
+            $('#option1').attr('checked', true);
+        }
+    });
 }
 
 window.addEventListener('resize', () => {
