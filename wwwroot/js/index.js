@@ -28,12 +28,12 @@ function renderServices() {
                 </div>`
             :
             card = `
-                <div class="serviceCard col-xxl-2 col-5 league my-3 d-flex flex-column align-items-center justify-content-between fade-top">
+                <div class="serviceCard league my-3 d-flex flex-column align-items-center justify-content-between fade-top">
                     <img class="col-12" src="${imgURL}" alt="yoga">
                     <div class="col-12 position-relative d-flex flex-column align-items-center justify-content-start">
                         <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
                         <p class="m-0 text-center">$${service.Price} | ${service.Duration} min</p>
-                        <p id=${service.Id + 'desc'} class="serviceDescription col-10 mb-0 fs-4">${service.ShortDescription}</p>
+                        <p id=${service.Id + 'desc'} class="serviceDescription text-center col-12 mb-0">${service.ShortDescription}</p>
                         <p id=${service.Id + 'descDisplay'} class="displayDescription col-10 fs-4 align-self-start">${service.Description}</p>
                     </div>
                     <p id=${service.Id + 'book'} class="serviceCard-button text-center fw-bold fs-5">Book</p>                        

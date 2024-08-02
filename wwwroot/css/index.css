@@ -25,8 +25,7 @@
 }
 
 .serviceCard {
-    border-top: 2px solid var(--purple);
-    border-bottom: 2px solid var(--purple);
+    width: 20vw;
     margin: 20px;
     color: var(--purple);
     background-color: var(--lav);
@@ -34,7 +33,7 @@
 }
 
 .serviceCard img {
-    height: 550px;
+    height: 475px;
     object-fit: cover;
     object-position: center 75%;
 }
@@ -44,6 +43,7 @@
 }
 
 .serviceDescription {
+    font-size: 20px;
     position: relative;
     display: inline-block;
     overflow: hidden;
@@ -177,6 +177,12 @@
     margin: 10px;
 }
 
+@media screen and (max-width: 1400px) {
+    .serviceCard {
+        width: 40vw;
+    }
+}
+
 @media screen and (max-width: 992px) {
     .roll-model-h2 {
         text-align: center;
@@ -215,6 +221,8 @@
     .serviceCard {
         width: 90%;
         height: 100px;
+        border-top: 2px solid var(--purple);
+        border-bottom: 2px solid var(--purple);
     }
 
     .serviceCard img {
@@ -229,7 +237,6 @@
         padding: 10px 15px;
         top: 40px;
         left: 30%;
-
     }
 
     #portrait {
@@ -257,6 +264,6 @@
     }
 
     #private-sessions {
-        padding-top: 50px;
+        padding-top: 85px;
     }
 }
