@@ -5,8 +5,7 @@ let mobile = window.innerWidth < 768 ? true : false;
 function renderServices() {
     const servicesContainer = $('#services');
     servicesContainer.empty();
-    if (mobile) { $('#meet-container').addClass('flex-column-reverse') }
-    else { $('#meet-container').removeClass('flex-column-reverse'); }
+
     const serviceCards = privateServices.map(service => {
         let card;
         const imgURL = '.' + service.ImgURL.slice(5);
@@ -94,9 +93,8 @@ $('#overlay').on('click', function () {
 
 renderServices();
 
-$('#roll-read-more').on('click', function () {
-    $('#overlay').toggleClass('show');
-    $('.displayRollModel').toggleClass('show');
+$('#calendar-link').on('click', function () {
+    window.location.assign('./calendar');
 });
 
 window.addEventListener('resize', () => {
