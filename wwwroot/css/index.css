@@ -113,14 +113,6 @@
     visibility: visible;
 }
 
-#portrait {
-    width: 450px;
-    height: 450px;
-    border-radius: 50%;
-    object-fit: cover;
-    object-position: center;
-}
-
 #move-mods img {
     width: 150px;
     height: auto;
@@ -201,11 +193,6 @@
         padding: 10px 15px;
         top: 40px;
         left: 30%;
-    }
-
-    #portrait {
-        width: 350px;
-        height: 350px;
     }
 
     .odd-mod {

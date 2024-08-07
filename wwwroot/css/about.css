@@ -1,0 +1,11 @@
+#about-me {
+    min-height: 90vh;
+}
+
+#portrait {
+    width: 550px;
+    height: 550px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+}
