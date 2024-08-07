@@ -15,11 +15,11 @@ function renderNav() {
             </ul>
         </div>
     ` : `
-        <input type="radio" name="navOptions" id="option1" value="/" autocomplete="off">
-        <label for="option1" class="text-purple fs-4">HOME</label>
-        <input type="radio" name="navOptions" id="option2" value="calendar" autocomplete="off">
-        <label for="option2" class="text-purple fs-4">CALENDAR</label>
-        <input type="radio" name="navOptions" id="option3" value="contact" autocomplete="off">
+        <input type="radio" name="navOptions" id="option1" value="/calendar" autocomplete="off">
+        <label for="option1" class="text-purple fs-4">CALENDAR</label>
+        <input type="radio" name="navOptions" id="option2" value="/about" autocomplete="off">
+        <label for="option2" class="text-purple fs-4">ABOUT</label>
+        <input type="radio" name="navOptions" id="option3" value="/contact" autocomplete="off">
         <label for="option3" class="text-purple fs-4">CONTACT</label>
     `
     $('.navbar').append(nav);
@@ -33,14 +33,18 @@ function renderNav() {
         if (window.location.pathname === '/contact') {
             $('#option3').attr('checked', true);
         }
-        else if (window.location.pathname === '/calendar') {
+        else if (window.location.pathname === '/about') {
             $('#option2').attr('checked', true);
         }
-        else {
+        else if (window.location.pathname === '/calendar') {
             $('#option1').attr('checked', true);
         }
     });
 }
+
+$('#logo').click(() => {
+    window.location.assign('/');
+});
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;

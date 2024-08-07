@@ -85,6 +85,10 @@ body {
     background-color: var(--purple);
 }
 
+#logo {
+    cursor: pointer;
+}
+
 nav label {
     font-size: 24px;
     cursor: pointer;
