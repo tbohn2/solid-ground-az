@@ -5,7 +5,18 @@
 #portrait {
     width: 550px;
     height: 550px;
-    border-radius: 50%;
     object-fit: cover;
-    object-position: center;
+    object-position: center 100%;
+}
+
+@media screen and (max-width: 768px) {
+    #about-me {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #portrait {
+        width: 300px;
+        height: 300px;
+    }
 }
