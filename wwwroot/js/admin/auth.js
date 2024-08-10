@@ -55,6 +55,7 @@ class AuthService {
         localStorage.removeItem('id_token');
         localStorage.removeItem('services');
         localStorage.removeItem('admin_id');
+        window.location.assign('/admin/login');
     }
 }
 

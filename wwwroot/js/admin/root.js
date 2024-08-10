@@ -2,10 +2,13 @@ import auth from './auth.js';
 
 let loggedIn = auth.loggedIn();
 
-if (!loggedIn) {
-    console.log('Not logged in');
-    // window.location.assign('/login');
+function checkLoggedIn() {
+    if (!loggedIn && window.location.pathname !== '/admin/login') {
+        window.location.assign('/admin/login');
+    }
 }
+
+checkLoggedIn();
 
 let mobile = window.innerWidth < 768 ? true : false;
 
@@ -22,9 +25,7 @@ else if (window.location.pathname === '/clients') {
 }
 
 $('#logout-btn').click(() => {
-    // auth.logout();
-    console.log('Logged out');
-
+    auth.logout();
 });
 
 window.addEventListener('resize', () => {
