@@ -1,0 +1,6 @@
+input[type="radio"]:checked+label {
+    border-bottom: 5px solid;
+    border-image: linear-gradient(to left, var(--lav), var(--purple));
+    border-image-slice: 1;
+    border-image-repeat: stretch;
+}

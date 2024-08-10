@@ -7,6 +7,7 @@
     --lav: #ede9f3;
     --purple: #5c4888;
     --purple2: #a194eb;
+    --pink: #db624c;
 }
 
 body {
@@ -53,7 +54,6 @@ body {
 .body {
     font-family: 'Roboto', sans-serif;
     min-height: 100vh;
-    color: black;
 }
 
 .libre {
@@ -71,12 +71,20 @@ body {
     background-position: center;
 }
 
+.text-white {
+    color: var(--white);
+}
+
 .text-darkgray {
     color: var(--darkgray);
 }
 
 .text-purple {
     color: var(--purple);
+}
+
+.border-darkgray {
+    border: 1px solid var(--darkgray);
 }
 
 .line {
@@ -99,11 +107,28 @@ input[type="radio"] {
     display: none;
 }
 
-input[type="radio"]:checked+label {
-    border-bottom: 5px solid;
-    border-image: linear-gradient(to left, var(--lav), var(--purple));
-    border-image-slice: 1;
-    border-image-repeat: stretch;
+.input {
+    border: 1px solid var(--purple);
+    border-radius: 5px;
+    padding-left: 5px;
+}
+
+input:focus {
+    border: 1px solid var(--purple);
+    outline: 1px solid var(--purple);
+}
+
+#modal-header {
+    border-bottom: 1px solid var(--darkgray);
+    color: var(--white);
+    background-color: var(--purple2);
+}
+
+.btn-close {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    color: var(--white) !important;
 }
 
 .custom-btn {
@@ -117,6 +142,16 @@ input[type="radio"]:checked+label {
     background-color: var(--lav);
     color: var(--purple);
     transition: all 0.3s ease;
+}
+
+.success-btn:hover {
+    color: var(--white);
+    background-color: rgb(107, 209, 107);
+}
+
+.danger-btn:hover {
+    color: var(--white);
+    background-color: var(--pink);
 }
 
 .purple-border {
@@ -139,21 +174,11 @@ input[type="radio"]:checked+label {
     height: 100px;
 }
 
+.spinner-border {
+    color: var(--purple);
+}
+
 @keyframes fade-in {
-    0% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-
-.fade-in {
-    animation: fade-in 0.75s ease-in-out;
-}
-
-@keyframes fade-top {
     0% {
         opacity: 0;
         transform: translateY(-20px);
@@ -165,7 +190,7 @@ input[type="radio"]:checked+label {
     }
 }
 
-.fade-top {
+.fade-in {
     animation: fade-in 0.75s ease-in-out;
 }
 
