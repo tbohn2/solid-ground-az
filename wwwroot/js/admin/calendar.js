@@ -1,5 +1,7 @@
 import auth from './auth.js';
 
+// Manage logged in state to redirect to login page if not logged in
+
 const token = auth.getToken();
 const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const statuses = ['Available', 'Requested', 'Booked', 'Completed', 'Firm'];
@@ -17,6 +19,10 @@ let calendarDates = new calendar.Calendar(6).monthdayscalendar(calendarYear, cal
 let appointments = {};
 let dayAppts = [];
 let mobile = window.innerWidth < 768 ? true : false;
+
+function setDisplayService(service) {
+    displayService = service;
+}
 
 function loadingPage() {
     $('#calendar-header').append(`<div class="spinner-border" role="status"></div>`);
@@ -155,6 +161,9 @@ function renderCalendar() {
     })
 }
 
+function refetch() {
+    renderCalendar();
+}
 
 $('#prev').click(() => {
     if (calendarMonth === 1) {
@@ -166,7 +175,7 @@ $('#prev').click(() => {
         const prevMonth = calendarMonth - 1;
         calendarMonth = prevMonth;
     }
-    renderCalendar();
+    refetch();
 });
 
 $('#next').click(() => {
@@ -179,16 +188,28 @@ $('#next').click(() => {
         const nextMonth = calendarMonth + 1;
         calendarMonth = nextMonth;
     }
-    renderCalendar();
+    refetch();
 });
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
     if (isMobile !== mobile) {
         mobile = !mobile;
-        renderCalendar();
+        refetch();
     }
 });
 
 renderCalendar();
 getServices();
+
+module.exports = {
+    services,
+    displayService,
+    setDisplayService,
+    dayAppts,
+    displayDate,
+    calendarMonth,
+    calendarYear,
+    refetch,
+    token
+};
