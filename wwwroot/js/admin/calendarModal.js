@@ -3,18 +3,20 @@ import {
     services,
     displayService,
     setDisplayService,
-    appts as dayAppts,
-    date as displayDate,
-    month as calendarMonth,
-    year as calendarYear,
+    dayAppts as appts,
+    displayDate as date,
+    calendarMonth as month,
+    calendarYear as year,
     refetch,
     token
 } from './calendar.js';
 
+console.log('calendarModal.js');
+
+
 const privateServices = services.filter(service => service.Private === true);
 const publicServices = services.filter(service => service.Private === false);
 const adminId = localStorage.getItem('admin_id');
-const token = auth.getToken();
 const dateDisplay = new Date(year, month - 1, date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const minutes = ['00', '15', '30', '45'];
