@@ -24,6 +24,9 @@
             </div>
             <div id="calendar-dates" class="d-flex flex-column col-12"></div>
         </div>
+
+        @await Html.PartialAsync("~/Views/Admin/Shared/_CalendarModal.cshtml")
+
         @* <div class={`col-12 mt-3 d-flex align-items-center justify-content-evenly ${mobile && 'flex-column' }`}>
         <button id="newApptBtn" class="custom-btn fs-4 my-2 col-md-4 col-xl-3 col-xxl-2 col-12"
         data-bs-toggle="modal" data-bs-target="#newApptsModal">Add to Schedule</button>
