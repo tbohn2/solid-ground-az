@@ -178,6 +178,10 @@ input:focus {
     color: var(--purple);
 }
 
+.hide {
+    display: none;
+}
+
 @keyframes fade-in {
     0% {
         opacity: 0;
