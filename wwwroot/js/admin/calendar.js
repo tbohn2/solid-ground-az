@@ -9,19 +9,23 @@ const currentDate = new Date().getDate();
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-let services = [];
-let displayService = {};
-let displayDate = '';
-let calendarMonth = currentMonth;
-let calendarYear = currentYear;
-let calendarDates = new calendar.Calendar(6).monthdayscalendar(calendarYear, calendarMonth);
+export let state = {
+    appointments: {},
+    services: [],
+    displayService: {},
+    dayAppts: [],
+    date: '',
+    month: currentMonth,
+    year: currentYear,
+    token: token
+};
 
+let calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
 let appointments = {};
-let dayAppts = [];
 let mobile = window.innerWidth < 768 ? true : false;
 
-function setDisplayService(service) {
-    displayService = service;
+export function setDisplayService(service) {
+    state.displayService = service;
 }
 
 function loadingPage() {
@@ -43,24 +47,25 @@ function removeError() {
 async function getServices() {
     const retrievedServices = await auth.getServices();
     if (typeof retrievedServices === 'string') { displayError(retrievedServices); return; }
-    services = retrievedServices;
+    state.services = retrievedServices;
 }
 
 async function getAppointments() {
+    state.appointments = {};
     loadingPage();
     removeError();
     try {
-        const response = await fetch(`http://localhost:5062/api/allAppts/${calendarMonth}/${calendarYear}`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`http://localhost:5062/api/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
         const data = await response.json();
         removeLoading();
         if (response.ok) {
             data.forEach(appt => {
                 const date = new Date(appt.DateTime).getDate();
 
-                if (!appointments[date]) {
-                    appointments[date] = [];
+                if (!state.appointments[date]) {
+                    state.appointments[date] = [];
                 }
-                appointments[date].push(appt);
+                state.appointments[date].push(appt);
             });
         }
         if (!response.ok) { displayError(data) }
@@ -71,17 +76,17 @@ async function getAppointments() {
     }
 }
 
-function renderCalendar() {
+async function renderCalendar() {
 
     $('#calendar-dates').empty();
-    getAppointments();
+    await getAppointments();
 
-    $('#month').text(months[calendarMonth - 1] + ' ' + calendarYear);
+    $('#month').text(months[state.month - 1] + ' ' + state.year);
 
     calendarDates.forEach((week, index) => {
         $('#calendar-dates').append(`<div class="d-flex col-12 fade-in"></div>`);
         week.forEach((date, index) => {
-            const apptsForDay = appointments[date] || [];
+            const apptsForDay = state.appointments[date] || [];
             let numberDisplay
 
             if (date === 0) { numberDisplay = '' }
@@ -92,16 +97,16 @@ function renderCalendar() {
                     data-bs-target=${mobile ? "#apptsModal" : ""}</div>`)
 
             $(`#${date + 'container'}`).append(
-                `<div class='date-display' data-bs-toggle=${mobile ? "" : "modal"} data-bs-target=${mobile ? "" : "#apptsModal"}>${numberDisplay}</div>`);
+                `<div class='date-display' data-date=${date} data-bs-toggle=${mobile ? "" : "modal"} data-bs-target=${mobile ? "" : "#apptsModal"}>${numberDisplay}</div>`);
 
             if (mobile) {
                 $('.date-container').on('click', function () {
-                    dayAppts = appointments[$(this).attr('id').slice(0, -9)];
+                    state.dayAppts = state.appointments[$(this).attr('id').slice(0, -9)];
                 })
             }
             else {
                 $('.date-display').on('click', function () {
-                    dayAppts = appointments[$(this).attr('id')];
+                    state.dayAppts = state.appointments[$(this).attr('id')];
                 })
             }
 
@@ -118,7 +123,7 @@ function renderCalendar() {
                         apptsForDay.map((appt, index) => {
 
                             let display = ''
-                            const apptType = services.find(service => service.Id === appt.ApptTypeId)
+                            const apptType = state.services.find(service => service.Id === appt.ApptTypeId)
                             if (appt.Status === 2 || appt.Status === 4) {
                                 display = apptType.Name
                             } else {
@@ -128,10 +133,6 @@ function renderCalendar() {
                                 hour: 'numeric',
                                 minute: '2-digit'
                             });
-                            console.log(apptTime);
-                            console.log(display);
-
-
 
                             return (
                                 `<div id=${appt.Id} data-date=${date} data-bs-toggle='modal' data-bs-target='#apptsModal' class='appt-time'>
@@ -151,41 +152,45 @@ function renderCalendar() {
     $('.appt-time').on('click', function () {
         const apptId = $(this).attr('id');
         const date = $(this).attr('data-date');
-        const thisDayAppts = appointments[date] || [];
+        const thisDayAppts = state.appointments[date] || [];
         // Id is probably a string, so use == instead of ===
         const appt = thisDayAppts.find(appt => appt.Id === apptId);
-        dayAppts = [appt];
-        displayService = services.find(service => service.Id === appt.ApptTypeId);
-        displayDate = date;
+        state.dayAppts = [appt];
+        state.displayService = state.services.find(service => service.Id === appt.ApptTypeId);
+        state.displayDate = date;
+    })
+
+    $('.date-display').on('click', function () {
+        state.displayDate = $(this).attr('data-date');
     })
 }
 
-function refetch() {
+export function refetch() {
     renderCalendar();
 }
 
 $('#prev').click(() => {
-    if (calendarMonth === 1) {
-        const prevYear = calendarYear - 1;
-        calendarMonth = 12;
-        calendarYear = prevYear;
+    if (state.month === 1) {
+        const prevYear = state.year - 1;
+        state.month = 12;
+        state.year = prevYear;
     }
     else {
-        const prevMonth = calendarMonth - 1;
-        calendarMonth = prevMonth;
+        const prevMonth = state.month - 1;
+        state.month = prevMonth;
     }
     refetch();
 });
 
 $('#next').click(() => {
-    if (calendarMonth === 12) {
-        const nextYear = calendarYear + 1;
-        calendarMonth = 1;
-        calendarYear = nextYear;
+    if (state.month === 12) {
+        const nextYear = state.year + 1;
+        state.month = 1;
+        state.year = nextYear;
     }
     else {
-        const nextMonth = calendarMonth + 1;
-        calendarMonth = nextMonth;
+        const nextMonth = state.month + 1;
+        state.month = nextMonth;
     }
     refetch();
 });
@@ -200,15 +205,3 @@ window.addEventListener('resize', () => {
 
 renderCalendar();
 getServices();
-
-export {
-    services,
-    displayService,
-    setDisplayService,
-    dayAppts,
-    displayDate,
-    calendarMonth,
-    calendarYear,
-    refetch,
-    token
-};
