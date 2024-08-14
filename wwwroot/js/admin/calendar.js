@@ -75,7 +75,6 @@ function renderCalendar() {
 
     $('#calendar-dates').empty();
     getAppointments();
-    console.log(appointments);
 
     $('#month').text(months[calendarMonth - 1] + ' ' + calendarYear);
 
@@ -202,7 +201,7 @@ window.addEventListener('resize', () => {
 renderCalendar();
 getServices();
 
-module.exports = {
+export {
     services,
     displayService,
     setDisplayService,
