@@ -1,4 +1,5 @@
 import auth from './auth.js';
+import { renderApptModal } from './calendarModal.js';
 
 // Manage logged in state to redirect to login page if not logged in
 
@@ -9,7 +10,7 @@ const currentDate = new Date().getDate();
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-export let state = {
+let state = {
     appointments: {},
     services: [],
     displayService: {},
@@ -24,7 +25,7 @@ let calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state
 let appointments = {};
 let mobile = window.innerWidth < 768 ? true : false;
 
-export function setDisplayService(service) {
+function setDisplayService(service) {
     state.displayService = service;
 }
 
@@ -77,7 +78,6 @@ async function getAppointments() {
 }
 
 async function renderCalendar() {
-
     $('#calendar-dates').empty();
     await getAppointments();
 
@@ -93,22 +93,12 @@ async function renderCalendar() {
             else { numberDisplay = date }
 
             $('#calendar-dates').children().last().append(
-                `<div id="${date + 'container'}" class="date-container px-1 d-flex flex-column align-items-center date" data-bs-toggle=${mobile ? "modal" : ""}
-                    data-bs-target=${mobile ? "#apptsModal" : ""}</div>`)
+                `<div id="${date + 'container'}" class="date-container px-1 d-flex flex-column align-items-center date" ${mobile ? `data-bs-toggle="modal" data-bs-target="#apptsModal"` : ""}</div>`)
 
             $(`#${date + 'container'}`).append(
-                `<div class='date-display' data-date=${date} data-bs-toggle=${mobile ? "" : "modal"} data-bs-target=${mobile ? "" : "#apptsModal"}>${numberDisplay}</div>`);
+                `<div class='date-display' data-date=${date} ${mobile ? "" : `data-bs-toggle="modal" data-bs-target="#apptsModal"`}>${numberDisplay}</div>`);
 
-            if (mobile) {
-                $('.date-container').on('click', function () {
-                    state.dayAppts = state.appointments[$(this).attr('id').slice(0, -9)];
-                })
-            }
-            else {
-                $('.date-display').on('click', function () {
-                    state.dayAppts = state.appointments[$(this).attr('id')];
-                })
-            }
+
 
             $(`#${date + 'container'}`).append(
                 `<div class=${`col-12 ${mobile ? 'd-flex justify-content-center flex-wrap' : 'appts-container'} `}>
@@ -146,8 +136,21 @@ async function renderCalendar() {
                 </div>`
             )
 
-        })
+        }
+
+        )
     })
+
+    if (mobile) {
+        $('.date-container').on('click', function () {
+            state.dayAppts = state.appointments[$(this).attr('id').slice(0, -9)] ? state.appointments[$(this).attr('id').slice(0, -9)] : [];
+        })
+    }
+    else {
+        $('.date-display').on('click', function () {
+            state.dayAppts = state.appointments[$(this).data('date')] ? state.appointments[$(this).data('date')] : [];
+        })
+    }
 
     $('.appt-time').on('click', function () {
         const apptId = $(this).attr('id');
@@ -158,15 +161,13 @@ async function renderCalendar() {
         state.dayAppts = [appt];
         state.displayService = state.services.find(service => service.Id === appt.ApptTypeId);
         state.displayDate = date;
+        renderApptModal(state, setDisplayService, renderCalendar);
     })
 
     $('.date-display').on('click', function () {
         state.displayDate = $(this).attr('data-date');
+        renderApptModal(state, setDisplayService, renderCalendar);
     })
-}
-
-export function refetch() {
-    renderCalendar();
 }
 
 $('#prev').click(() => {
@@ -179,7 +180,7 @@ $('#prev').click(() => {
         const prevMonth = state.month - 1;
         state.month = prevMonth;
     }
-    refetch();
+    renderCalendar();
 });
 
 $('#next').click(() => {
@@ -192,14 +193,14 @@ $('#next').click(() => {
         const nextMonth = state.month + 1;
         state.month = nextMonth;
     }
-    refetch();
+    renderCalendar();
 });
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
     if (isMobile !== mobile) {
         mobile = !mobile;
-        refetch();
+        renderCalendar();
     }
 });
 
