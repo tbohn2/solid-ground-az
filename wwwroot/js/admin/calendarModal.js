@@ -53,8 +53,6 @@ function hideError() {
     $('.alert').remove();
 }
 
-function timeSelector() { }
-
 function updateAppointments(appts) {
     state.appointments = appts;
     state.apptDetails = appts.length === 1 ? appts[0] : null;
@@ -99,7 +97,55 @@ function handleInputChange(e) {
     };
 }
 
-// $('select[name="Hour"], select[name="Minutes"], select[name="MeridiemAM"]').on('change', handleInputChange);
+function timeSelector() {
+    $('#cal-modal-body').append(`
+        <div id='time-selector' class="d-flex flex-column col-12 justify-content-center align-items-center my-2">
+            <div class="d-flex col-12 justify-content-center align-items-center">
+                <select name="Hour" class="new-appt-input custom-btn mx-1">
+                    ${hours.map((hour, index) => `<option key=${index} value=${hour} selected=${hour === state.newApptDetails.Hour ? 'selected' : undefined}>${hour}</option>`)}
+                </select>
+                <p class="d-flex align-items-center my-0">:</p>
+                <select name="Minutes" class="new-appt-input custom-btn mx-1">
+                    ${minutes.map((minute, index) => `<option key=${index} value=${minute} selected=${minute === state.newApptDetails.Minutes ? 'selected' : undefined}>${minute}</option>`)}
+                </select>
+                <select name="MeridiemAM" class="new-appt-input custom-btn">
+                    <option value="AM" selected=${state.newApptDetails.MeridiemAM}>AM</option>
+                    <option value="PM" selected=${!state.newApptDetails.MeridiemAM}>PM</option>
+                </select>
+            </div>
+            ${state.addingAppts ?
+            `<select id='status-select' name="Status" class="new-appt-input custom-btn mt-2">
+                        <option value='4' selected=${state.newApptDetails.Status === 4}>Public</option>
+                        <option value='0' selected=${state.newApptDetails.Status !== 4}>Private</option>
+                </select>` :
+            ``
+        }
+        </div>`);
+
+    function renderServiceSelect() {
+        $('select[name="ApptTypeId"]').remove();
+
+        if (state.newApptDetails.Status !== 0) { // Service not Available
+            $('#time-selector').append(
+                `${state.newApptDetails.Status !== 4 ? // Service not Public (has Status 1, 2, or 3)
+                    `<select name="ApptTypeId" class="new-appt-input custom-btn mt-2">
+                            ${privateServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === newApptDetails.ApptTypeId}>${service.Name}</option>`)}
+                        </select>`
+                    :
+                    `<select name="ApptTypeId" class="new-appt-input custom-btn mt-2">
+                            ${publicServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === newApptDetails.ApptTypeId}>${service.Name}</option>`)}
+                        </select>`
+                }`
+
+            );
+        }
+    }
+
+    renderServiceSelect();
+    $('.new-appt-input').on('change', (e) => handleInputChange(e));
+    $('#status-select').on('change', renderServiceSelect);
+
+}
 
 const addAppt = async () => {
     showLoading();
@@ -288,21 +334,27 @@ const deleteAppt = async () => {
     }
 }
 
-function setAddingAppts(bool) {
-    if (bool) {
+function setAddingAppts(adding) {
+    if (adding) {
+        state.addingAppts = true;
         $('.appts-container').addClass('hide');
         $('#cal-modal-body').append(`
-            < div class= "mt-2 fs-4 col-11 d-flex flex-wrap align-items-center" >
+            <div id='adding-container' class="mt-2 fs-4 col-11 d-flex flex-wrap align-items-center">
             <h3 class="col-12 text-center">Add Available Time</h3>
-                ${timeSelector()}
-        < div class= "d-flex justify-content-evenly col-12 my-2" >
-                    <button type="button" class="custom-btn success-btn fs-5" onClick={addAppt}>Confirm Time</button>
-                    <button type="button" class="custom-btn danger-btn fs-5" onClick={clearStates}>Cancel</button>
-                </div >
-            </div > `);
-    }
-    else {
+            <div class= "d-flex justify-content-evenly col-12 my-2">
+            <button id='confirm-add' type="button" class="custom-btn success-btn fs-5">Confirm Time</button>
+            <button id='cancel-add' type="button" class="custom-btn danger-btn fs-5">Cancel</button>
+            </div >
+            </div> `);
+
+        timeSelector()
+        $('#confirm-add').on('click', addAppt);
+        $('#cancel-add').on('click', () => setAddingAppts(false))
+    } else {
+        state.addingAppts = false;
         $('.appts-container').removeClass('hide');
+        $('#adding-container').remove();
+        $('#time-selector').remove();
         clearStates();
     }
 }
@@ -419,8 +471,8 @@ function toggleDetails(appt) {
 $('.modal-title').text(dateDisplay);
 
 $('#cal-modal-body').append(`
-    ${appointments.length === 0 && !addingAppts && `<h2 class="fs-5">Add Appointments Below</h2>`}
-    ${appointments.map((appt, index) => {
+    ${state.appointments.length === 0 && `<h2 class="fs-5">Add Appointments Below</h2>`}
+    ${state.appointments.map((appt, index) => {
 
     if (appt.Client) {
         state.clients[appt.Id] = appt.Client // Store client info in state
@@ -448,10 +500,11 @@ $('#cal-modal-body').append(`
 })}
  `);
 
-
 $('.appt-card-header').on('click', () => {
     const apptId = $(this).attr('id');
-    const appt = appointments.find(appt => appt.Id === apptId);
+    const appt = state.appointments.find(appt => appt.Id === apptId);
     toggleDetails(appt)
 }
 );
+
+$('#adding-btn').on('click', () => setAddingAppts(true));
