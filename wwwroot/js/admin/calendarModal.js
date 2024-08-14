@@ -55,8 +55,9 @@ export function renderApptModal(state, setDisplayService, refetch) {
     }
 
     function clearStates() {
-        $('.modal-title').empty();
-        $('#cal-modal-body').empty();
+        $('.appts-container').removeClass('hide');
+        $('#adding-container').remove();
+        $('#time-selector').remove();
 
         calModalState.newApptDetails = initialFormState;
         calModalState.apptDetails = calModalState.appointments.length === 1 ? calModalState.appointments[0] : null;
@@ -96,7 +97,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
     }
 
     function timeSelector() {
-        $('#cal-modal-body').append(`
+        $('#adding-container h3').after(`
         <div id='time-selector' class="d-flex flex-column col-12 justify-content-center align-items-center my-2">
             <div class="d-flex col-12 justify-content-center align-items-center">
                 <select name="Hour" class="new-appt-input custom-btn mx-1">
@@ -127,11 +128,11 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 $('#time-selector').append(
                     `${calModalState.newApptDetails.Status !== 4 ? // Service not Public (has Status 1, 2, or 3)
                         `<select name="ApptTypeId" class="new-appt-input custom-btn mt-2">
-                            ${privateServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === newApptDetails.ApptTypeId}>${service.Name}</option>`)}
+                            ${privateServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === calModalState.newApptDetails.ApptTypeId}>${service.Name}</option>`)}
                         </select>`
                         :
                         `<select name="ApptTypeId" class="new-appt-input custom-btn mt-2">
-                            ${publicServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === newApptDetails.ApptTypeId}>${service.Name}</option>`)}
+                            ${publicServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === calModalState.newApptDetails.ApptTypeId}>${service.Name}</option>`)}
                         </select>`
                     }`
 
@@ -338,21 +339,18 @@ export function renderApptModal(state, setDisplayService, refetch) {
             $('.appts-container').addClass('hide');
             $('#cal-modal-body').append(`
             <div id='adding-container' class="mt-2 fs-4 col-11 d-flex flex-wrap align-items-center">
-            <h3 class="col-12 text-center">Add Available Time</h3>
-            <div class= "d-flex justify-content-evenly col-12 my-2">
-            <button id='confirm-add' type="button" class="custom-btn success-btn fs-5">Confirm Time</button>
-            <button id='cancel-add' type="button" class="custom-btn danger-btn fs-5">Cancel</button>
-            </div >
-            </div> `);
+                <h3 class="col-12 text-center">Add Available Time</h3>
+                <div class= "d-flex justify-content-evenly col-12 my-2">
+                    <button id='confirm-add' type="button" class="custom-btn success-btn fs-5">Confirm Time</button>
+                    <button id='cancel-add' type="button" class="custom-btn danger-btn fs-5">Cancel</button>
+                </div>
+            </div>`);
 
             timeSelector()
             $('#confirm-add').on('click', addAppt);
             $('#cancel-add').on('click', () => setAddingAppts(false))
         } else {
             calModalState.addingAppts = false;
-            $('.appts-container').removeClass('hide');
-            $('#adding-container').remove();
-            $('#time-selector').remove();
             clearStates();
         }
     }
@@ -505,13 +503,15 @@ export function renderApptModal(state, setDisplayService, refetch) {
     }
     );
 
-    $('#adding-btn').on('click', () => {
-        console.log(displayService, appts, date);
-
-        setAddingAppts(true)
+    $('#adding-btn').off('click').on('click', () => {
+        if (!calModalState.addingAppts) {
+            setAddingAppts(true)
+        }
     });
 
-    $('button[data-bs-dismiss="modal"]').on('click', () => {
+    $('button[data-bs-dismiss="modal"]').off('click').on('click', () => {
+        $('.modal-title').empty();
+        $('#cal-modal-body').empty();
         clearStates();
     });
 }
