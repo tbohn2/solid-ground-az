@@ -27,6 +27,14 @@
 
         @await Html.PartialAsync("~/Views/Admin/Shared/_CalendarModal.cshtml")
 
+</div>
+
+@section Scripts {
+        <script src="~/lib/node-calendar/node-calendar.js"></script>
+        <script type="module" src="~/js/admin/calendar.js"></script>
+        <script type="module" src="~/js/admin/calendarModal.js"></script>
+}
+
         @* <div class={`col-12 mt-3 d-flex align-items-center justify-content-evenly ${mobile && 'flex-column' }`}>
         <button id="newApptBtn" class="custom-btn fs-4 my-2 col-md-4 col-xl-3 col-xxl-2 col-12"
         data-bs-toggle="modal" data-bs-target="#newApptsModal">Add to Schedule</button>
@@ -41,9 +49,3 @@
     currentMonth={currentMonth} currentYear={currentYear} setLoading={setLoading} setError={setError}
     token={token} />
     <ServicesModal services={services} getServices={getServices} /> *@
-</div>
-
-@section Scripts {
-    <script src="~/lib/node-calendar/node-calendar.js"></script>
-    <script type="module" src="~/js/admin/calendar.js"></script>
-}
