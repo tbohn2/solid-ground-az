@@ -4,7 +4,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
     let services = state.services;
     let displayService = state.displayService;
     let appts = state.dayAppts;
-    let date = state.date;
+    let date = state.displayDate;
     let month = state.month;
     let year = state.year;
     let token = state.token;
@@ -146,7 +146,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
 
     }
 
-    const addAppt = async () => {
+    async function addAppt() {
         showLoading();
         hideError();
         // "DateTime": "2024-04-28 14:00:00"
@@ -186,7 +186,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
         }
     }
 
-    const editAppt = async () => {
+    async function editAppt() {
         showLoading();
         hideError();
 
@@ -226,7 +226,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
         }
     }
 
-    const approveAppt = async () => {
+    async function approveAppt() {
         showLoading();
         hideError();
         try {
@@ -253,7 +253,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
         }
     }
 
-    const denyAppt = async () => {
+    async function denyAppt() {
         showLoading();
         hideError();
         try {
@@ -280,7 +280,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
         }
     }
 
-    const completeAppt = async () => {
+    async function completeAppt() {
         showLoading();
         hideError();
         try {
@@ -305,7 +305,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
         }
     }
 
-    const deleteAppt = async () => {
+    async function deleteAppt() {
         showLoading();
         calModalState.deletingAppt = false;
         hideError();
@@ -417,38 +417,41 @@ export function renderApptModal(state, setDisplayService, refetch) {
     }
 
     function toggleDetails(appt) {
-        calModalState.apptDetails = (calModalState.apptDetails === appt) ? null : appt;
-
-        const time = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-
         if (calModalState.apptDetails === appt) {
             $('.appt-details').remove();
         } else {
+            calModalState.apptDetails = (calModalState.apptDetails === appt) ? null : appt;
+            const time = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
             const client = calModalState.clients[appt.Id] ? calModalState.clients[appt.Id] : null;
+
 
             $(`#appt-card-${appt.Id}`).append(`
         <div class='appt-details pt-2 col-12 text-center fade-in'>
             <h2 class="fs-5">Status: <span class="text-purple">${statuses[appt.Status]}</span></h2>
-            ${displayService &&
-                `<div>
+            ${displayService.Id ?
+                    `<div>
                 <h2 class="fs-5">Class Name: <span class="text-purple">${displayService.Name}</span></h2>
                 <h2 class="fs-5">Price: <span class="text-purple">${displayService.Price}</span></h2>
                 <h2 class="fs-5">Duration: <span class="text-purple">${displayService.Duration} min</span></h2>
-            </div>`}
+            </div>`
+                    : ''
+                }
             <h2 class="time fs-5">Time: <span class="text-purple">${time}</span></h2>
-            ${client &&
-                `<div class="my-2">
+            ${client ?
+                    `<div class="my-2">
                 <h2 class="text-decoration-underline">Client Information</h2>
                 <p class="fs-5 m-0 text-purple fw-bold">${client.Name}</p>
                 <p class="fs-5 m-0 text-purple fw-bold">${client.Phone.includes('-') ? client.Phone : `${client.Phone.slice(0, 3)} - ${client.Phone.slice(3, 6)} - ${client.Phone.slice(6)}`}</p>
                 <p class="fs-5 m-0 text-purple fw-bold">${client.Email}</p>
             </div>`
+                    : ''
                 }
-            ${appt.Status === 1 &&
-                `<div class="d-flex justify-content-evenly my-3">
+            ${appt.Status === 1 ?
+                    `<div class="d-flex justify-content-evenly my-3">
                 <button type="button" class="custom-btn success-btn fs-5 col-3" onClick={approveAppt}>Approve</button>
                 <button type="button" class="custom-btn danger-btn fs-5 col-3" onClick={denyAppt}>Deny</button>
             </div>`
+                    : ''
                 }            
             <div class="default-buttons d-flex flex-wrap justify-content-evenly mt-3 col-12">
                 <button id='set-complete' type="button" class="custom-btn success-btn col-12 col-md-4 fs-5 mb-3" onClick={completeAppt}>Set Complete</button>
@@ -459,17 +462,16 @@ export function renderApptModal(state, setDisplayService, refetch) {
         `)
 
             $('#set-complete').on('click', completeAppt);
-            $('#enable-edit').on('click', setEditing(true));
-            $('#enable-delete').on('click', setDeleting(true));
+            $('#enable-edit').on('click', () => setEditing(true));
+            $('#enable-delete').on('click', () => setDeleting(true));
         }
     }
 
-    $('.modal-title').text(dateDisplay);
+    $('#apptsModalLabel').text(dateDisplay);
 
     $('#cal-modal-body').append(`
-    ${calModalState.appointments.length === 0 && `<h2 class="fs-5">Add Appointments Below</h2>`}
+    ${calModalState.appointments.length === 0 ? `<h2 class="fs-5">Add Appointments Below</h2>` : ''}
     ${calModalState.appointments.map((appt, index) => {
-
         if (appt.Client) {
             calModalState.clients[appt.Id] = appt.Client // Store client info in state
         }
@@ -496,20 +498,20 @@ export function renderApptModal(state, setDisplayService, refetch) {
     })}
  `);
 
-    $('.appt-card-header').on('click', () => {
+    $('.appt-card-header').on('click', function () {
         const apptId = $(this).attr('id');
-        const appt = calModalState.appointments.find(appt => appt.Id === apptId);
+        const appt = calModalState.appointments.find(appt => appt.Id === parseInt(apptId));
         toggleDetails(appt)
     }
     );
 
-    $('#adding-btn').off('click').on('click', () => {
+    $('#adding-btn').off('click').on('click', function () {
         if (!calModalState.addingAppts) {
             setAddingAppts(true)
         }
     });
 
-    $('button[data-bs-dismiss="modal"]').off('click').on('click', () => {
+    $('button[data-bs-dismiss="modal"]').off('click').on('click', function () {
         $('.modal-title').empty();
         $('#cal-modal-body').empty();
         clearStates();
