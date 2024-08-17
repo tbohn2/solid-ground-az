@@ -156,10 +156,9 @@ async function renderCalendar() {
         const apptId = $(this).attr('id');
         const date = $(this).attr('data-date');
         const thisDayAppts = state.appointments[date] || [];
-        // Id is probably a string, so use == instead of ===
-        const appt = thisDayAppts.find(appt => appt.Id === apptId);
+        const appt = thisDayAppts.find(appt => appt.Id === parseInt(apptId));
         state.dayAppts = [appt];
-        state.displayService = state.services.find(service => service.Id === appt.ApptTypeId);
+        state.displayService = appt.ApptTypeId ? state.services.find(service => service.Id === appt.ApptTypeId) : {};
         state.displayDate = date;
         renderApptModal(state, setDisplayService, renderCalendar);
     })
