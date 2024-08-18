@@ -101,21 +101,21 @@ export function renderApptModal(state, setDisplayService, refetch) {
         <div id='time-selector' class="d-flex flex-column col-12 justify-content-center align-items-center my-2">
             <div class="d-flex col-12 justify-content-center align-items-center">
                 <select name="Hour" class="new-appt-input custom-btn mx-1">
-                    ${hours.map((hour, index) => `<option key=${index} value=${hour} selected=${hour === calModalState.newApptDetails.Hour ? 'selected' : undefined}>${hour}</option>`)}
+                    ${hours.map((hour, index) => `<option key=${index} value=${hour} ${hour === calModalState.newApptDetails.Hour ? 'selected' : ''}>${hour}</option>`)}
                 </select>
                 <p class="d-flex align-items-center my-0">:</p>
                 <select name="Minutes" class="new-appt-input custom-btn mx-1">
-                    ${minutes.map((minute, index) => `<option key=${index} value=${minute} selected=${minute === calModalState.newApptDetails.Minutes ? 'selected' : undefined}>${minute}</option>`)}
+                    ${minutes.map((minute, index) => `<option key=${index} value=${minute} ${minute === calModalState.newApptDetails.Minutes ? 'selected' : ''}>${minute}</option>`)}
                 </select>
                 <select name="MeridiemAM" class="new-appt-input custom-btn">
-                    <option value="AM" selected=${calModalState.newApptDetails.MeridiemAM}>AM</option>
-                    <option value="PM" selected=${!calModalState.newApptDetails.MeridiemAM}>PM</option>
+                    <option value="AM" selected>AM</option>
+                    <option value="PM">PM</option>
                 </select>
             </div>
             ${calModalState.addingAppts ?
                 `<select id='status-select' name="Status" class="new-appt-input custom-btn mt-2">
-                        <option value='4' selected=${calModalState.newApptDetails.Status === 4}>Public</option>
-                        <option value='0' selected=${calModalState.newApptDetails.Status !== 4}>Private</option>
+                    <option value='0' selected>Private</option>
+                    <option value='4'>Public</option>
                 </select>` :
                 ``
             }
@@ -128,11 +128,11 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 $('#time-selector').append(
                     `${calModalState.newApptDetails.Status !== 4 ? // Service not Public (has Status 1, 2, or 3)
                         `<select name="ApptTypeId" class="new-appt-input custom-btn mt-2">
-                            ${privateServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === calModalState.newApptDetails.ApptTypeId}>${service.Name}</option>`)}
+                            ${privateServices.map((service, index) => `<option key=${index} value=${service.Id} ${service.Id === calModalState.newApptDetails.ApptTypeId ? 'selected' : ''}>${service.Name}</option>`)}
                         </select>`
                         :
                         `<select name="ApptTypeId" class="new-appt-input custom-btn mt-2">
-                            ${publicServices.map((service, index) => `<option key=${index} value=${service.Id} selected=${service.Id === calModalState.newApptDetails.ApptTypeId}>${service.Name}</option>`)}
+                            ${publicServices.map((service, index) => `<option key=${index} value=${service.Id} ${service.Id === calModalState.newApptDetails.ApptTypeId ? 'selected' : ''}>${service.Name}</option>`)}
                         </select>`
                     }`
 
@@ -156,7 +156,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
 
         const newAppt = {
             AdminId: adminId,
-            DateTime: `${year} - ${month} - ${date} ${newHour}: ${calModalState.newApptDetails.Minutes}:00`,
+            DateTime: `${year}-${month}-${date} ${newHour}:${calModalState.newApptDetails.Minutes}:00`,
             // Server uses ApptType to determine status Available or Public
             ApptTypeId: calModalState.newApptDetails.ApptTypeId,
             Status: calModalState.newApptDetails.Status
