@@ -179,6 +179,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 hideLoading();
                 clearStates();
                 refetch();
+                $('#apptsModal').modal('hide');
             }
             if (!response.ok) {
                 hideLoading();
@@ -200,25 +201,25 @@ export function renderApptModal(state, setDisplayService, refetch) {
         // "DateTime": "2024-04-28 14:00:00"
         let newHour = calModalState.newApptDetails.Hour;
         if (calModalState.newApptDetails.MeridiemAM === false) {
-            newHour += 12;
+            newHour === 12 ? newHour = '00' : newHour += 12;
         }
         try {
             const response = await fetch(`http://localhost:5062/api/editAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({
                     Id: calModalState.apptDetails.Id,
-                    DateTime: `${year}-${month}-${date} ${newHour}:${calModalState.newApptDetails.Minutes}:00`,
+                    DateTime: `${year}-${month}-${date} ${newHour}:${calModalState.newApptDetails.Minutes == '0' ? '00' : calModalState.newApptDetails.Minutes}:00`,
                     ApptTypeId: calModalState.newApptDetails.ApptTypeId
                 }),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             });
             if (response.ok) {
                 const appt = await response.json();
-                hideLoading();
                 clearStates();
                 refetch();
                 calModalState.appointments = [appt]
-                setApptDetails(appt);
+                toggleDetails(appt);
+                $(`#${appt.Id} .time`).text(new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }));
             }
             if (!response.ok) {
                 hideLoading();
@@ -326,6 +327,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 hideLoading();
                 clearStates();
                 refetch();
+                $('#apptsModal').modal('hide');
             }
             if (!response.ok) {
                 hideLoading();
@@ -423,7 +425,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
             <div id='deleting-container' class="mt-2 fs-4 col-12 pink-border d-flex flex-column align-items-center">
                 <h3>Are you sure you want to delete this appointment?</h3>
                 <div class="d-flex justify-content-evenly col-12">
-                    <button id="confirm-del" type="button" class="custom-btn danger-btn fs-5 my-2" data-bs-dismiss="modal">Confirm Delete</button>
+                    <button id="confirm-del" type="button" class="custom-btn danger-btn fs-5 my-2">Confirm Delete</button>
                     <button id="cancel-del" type="button" class="custom-btn fs-5 my-2">Cancel</button>
                 </div>
             </div>
@@ -481,9 +483,9 @@ export function renderApptModal(state, setDisplayService, refetch) {
                     : ''
                 }            
             <div id='default-buttons' class="d-flex flex-wrap justify-content-evenly mt-3 col-12">
-                <button id='set-complete' type="button" class="custom-btn success-btn col-12 col-md-4 fs-5 mb-3">Set Complete</button>
+                ${client ? `<button id='set-complete' type="button" class="custom-btn success-btn col-12 col-md-3 fs-5 mb-3">Set Complete</button>` : ''}
                 <button id='enable-edit' type="button" class="custom-btn col-12 col-md-3 fs-5 mb-3">Edit</button>
-                <button id='enable-delete' type="button" class="custom-btn danger-btn col-12 col-md-4 fs-5 mb-3">Delete</button>
+                <button id='enable-delete' type="button" class="custom-btn danger-btn col-12 col-md-3 fs-5 mb-3">Delete</button>
             </div>
         </div>    
         `)
@@ -515,14 +517,14 @@ export function renderApptModal(state, setDisplayService, refetch) {
             `<div class="appts-container d-flex flex-column align-items-center col-11">
             <div id=${"appt-card-" + appt.Id} class="appt-card col-12 px-1 mt-3 d-flex flex-wrap align-items-center">
                 <div id=${appt.Id} class="appt-card-header text-purple col-12 d-flex px-1">
-                    <h2 class="fs-5 my-1 col-3">${time}</h2>
+                    <h2 class="time fs-5 my-1 col-3">${time}</h2>
                     <h2 class="fs-5 my-1 col-6 text-center">${display}</h2>
                     <h2 class="my-1 col-3"></h2>
                 </div>
             </div>
         </div>`
         )
-    })}
+    }).join('')}
  `);
 
     $('.appt-card-header').on('click', function () {
@@ -538,7 +540,7 @@ export function renderApptModal(state, setDisplayService, refetch) {
         }
     });
 
-    $('button[data-bs-dismiss="modal"]').off('click').on('click', function () {
+    $('#apptsModal').on('hidden.bs.modal', function () {
         $('.modal-title').empty();
         $('#cal-modal-body').empty();
         clearStates();
