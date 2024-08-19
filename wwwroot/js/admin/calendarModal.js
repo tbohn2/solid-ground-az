@@ -1,5 +1,3 @@
-import auth from './auth.js';
-
 export function renderApptModal(state, setDisplayService, refetch) {
     let services = state.services;
     let displayService = state.displayService;
