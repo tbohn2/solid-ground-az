@@ -21,7 +21,8 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
     const years = getYears();
 
     const newApptsState = {
-        dates: [],
+        startDates: [],
+        endDates: [],
         newHourDisplay: '12',
         newMinute: '00',
         newMeridiem: 'AM',
@@ -36,47 +37,32 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
         checkedDays: [],
     }
 
-    useEffect(() => {
-        const daysInMonth = new Date(startYear, months.indexOf(startMonth) + 1, 0).getDate();
-        let dates = [];
-        for (let i = 1; i <= daysInMonth; i++) {
-            dates.push(i);
-        }
-        setDates(dates);
-    }, [startMonth, startYear]);
-
-    useEffect(() => {
-        if (newApptStatus === 4) {
-            setNewApptTypeId(initialServiceId);
-        }
-    }, [newApptStatus]);
-
-    const clearStates = () => {
-        setnewHourDisplay('12');
-        setNewMinute('00');
-        setStartDate(currentDate);
-        setStartMonth(months[currentMonth - 1]);
-        setStartYear(currentYear);
-        setEndDate(currentDate);
-        setEndMonth(months[currentMonth - 1]);
-        setEndYear(currentYear);
-        setNewApptStatus(0);
-        setNewApptTypeId(0);
-        setCheckedDays([]);
+    function clearStates() {
+        // setnewHourDisplay('12');
+        // setNewMinute('00');
+        // setStartDate(currentDate);
+        // setStartMonth(months[currentMonth - 1]);
+        // setStartYear(currentYear);
+        // setEndDate(currentDate);
+        // setEndMonth(months[currentMonth - 1]);
+        // setEndYear(currentYear);
+        // setNewApptStatus(0);
+        // setNewApptTypeId(0);
+        // setCheckedDays([]);
     };
 
-    const handleCheckedDay = (e) => {
+    function handleCheckedDay(e) {
         const day = e.target.id;
         if (e.target.checked) {
-            setCheckedDays([...checkedDays, day]);
+            newApptsState.checkedDays = [...newApptsState.checkedDays, day];
         }
         if (!e.target.checked) {
-            const newCheckedDays = checkedDays.filter(checkedDay => checkedDay !== day);
-            setCheckedDays(newCheckedDays);
+            const newCheckedDays = newApptsState.checkedDays.filter(checkedDay => checkedDay !== day);
+            newApptsState.checkedDays = newCheckedDays;
         }
     };
 
-    const createAppts = async () => {
+    async function createAppts() {
         setLoading(true);
         setError('');
         // "DateTime": "2024-04-28 14:00:00"
@@ -131,4 +117,122 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
             setError('An error occurred while making request. Please try again later.');
         }
     };
+
+    $('#day-checks').append(
+        days.map(day =>
+            `<div key=${day}>
+                <input type="checkbox" class="day-checkbox" id=${day} ${newApptsState.checkedDays.includes(day) ? "checked" : ""}/>
+                <label class="d-flex justify-content-center align-items-center" for=${day}>${day}</label>
+            </div>`
+        ).join('')
+    )
+
+    $('.day-checkbox').change((e) => handleCheckedDay(e));
+
+    $('#newHourDisplay').append(
+        hours.map(hour =>
+            `<option key=${hour} value=${hour} ${hour == newApptsState.newHourDisplay ? "selected" : ""}>${hour}</option>`
+        ).join('')
+    );
+
+    $('#newMinute').append(
+        minutes.map(minute =>
+            `<option key=${minute} value=${minute} ${minute == newApptsState.newMinute ? "selected" : ""}>${minute}</option>`
+        ).join('')
+    );
+
+    function renderDateSelects(start, mSelectId, dSelectId, ySelectId) {
+        $(`#${mSelectId}`).empty();
+        $(`#${dSelectId}`).empty();
+        $(`#${ySelectId}`).empty();
+
+        let dates = newApptsState.startDates;
+        let monthState = newApptsState.startMonth;
+        let dateState = newApptsState.startDate;
+        let yearState = newApptsState.startYear;
+
+        if (!start) {
+            dates = newApptsState.endDates;
+            monthState = newApptsState.endMonth;
+            dateState = newApptsState.endDate;
+            yearState = newApptsState.endYear;
+        }
+
+        $(`#${mSelectId}`).append(`
+            ${months.map((month, index) => `<option key=${index} value=${month} ${month === monthState ? 'selected' : ''}>${month}</option>`)}
+        `)
+
+        $(`#${dSelectId}`).append(`
+            ${dates.map((date, index) => `<option key=${index} value=${date} ${date === dateState ? 'selected' : ''}>${date}</option>`)}
+        `)
+
+        $(`#${ySelectId}`).append(`
+            ${years.map((year, index) => `<option key=${index} value=${year} ${year === yearState ? 'selected' : ''}>${year}</option>`)}
+        `)
+    }
+
+    function generateDates(name) {
+        let month = newApptsState.startMonth;
+        let year = newApptsState.startYear;
+        if (name === 'endMonth' || name === 'endYear') {
+            month = newApptsState.endMonth;
+            year = newApptsState.endYear;
+        }
+
+        const daysInMonth = new Date(year, months.indexOf(month) + 1, 0).getDate();
+        let dates = [];
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            dates.push(i);
+        }
+
+        if (name === 'startMonth' || name === 'startYear') {
+            newApptsState.startDates = dates;
+            renderDateSelects(true, 'startMonth', 'startDate', 'startYear');
+        } else if (name === 'endMonth' || name === 'endYear') {
+            newApptsState.endDates = dates;
+            renderDateSelects(false, 'endMonth', 'endDate', 'endYear');
+        }
+    };
+
+    renderDateSelects(true, 'startMonth', 'startDate', 'startYear');
+    renderDateSelects(false, 'endMonth', 'endDate', 'endYear');
+
+    generateDates('startMonth');
+    generateDates('endMonth');
+
+    $('#newApptStatus').change(function () {
+        const status = parseInt($(this).val());
+
+        if (status === 4) {
+            newApptsState.newApptTypeId = initialServiceId;
+
+            $('#status-select').after(`
+                <select id="apptType-select" name="ApptTypeId" class="custom-btn mt-2">
+                    ${publicServices.forEach((service, index) =>
+                `<option key=${index} value=${service.Id} ${service.Id === newApptTypeId ? "selected" : ""}>${service.Name}</option>`)}
+                </select>
+                `);
+
+            $('#status-select').change((e) => handleNewState(e));
+        } else {
+            $('#apptType-select').remove();
+        }
+    });
+
+    $('select').change(function handleNewState(e) {
+        const name = e.target.id;
+        const value = e.target.value;
+        newApptsState[name] = value;
+
+        if (name === 'startMonth' || name === 'endMonth' || name === 'startYear' || name === 'endYear') {
+            generateDates(name);
+        }
+    });
+
+    $('#create-appts-btn').click(() => createAppts());
+
+    $('#newApptsModal').on('hidden.bs.modal', function () {
+        clearStates();
+    });
 }
