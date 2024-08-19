@@ -453,7 +453,6 @@ export function renderApptModal(state, setDisplayService, refetch) {
             const time = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
             const client = calModalState.clients[appt.Id] ? calModalState.clients[appt.Id] : null;
 
-
             $(`#appt-card-${appt.Id}`).append(`
         <div class='appt-details pt-2 col-12 text-center fade-in'>
             <h2 class="fs-5">Status: <span class="text-purple">${statuses[appt.Status]}</span></h2>
@@ -477,15 +476,15 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 }
             ${appt.Status === 1 ?
                     `<div class="d-flex justify-content-evenly my-3">
-                <button type="button" class="custom-btn success-btn fs-5 col-3">Approve</button>
-                <button type="button" class="custom-btn danger-btn fs-5 col-3">Deny</button>
+                <button type="button" id='approve-btn' class="custom-btn success-btn fs-5 col-3">Approve</button>
+                <button type="button" id='deny-btn' class="custom-btn danger-btn fs-5 col-3">Deny</button>
             </div>`
                     : ''
                 }            
             <div id='default-buttons' class="d-flex flex-wrap justify-content-evenly mt-3 col-12">
-                ${client ? `<button id='set-complete' type="button" class="custom-btn success-btn col-12 col-md-3 fs-5 mb-3">Set Complete</button>` : ''}
-                <button id='enable-edit' type="button" class="custom-btn col-12 col-md-3 fs-5 mb-3">Edit</button>
-                <button id='enable-delete' type="button" class="custom-btn danger-btn col-12 col-md-3 fs-5 mb-3">Delete</button>
+            <button id='enable-edit' type="button" class="custom-btn col-12 col-md-3 fs-5 mb-3">Edit</button>
+            <button id='enable-delete' type="button" class="custom-btn danger-btn col-12 col-md-3 fs-5 mb-3">Delete</button>
+            ${client && appt.Status === 2 ? `<button id='set-complete' type="button" class="custom-btn success-btn col-12 col-md-8 fs-5 mb-3">Set Complete</button>` : ''}
             </div>
         </div>    
         `)
@@ -493,6 +492,8 @@ export function renderApptModal(state, setDisplayService, refetch) {
             $('#set-complete').on('click', completeAppt);
             $('#enable-edit').on('click', () => setEditing(true));
             $('#enable-delete').on('click', () => setDeleting(true));
+            $('#approve-btn').on('click', approveAppt);
+            $('#deny-btn').on('click', denyAppt);
         }
     }
 
