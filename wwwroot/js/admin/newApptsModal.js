@@ -38,17 +38,27 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
     }
 
     function clearStates() {
-        // setnewHourDisplay('12');
-        // setNewMinute('00');
-        // setStartDate(currentDate);
-        // setStartMonth(months[currentMonth - 1]);
-        // setStartYear(currentYear);
-        // setEndDate(currentDate);
-        // setEndMonth(months[currentMonth - 1]);
-        // setEndYear(currentYear);
-        // setNewApptStatus(0);
-        // setNewApptTypeId(0);
-        // setCheckedDays([]);
+        newApptsState.startDates = [];
+        newApptsState.endDates = [];
+        newApptsState.newHourDisplay = '12';
+        newApptsState.newMinute = '00';
+        newApptsState.newMeridiem = 'AM';
+        newApptsState.startDate = currentDate;
+        newApptsState.startMonth = months[currentMonth - 1];
+        newApptsState.startYear = currentYear;
+        newApptsState.endDate = currentDate;
+        newApptsState.endMonth = months[currentMonth - 1];
+        newApptsState.endYear = currentYear;
+        newApptsState.newApptStatus = 0;
+        newApptsState.newApptTypeId = 0;
+        newApptsState.checkedDays = [];
+        $('#day-checks').empty();
+        $('#apptType-select').remove();
+        $('#newApptStatus').val(0);
+        $('#newHourDisplay').val('12');
+        $('#newMinute').val('00');
+        $('#newMeridiem').val('AM');
+        $('#day-checks').find('input').prop('checked', false);
     };
 
     function handleCheckedDay(e) {
@@ -66,12 +76,12 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
         setLoading(true);
         setError('');
         // "DateTime": "2024-04-28 14:00:00"
-        const selectedDays = checkedDays;
-        let hour = newMeridiem === 'PM' && newHourDisplay !== '12' ? parseInt(newHourDisplay) + 12 : parseInt(newHourDisplay);
-        hour = hour === 12 && newMeridiem === 'AM' ? '00' : hour;
-        const minute = parseInt(newMinute);
-        const startDateTime = new Date(startYear, months.indexOf(startMonth), startDate, hour, minute);
-        const endDateTime = new Date(endYear, months.indexOf(endMonth), endDate, hour, minute);
+        const selectedDays = newApptsState.checkedDays;
+        let hour = newApptsState.newMeridiem === 'PM' && newApptsState.newHourDisplay !== '12' ? parseInt(newApptsState.newHourDisplay) + 12 : parseInt(newApptsState.newHourDisplay);
+        hour = hour === 12 && newApptsState.newMeridiem === 'AM' ? '00' : hour;
+        const minute = parseInt(newApptsState.newMinute);
+        const startDateTime = new Date(newApptsState.startYear, months.indexOf(newApptsState.startMonth), newApptsState.startDate, hour, minute);
+        const endDateTime = new Date(newApptsState.endYear, months.indexOf(newApptsState.endMonth), newApptsState.endDate, hour, minute);
 
         const createApptArray = () => {
             const appts = [];
@@ -81,9 +91,9 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
                     if (date.getDay() === days.indexOf(day) + 1) {
                         const newAppt = {
                             AdminId: adminId,
-                            DateTime: `${date.toISOString().slice(0, 10)}T${hour}:${newMinute}:00`,
-                            ApptTypeId: newApptStatus === 0 ? null : newApptTypeId,
-                            Status: newApptStatus
+                            DateTime: `${date.toISOString().slice(0, 10)}T${hour}:${newApptsState.newMinute}:00`,
+                            ApptTypeId: newApptsState.newApptStatus === 0 ? null : newApptsState.newApptTypeId,
+                            Status: newApptsState.newApptStatus
                         }
                         appts.push(newAppt);
                     }
@@ -207,12 +217,12 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
         if (status === 4) {
             newApptsState.newApptTypeId = initialServiceId;
 
-            $('#status-select').after(`
+            $('#newApptStatus').after(`
                 <select id="apptType-select" name="ApptTypeId" class="custom-btn mt-2">
-                    ${publicServices.forEach((service, index) =>
-                `<option key=${index} value=${service.Id} ${service.Id === newApptTypeId ? "selected" : ""}>${service.Name}</option>`)}
-                </select>
-                `);
+                    ${publicServices.map((service, index) =>
+                `<option key=${index} value=${service.Id} ${service.Id === newApptsState.newApptTypeId ? "selected" : ""}>${service.Name}</option>`).join('')}
+                </select>`
+            );
 
             $('#status-select').change((e) => handleNewState(e));
         } else {
