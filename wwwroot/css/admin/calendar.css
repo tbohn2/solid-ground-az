@@ -173,4 +173,8 @@ textarea {
         font-size: 25px;
         font-weight: 300;
     }
+
+    #modal-btns {
+        flex-direction: column;
+    }
 }

@@ -1,5 +1,6 @@
 import auth from './auth.js';
 import { renderApptModal } from './calendarModal.js';
+import { renderNewApptsModal } from './newApptsModal.js';
 
 // Manage logged in state to redirect to login page if not logged in
 
@@ -29,14 +30,14 @@ function setDisplayService(service) {
     state.displayService = service;
 }
 
-function loadingPage() {
-    $('#calendar-header').append(`<div class="spinner-border" role="status"></div>`);
+function setLoading(loading) {
+    if (loading) {
+        $('#calendar-header').append(`<div class="spinner-border" role="status"></div>`);
+    }
+    else {
+        $('.spinner-border').remove();
+    }
 }
-
-function removeLoading() {
-    $('.spinner-border').remove();
-}
-
 function displayError(error) {
     $('#calendar-header').append(`<div class="alert alert-danger mx-2 my-0 p-2">${error}</div>`);
 }
@@ -53,12 +54,12 @@ async function getServices() {
 
 async function getAppointments() {
     state.appointments = {};
-    loadingPage();
+    setLoading(true);
     removeError();
     try {
         const response = await fetch(`http://localhost:5062/api/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
         const data = await response.json();
-        removeLoading();
+        setLoading(false);
         if (response.ok) {
             data.forEach(appt => {
                 const date = new Date(appt.DateTime).getDate();
@@ -72,7 +73,7 @@ async function getAppointments() {
         if (!response.ok) { displayError(data) }
     } catch (error) {
         console.error(error);
-        removeLoading();
+        setLoading(false);
         displayError('An error occurred while making request. Please try again later.');
     }
 }
@@ -193,6 +194,10 @@ $('#next').click(() => {
         state.month = nextMonth;
     }
     renderCalendar();
+});
+
+$('#newApptBtn').click(() => {
+    renderNewApptsModal(renderCalendar, state.services, months, currentDate, currentMonth, currentYear, setLoading, displayError, removeError);
 });
 
 window.addEventListener('resize', () => {
