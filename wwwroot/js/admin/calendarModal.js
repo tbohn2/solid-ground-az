@@ -55,12 +55,12 @@ export function renderApptModal(state, setDisplayService, refetch) {
     }
 
     function clearStates() {
-        $('.appts-container').removeClass('hide');
         $('#adding-container').remove();
-        $('#time-selector').remove();
+        $('#editing-container').remove();
+        $('#deleting-container').remove();
 
         calModalState.newApptDetails = initialFormState;
-        calModalState.apptDetails = calModalState.appointments.length === 1 ? calModalState.appointments[0] : null;
+        calModalState.apptDetails = null;
         calModalState.addingAppts = false;
         calModalState.editingAppt = false;
         calModalState.deletingAppt = false;
@@ -97,19 +97,19 @@ export function renderApptModal(state, setDisplayService, refetch) {
     }
 
     function timeSelector() {
-        $('#adding-container h3').after(`
-        <div id='time-selector' class="d-flex flex-column col-12 justify-content-center align-items-center my-2">
+        const selector = `
+            <div id='time-selector' class="d-flex flex-column col-12 justify-content-center align-items-center my-2">
             <div class="d-flex col-12 justify-content-center align-items-center">
                 <select name="Hour" class="new-appt-input custom-btn mx-1">
-                    ${hours.map((hour, index) => `<option key=${index} value=${hour} ${hour === calModalState.newApptDetails.Hour ? 'selected' : ''}>${hour}</option>`)}
+                    ${hours.map((hour, index) => `<option key=${index} value=${hour} ${hour == calModalState.newApptDetails.Hour ? 'selected' : ''}>${hour}</option>`)}
                 </select>
                 <p class="d-flex align-items-center my-0">:</p>
                 <select name="Minutes" class="new-appt-input custom-btn mx-1">
-                    ${minutes.map((minute, index) => `<option key=${index} value=${minute} ${minute === calModalState.newApptDetails.Minutes ? 'selected' : ''}>${minute}</option>`)}
+                    ${minutes.map((minute, index) => `<option key=${index} value=${minute} ${minute == calModalState.newApptDetails.Minutes ? 'selected' : ''}>${minute}</option>`)}
                 </select>
                 <select name="MeridiemAM" class="new-appt-input custom-btn">
-                    <option value="AM" selected>AM</option>
-                    <option value="PM">PM</option>
+                    <option value="AM" ${calModalState.newApptDetails.MeridiemAM ? 'selected' : ''}>AM</option>
+                    <option value="PM" ${!calModalState.newApptDetails.MeridiemAM ? 'selected' : ''}>PM</option>
                 </select>
             </div>
             ${calModalState.addingAppts ?
@@ -119,7 +119,14 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 </select>` :
                 ``
             }
-        </div>`);
+        </div>`;
+
+        if (calModalState.addingAppts) {
+            $('#adding-container h3').after(selector);
+        } else if (calModalState.editingAppt) {
+            $(`#editing-container h3`).append(selector);
+        }
+
 
         function renderServiceSelect() {
             $('select[name="ApptTypeId"]').remove();
@@ -335,8 +342,10 @@ export function renderApptModal(state, setDisplayService, refetch) {
 
     function setAddingAppts(adding) {
         if (adding) {
+            $('#editing-container').remove();
+            toggleDetails(calModalState.apptDetails)
             calModalState.addingAppts = true;
-            $('.appts-container').addClass('hide');
+            $('.appts-container').hide();
             $('#cal-modal-body').append(`
             <div id='adding-container' class="mt-2 fs-4 col-11 d-flex flex-wrap align-items-center">
                 <h3 class="col-12 text-center">Add Available Time</h3>
@@ -346,21 +355,29 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 </div>
             </div>`);
 
-            timeSelector()
+            timeSelector();
+
             $('#confirm-add').on('click', addAppt);
             $('#cancel-add').on('click', () => setAddingAppts(false))
         } else {
             calModalState.addingAppts = false;
-            clearStates();
+            calModalState.newApptDetails = initialFormState;
+            $('#adding-container').remove();
         }
     }
 
     function setEditing(editing) {
         if (editing) {
-            $('.time').addClass('hide');
-            $('.default-buttons').addClass('hide');
+            calModalState.addingAppts = false;
+            calModalState.deletingAppt = false;
+            $('#adding-container').remove();
+            $('#deleting-container').remove();
+
+            $(`.appt-details`).hide();
+            const apptId = calModalState.apptDetails.Id
 
             const dateTime = new Date(calModalState.apptDetails.DateTime);
+            calModalState.editingAppt = true;
             calModalState.newApptDetails = {
                 Hour: dateTime.getHours() % 12 || 12,
                 Minutes: dateTime.getMinutes(),
@@ -369,36 +386,41 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 Status: calModalState.apptDetails.Status
             };
 
-            $('.time').after(`
-            <div class="mt-2 fs-5 col-12 d-flex flex-column align-items-center">
-                ${timeSelector()}
-            </div>
-        `);
 
-            $('#cal-modal-body').append(`
-            <div class="editing-buttons d-flex justify-content-evenly col-12">
-                <button id='save-edit' type="button" class="custom-btn success-btn fs-5 my-2">Save</button>
-                <button id='cancel-edit' type="button" class="custom-btn fs-5 my-2">Cancel</button>
-            </div>
-        `);
+            $(`#appt-card-${apptId}`).append(`
+                <div id='editing-container' class="mt-2 fs-4 col-12 d-flex flex-wrap align-items-center">
+                    <h3 class="col-12 text-center">Edit Appointment</h3>
+                    <div class="editing-buttons d-flex justify-content-evenly col-12">
+                        <button id='save-edit' type="button" class="custom-btn success-btn fs-5 my-2">Save</button>
+                        <button id='cancel-edit' type="button" class="custom-btn fs-5 my-2">Cancel</button>
+                    </div>
+                </div>
+                `);
+
+            timeSelector();
 
             $('#save-edit').on('click', editAppt);
-            $('#cancel-edit').on('click', setEditing(false));
+            $('#cancel-edit').on('click', () => setEditing(false));
         } else {
-            $('.time').removeClass('hide');
-            $('.default-buttons').removeClass('hide');
+            $(`.appt-details`).show();
+            $('#editing-container').remove();
+            calModalState.editingAppt = false;
             calModalState.newApptDetails = initialFormState;
         }
     }
 
     const setDeleting = (deleting) => {
-        calModalState.deletingAppt = !calModalState.deletingAppt;
+        const apptId = calModalState.apptDetails.Id
+        calModalState.deletingAppt = deleting;
         $('.deleting-buttons').remove();
-        $('.default-buttons').addClass('hide');
 
         if (deleting) {
-            $('#cal-modal-body').append(`
-            <div class="mt-2 fs-4 col-12 pink-border d-flex flex-column align-items-center">
+            $('#set-complete').hide();
+            $('#enable-edit').hide();
+            $('#enable-delete').hide();
+
+            $(`#appt-card-${apptId}`).append(`
+            <div id='deleting-container' class="mt-2 fs-4 col-12 pink-border d-flex flex-column align-items-center">
                 <h3>Are you sure you want to delete this appointment?</h3>
                 <div class="d-flex justify-content-evenly col-12">
                     <button id="confirm-del" type="button" class="custom-btn danger-btn fs-5 my-2" data-bs-dismiss="modal">Confirm Delete</button>
@@ -408,19 +430,24 @@ export function renderApptModal(state, setDisplayService, refetch) {
             `);
 
             $('#confirm-del').on('click', deleteAppt);
-            $('#cancel-del').on('click', setDeleting(false));
+            $('#cancel-del').on('click', () => setDeleting(false));
         }
         else {
-            $('.default-buttons').removeClass('hide');
-            $('.deleting-buttons').remove();
+            $('#set-complete').show();
+            $('#enable-edit').show();
+            $('#enable-delete').show();
+            $('#deleting-container').remove();
         }
     }
 
     function toggleDetails(appt) {
         if (calModalState.apptDetails === appt) {
+            clearStates();
+            calModalState.apptDetails = null;
             $('.appt-details').remove();
         } else {
-            calModalState.apptDetails = (calModalState.apptDetails === appt) ? null : appt;
+            $('.appt-details').remove();
+            calModalState.apptDetails = appt;
             const time = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
             const client = calModalState.clients[appt.Id] ? calModalState.clients[appt.Id] : null;
 
@@ -448,15 +475,15 @@ export function renderApptModal(state, setDisplayService, refetch) {
                 }
             ${appt.Status === 1 ?
                     `<div class="d-flex justify-content-evenly my-3">
-                <button type="button" class="custom-btn success-btn fs-5 col-3" onClick={approveAppt}>Approve</button>
-                <button type="button" class="custom-btn danger-btn fs-5 col-3" onClick={denyAppt}>Deny</button>
+                <button type="button" class="custom-btn success-btn fs-5 col-3">Approve</button>
+                <button type="button" class="custom-btn danger-btn fs-5 col-3">Deny</button>
             </div>`
                     : ''
                 }            
-            <div class="default-buttons d-flex flex-wrap justify-content-evenly mt-3 col-12">
-                <button id='set-complete' type="button" class="custom-btn success-btn col-12 col-md-4 fs-5 mb-3" onClick={completeAppt}>Set Complete</button>
-                <button id='enable-edit' type="button" class="custom-btn col-12 col-md-3 fs-5 mb-3" onClick={toggleEditing}>Edit</button>
-                <button id='enable-delete' type="button" class="custom-btn danger-btn col-12 col-md-4 fs-5 mb-3" onClick={toggleDeleting}>Delete</button>
+            <div id='default-buttons' class="d-flex flex-wrap justify-content-evenly mt-3 col-12">
+                <button id='set-complete' type="button" class="custom-btn success-btn col-12 col-md-4 fs-5 mb-3">Set Complete</button>
+                <button id='enable-edit' type="button" class="custom-btn col-12 col-md-3 fs-5 mb-3">Edit</button>
+                <button id='enable-delete' type="button" class="custom-btn danger-btn col-12 col-md-4 fs-5 mb-3">Delete</button>
             </div>
         </div>    
         `)
