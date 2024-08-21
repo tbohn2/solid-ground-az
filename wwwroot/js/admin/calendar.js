@@ -1,6 +1,7 @@
 import auth from './auth.js';
 import { renderApptModal } from './calendarModal.js';
 import { renderNewApptsModal } from './newApptsModal.js';
+import { renderServiceModal } from './servicesModal.js';
 
 // Manage logged in state to redirect to login page if not logged in
 
