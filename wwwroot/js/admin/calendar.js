@@ -1,7 +1,7 @@
 import auth from './auth.js';
 import { renderApptModal } from './calendarModal.js';
 import { renderNewApptsModal } from './newApptsModal.js';
-import { renderServiceModal } from './servicesModal.js';
+import { renderServicesModal } from './servicesModal.js';
 
 // Manage logged in state to redirect to login page if not logged in
 
@@ -24,7 +24,6 @@ let state = {
 };
 
 let calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
-let appointments = {};
 let mobile = window.innerWidth < 768 ? true : false;
 
 function setDisplayService(service) {
@@ -199,6 +198,10 @@ $('#next').click(() => {
 
 $('#newApptBtn').click(() => {
     renderNewApptsModal(renderCalendar, state.services, months, currentDate, currentMonth, currentYear, setLoading, displayError, removeError);
+});
+
+$('#servicesBtn').click(() => {
+    renderServicesModal(state.services);
 });
 
 window.addEventListener('resize', () => {
