@@ -2,24 +2,47 @@ import auth from "../utils/auth";
 
 const token = auth.getToken()
 
-const [services, setServices] = useState([]);
-const [clients, setClients] = useState([]); // All clients
-const [displayedClients, setDisplayedClients] = useState([]); // Changes with search input
-const [displayedAppt, setDisplayedAppt] = useState({});
-const [displayDate, setDisplayDate] = useState(0);
-const [displayMonth, setDisplayMonth] = useState(0);
-const [displayYear, setDisplayYear] = useState(0);
-const [displayedService, setDisplayedService] = useState({});
-const [displayedPastAppts, setDisplayedPastAppts] = useState([]);
-const [displayClient, setDisplayClient] = useState(0);
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState('');
-const [successMessage, setSuccessMessage] = useState('');
+const clientStates = {
+    services: [],
+    clients: [],
+    displayedClients: [],
+    displayedAppt: {},
+    displayDate: 0,
+    displayMonth: 0,
+    displayYear: 0,
+    displayedService: {},
+    displayedPastAppts: [],
+    displayClient: 0,
+}
+
+function setLoading(loading) {
+    if (loading) {
+        $('#clients').prepend(`<div class="spinner-border" role="status"></div>`);
+    }
+    else {
+        $('.spinner-border').remove();
+    }
+}
+function displayError(error) {
+    $('#clients').prepend(`<div class="alert alert-danger mx-2 my-0 p-2">${error}</div>`);
+}
+
+function removeError() {
+    $('.alert').remove();
+}
+
+function displaySuccess(message) {
+    $('#clients').prepend(`<div class="alert alert-success mx-2 my-0 p-2">${message}</div>`);
+}
+
+function removeSuccess() {
+    $('.alert').remove();
+}
 
 const getServices = async () => {
     const services = await auth.getServices();
-    if (typeof services === 'string') { setError(services); return; }
-    setServices(services);
+    if (typeof services === 'string') { displayError(services); return; }
+    clientStates.services = services;
 }
 
 useEffect(() => {
@@ -27,25 +50,28 @@ useEffect(() => {
 }, []);
 
 const getService = async (appt) => {
-    const service = services.find(service => service.Id === appt.ApptTypeId);
-    setDisplayedService(service);
+    const service = clientStates.services.find(service => service.Id === appt.ApptTypeId);
+    clientStates.displayedService = service;
 }
 
 const fetchClients = async () => {
     setLoading(true);
-    setError('');
+    removeError();
     try {
         const response = await fetch('http://localhost:5062/api/clients', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
-        if (response.ok) { setClients(data); setDisplayedClients(data) }
-        if (!response.ok) { setError(data) }
+        if (response.ok) {
+            clientStates.clients = data;
+            clientStates.displayedClients = data;
+        }
+        if (!response.ok) { displayError(data) }
         setLoading(false);
     } catch (error) {
         console.error(error);
         setLoading(false);
-        setError('An error occurred while making request. Please try again later.');
+        displayError('An error occurred while making request. Please try again later.');
     }
 }
 
@@ -57,12 +83,12 @@ const payBalance = async (clientId, price) => {
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         });
         if (response.ok) {
-            setSuccessMessage('Balance cleared')
+            displaySuccess('Balance cleared')
             setTimeout(() => {
-                setSuccessMessage('');
+                removeSuccess();
             }, 2000);
         }
-        if (!response.ok) { setError('Failed to clear balance') }
+        if (!response.ok) { displayError('Failed to clear balance') }
         fetchClients();
     }
     catch (error) {
@@ -90,33 +116,33 @@ const sortAppts = (appts) => {
 }
 
 const togglePastAppts = (pastAppts, clientId) => {
-    if (clientId === displayClient) {
-        setDisplayedPastAppts([]);
-        setDisplayClient(0);
+    if (clientId === clientStates.displayClient) {
+        clientStates.displayedPastAppts = [];
+        clientStates.displayClient = 0;
     }
     else {
-        setDisplayedPastAppts(pastAppts);
-        setDisplayClient(clientId);
+        clientStates.displayedPastAppts = pastAppts;
+        clientStates.displayClient = clientId;
     }
 }
 
 const handleSearchChange = (e) => {
     const search = e.target.value;
     if (search === '') {
-        setDisplayedClients(clients);
+        clientStates.displayedClients = clientStates.clients;
         return;
     }
-    const filteredClients = clients.filter((client) => {
+    const filteredClients = clientStates.clients.filter((client) => {
         return client.Client.Name.toLowerCase().includes(search.toLowerCase()) || client.Client.Email.toLowerCase().includes(search.toLowerCase()) || client.Client.Phone.includes(search);
     });
-    setDisplayedClients(filteredClients);
+    clientStates.displayedClients = filteredClients;
 }
 
 const setModalStates = (appt) => {
-    setDisplayedAppt(appt);
     getService(appt);
     const date = new Date(appt.DateTime);
-    setDisplayDate(date.getDate());
-    setDisplayMonth(date.getMonth() + 1);
-    setDisplayYear(date.getFullYear());
+    clientStates.displayedAppt = appt;
+    clientStates.displayDate = date.getDate();
+    clientStates.displayMonth = date.getMonth() + 1;
+    clientStates.displayYear = date.getFullYear();
 }

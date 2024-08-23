@@ -4,9 +4,6 @@
 }
 
 <div id='clients' className="py-2 text-light d-flex flex-column align-items-center">
-    {loading && <div className="spinner-border fade-in" role="status"></div>}
-    {error && <div className="alert alert-danger fade-in">{error}</div>}
-    {successMessage && <div className="alert alert-success fade-in">{successMessage}</div>}
     {displayedClients.length === 0 && !loading && <div className="alert alert-info">No clients to display</div>}
     <input type="search" className="input fs-5" placeholder="Search" onChange={handleSearchChange} />
     <div className="my-2 col-12 d-flex flex-wrap justify-content-evenly">
