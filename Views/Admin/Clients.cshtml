@@ -5,74 +5,11 @@
 
 <div id='clients' className="py-2 text-light d-flex flex-column align-items-center">
     {displayedClients.length === 0 && !loading && <div className="alert alert-info">No clients to display</div>}
-    <input type="search" className="input fs-5" placeholder="Search" onChange={handleSearchChange} />
-    <div className="my-2 col-12 d-flex flex-wrap justify-content-evenly">
-        {displayedClients.map((clientInfo) => {
-        const client = clientInfo.Client
-        const clientAppts = clientInfo.Appointments
-        const phone = client.Phone.includes('-') ? client.Phone : `${client.Phone.slice(0, 3)}-${client.Phone.slice(3,
-        6)}-${client.Phone.slice(6)}`
-        const pastAppts = sortAppts(clientAppts.filter((appt) => appt.Status === 3))
-        const futureAppts = sortAppts(clientAppts.filter((appt) => appt.Status !== 3))
-        return (
-        <div key={client.Id}
-            className="bg-white text-darkgray rounded fade-in p-1 my-2 col-10 col-md-5 d-flex flex-column align-items-center">
-            <div className="col-12 d-flex flex-column align-items-center border-bottom border-light">
-                <h3 className="m-0">{client.Name}</h3>
-                <p className="m-0">{client.Email}</p>
-                <p className="m-0">{phone}</p>
-                <h3 className="text-decoration-underline mx-1">Upcoming Appointments</h3>
-                {futureAppts.length === 0 && <p>No upcoming appointments</p>}
-                {futureAppts.map((appt) => {
-                const time = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit'
-                });
-                const date = new Date(appt.DateTime).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit',
-                year: 'numeric' });
-                return (
-                <div key={appt.Id}
-                    className="client-appt custom-btn pink-border d-flex justify-content-between align-items-center col-10 col-lg-8 px-3 my-2"
-                    onClick={()=> { setModalStates(appt) }} data-bs-toggle="modal" data-bs-target="#apptsModal">
-                    <p className="fs-5 m-0 text-center">{date}</p>
-                    <p className="fs-5 m-0 text-center">{time}</p>
-                </div>
-                )
-                })}
-            </div>
-            <h3>Balance: ${client.Balance}</h3>
-            <div className="d-flex justify-content-evenly col-12 my-2">
-                <button className="custom-btn success-btn" onClick={()=> payBalance(client.Id, client.Balance)}>Clear
-                    Balance</button>
-                <button className="custom-btn" onClick={()=> togglePastAppts(pastAppts, client.Id)}>{displayClient ===
-                    client.Id ? 'Hide' : 'See'} Past Appts</button>
-            </div>
-            {displayClient === client.Id &&
-            <div className="d-flex flex-column align-items-center col-12">
-                <h3 className="text-decoration-underline">Past Appointments</h3>
-                {displayedPastAppts.length === 0 && <p>No past appointments</p>}
-                {displayedPastAppts.map((appt) => {
-                const time = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit'
-                });
-                const date = new Date(appt.DateTime).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit',
-                year: 'numeric' });
-                return (
-                <div key={appt.Id}
-                    className="client-appt custom-btn pink-border d-flex justify-content-between align-items-center col-10 col-lg-8 px-3 my-2"
-                    onClick={()=> setModalStates(appt)} data-bs-toggle='modal' data-bs-target='#apptsModal'>
-                    <p className="fs-5 m-0 text-center">{date}</p>
-                    <p className="fs-5 m-0 text-center">{time}</p>
-                </div>
-                )
-                })}
-            </div>
-            }
-        </div>
-        )
-        }
-        )}
-        <CalendarModal services={services} displayService={displayedService} setDisplayService={setDisplayedService}
+    <input id='search' type="search" className="input fs-5" placeholder="Search" onChange={handleSearchChange} />
+    
+        @* <CalendarModal services={services} displayService={displayedService} setDisplayService={setDisplayedService}
             appts={[displayedAppt]} date={displayDate} month={displayMonth} year={displayYear} refetch={fetchClients}
-            token={token} />
-    </div>
+            token={token} /> *@
 
     @await Html.PartialAsync("~/Views/Admin/Shared/_CalendarModal.cshtml")
 
