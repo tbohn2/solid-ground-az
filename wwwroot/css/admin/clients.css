@@ -1,0 +1,9 @@
+#clients {
+    overflow-y: scroll;
+    height: 85vh;
+    position: relative;
+}
+
+#clients::-webkit-scrollbar {
+    display: none;
+}

@@ -72,21 +72,8 @@
     color: var(--darkgray) !important;
 }
 
-#modal-header {
-    border-bottom: 1px solid var(--darkgray);
-    color: var(--white);
-    background-color: var(--purple2);
-}
-
 .icon {
     height: 20px;
-}
-
-.btn-close {
-    position: absolute;
-    top: 3px;
-    right: 3px;
-    color: var(--white) !important;
 }
 
 .time-option {
@@ -142,10 +129,6 @@
     border: 1px solid var(--purple) !important;
     background-color: var(--lav) !important;
     color: var(--purple) !important;
-}
-
-.spinner-border {
-    color: var(--purple);
 }
 
 #freepik-link {

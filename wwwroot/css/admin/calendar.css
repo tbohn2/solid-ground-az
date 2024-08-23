@@ -1,0 +1,180 @@
+textarea {
+    min-height: 200px;
+}
+
+#calendar {
+    padding: 45px;
+}
+
+#calendar-header {
+    border-left: 1px solid var(--gray);
+    border-right: 1px solid var(--gray);
+    border-top: 1px solid var(--gray);
+}
+
+#calendar-body {
+    min-height: 525px;
+}
+
+#calendar-weekdays {
+    border-left: 1px solid var(--gray);
+    border-right: 1px solid var(--gray);
+}
+
+#calendar-weekdays div {
+    width: 14.2857%;
+}
+
+.custom-btn {
+    color: var(--white);
+    background-color: var(--purple);
+    border: 1px solid var(--purple);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-btn:hover {
+    color: var(--purple);
+    background-color: var(--white);
+    border: 1px solid var(--purple);
+    transition: all 0.3s ease;
+}
+
+.monthNavBtn {
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--darkgray);
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--darkgray);
+}
+
+.monthNavBtn:hover {
+    color: var(--purple);
+    transition: all 0.3s ease;
+}
+
+.date {
+    width: 14.2857%;
+    height: 100px;
+    font-size: 20px;
+    position: relative;
+    border: 1px solid var(--gray);
+}
+
+.date-display {
+    align-self: flex-start;
+}
+
+.date-display:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.appts-container {
+    height: 70%;
+    overflow-y: auto;
+}
+
+.appt-dot {
+    position: relative;
+    bottom: 30px;
+    font-size: 50px;
+}
+
+.appt-time {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.appt-time:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.model-content {
+    border: 1px solid var(--darkgray) !important;
+    border-radius: 7px !important;
+    color: var(--darkgray) !important;
+}
+
+.appt-card {
+    color: var(--darkgray);
+    border: 1px solid var(--darkgray);
+    border-radius: 7px;
+}
+
+.appt-card-header {
+    cursor: pointer;
+
+}
+
+.appt-card:hover {
+    box-shadow: 0 0 10px var(--purple);
+    transition: all 0.3s ease;
+}
+
+.service-button {
+    cursor: pointer;
+}
+
+.day-checkbox {
+    display: none;
+}
+
+.day-checkbox+label {
+    color: var(--darkgray);
+    position: relative;
+    width: 50px;
+    height: 50px;
+    font-size: 25px;
+    font-weight: 300;
+    border-radius: 50%;
+    z-index: 0;
+    background-image: radial-gradient(transparent 55%, var(--white) 60%, var(--purple) 75%);
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+}
+
+.day-checkbox:checked+label {
+    color: var(--white);
+    position: relative;
+    background-image: radial-gradient(var(--purple) 55%, var(--white) 60%, var(--purple) 75%);
+    transition: all 0.5s ease;
+}
+
+@media screen and (max-width: 768px) {
+    #calendar {
+        padding: 30px;
+    }
+
+    #calendar-header {
+        flex-direction: column-reverse
+    }
+
+    .date {
+        height: 70px;
+    }
+
+    .date-display {
+        align-self: center;
+    }
+
+    .date-display:hover {
+        cursor: none;
+        text-decoration: none;
+    }
+
+    input[type="checkbox"]+label {
+        width: 45px;
+        height: 45px;
+        font-size: 25px;
+        font-weight: 300;
+    }
+
+    #modal-btns {
+        flex-direction: column;
+    }
+}

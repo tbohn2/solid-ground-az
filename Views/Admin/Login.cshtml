@@ -1,0 +1,20 @@
+@page
+@{
+    ViewData["Title"] = "Solid Ground Admin";
+}
+
+<div
+    class="position-absolute top-50 start-50 translate-middle d-flex flex-column align-items-center col-10 col-xl-6 text-darkgray p-3 fs-4 bg-white rounded">
+    <h1>Login</h1>
+    <form id="loginForm" class="col-12 d-flex flex-column align-items-center">
+        <label for="username" class="form-label col-12">Username</label>
+        <input type="text" id="username" class="input col-12" aria-describedby="usernameHelp" required />
+        <label for="password" class="form-label col-12">Password</label>
+        <input type="password" id="password" class="input col-12 mb-3" required />
+        <button type="submit" id="loginBtn" class="custom-btn col-6">Login</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script type="module" src="~/js/admin/login.js"></script>
+}

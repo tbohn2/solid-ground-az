@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="~/assets/flower.svg" />
+  <link rel="stylesheet" href="~/css/root.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/css/admin/root.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/css/admin/calendar.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"]</title>
+</head>
+
+<body class="admin-bg col-12 min-vh-100">
+  <header class='col-12 mb-5 d-flex justify-content-end'>
+    <nav class='admin-nav col-4 d-flex justify-content-evenly align-items-center'>
+      <a href='/calendar'>
+        <input type="radio" class="" name="navOptions" id="option1" value="calendar" />
+        <label for="option1">calendar</label>
+      </a>
+      <a href='/clients'>
+        <input type="radio" class="" name="navOptions" id="option2" value="clients" />
+        <label for="option2">clients</label>
+      </a>
+      <button id='logout-btn'>logout</button>
+    </nav>
+  </header>
+
+  <main role="main" class="col-12">
+    @RenderBody()
+  </main>
+
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="~/lib/jwt-decode/index.js"></script>
+  <script type="module" src="~/js/admin/root.js"></script>
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
