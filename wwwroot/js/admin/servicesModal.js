@@ -3,8 +3,10 @@ import auth from "./auth.js";
 export function renderServicesModal(services) {
     const token = auth.getToken();
     const adminId = localStorage.getItem('admin_id');
-    const getServices = async () => {
-        await auth.getServices();
+    const refetchServices = async () => {
+        $('#services-container').empty();
+        localStorage.removeItem('services');
+        return await auth.getServices();
     }
 
     const initialFormState = {
@@ -61,6 +63,7 @@ export function renderServicesModal(services) {
         servicesState.deletingService = false;
         $('.service-details').remove();
         $('#service-form').remove();
+        $('#delete-services-btns').remove();
         setLoading(false);
         removeError();
     }
@@ -70,6 +73,7 @@ export function renderServicesModal(services) {
     }
 
     async function addNewApptType() {
+        $('.service-card').show().addClass('d-flex');
         removeError();
         servicesState.addingService = false;
         setLoading(true);
@@ -81,9 +85,8 @@ export function renderServicesModal(services) {
             });
             if (response.ok) {
                 clearStates();
-                localStorage.removeItem('services');
-                services = getServices();
-                renderServicesModal(services, getServices);
+                services = await refetchServices();
+                renderServicesModal(services);
             }
             if (!response.ok) {
                 setLoading(false);
@@ -109,9 +112,8 @@ export function renderServicesModal(services) {
             servicesState.editingService = false;
             if (response.ok) {
                 clearStates();
-                localStorage.removeItem('services');
-                services = getServices();
-                renderServicesModal(services, getServices);
+                services = await refetchServices();
+                renderServicesModal(services);
             }
             if (!response.ok) {
                 setLoading(false);
@@ -147,9 +149,8 @@ export function renderServicesModal(services) {
             });
             if (response.ok) {
                 setLoading(false);
-                localStorage.removeItem('services');
-                services = getServices();
-                renderServicesModal(services, getServices);
+                services = await refetchServices();
+                renderServicesModal(services);
             }
             if (!response.ok) {
                 setLoading(false);
@@ -266,15 +267,13 @@ export function renderServicesModal(services) {
     }
 
     function displayServiceDetails(service) {
-        $('.service-details').remove();
-        if (servicesState.serviceDetails.Id === service.Id) {
-            servicesState.serviceDetails = initialFormState;
-            $(`${service.Id}-service-details`).remove();
-        } else {
-            servicesState.serviceDetails = service;
-            const id = service.Id;
+        const newDetails = servicesState.serviceDetails.Id !== service.Id;
+        clearStates();
+        if (!newDetails) { return; }
+        servicesState.serviceDetails = service;
+        const id = service.Id;
 
-            $(`#s-container-${id}`).append(`  
+        $(`#s-container-${id}`).append(`  
             <div class="service-details my-1 col-12 d-flex flex-wrap justify-content-center fade-in">
                 <div class="col-12 text-center bg-purple text-white">${service.Private ? 'Private' : 'Public'}</div>
                 <div class="col-12">Price: <span class="text-purple">$${service.Price}</span></div>
@@ -293,12 +292,11 @@ export function renderServicesModal(services) {
                 </div>
             </div>`);
 
-            $('#toggle-edit').on('click', () => {
-                servicesState.editingService = true
-                renderForm()
-            });
-            $('#toggle-delete').on('click', renderDeleteService);
-        }
+        $('#toggle-edit').on('click', () => {
+            servicesState.editingService = true
+            renderForm()
+        });
+        $('#toggle-delete').on('click', renderDeleteService);
     }
 
     function renderServices() {
