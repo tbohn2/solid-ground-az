@@ -25,10 +25,10 @@
             <div id="calendar-dates" class="d-flex flex-column col-12"></div>
         </div>
         <div id="modal-btns" class="col-12 mt-3 d-flex align-items-center justify-content-evenly">
-            <button id="newApptBtn" class="custom-btn fs-4 my-2 col-md-4 col-xl-3 col-xxl-2 col-12" data-bs-toggle="modal"
-            data-bs-target="#newApptsModal">Add to Schedule</button>
+            <button id="newApptBtn" class="custom-btn fs-4 my-2 col-md-4 col-xl-3 col-xxl-2 col-12"
+                data-bs-toggle="modal" data-bs-target="#newApptsModal">Add to Schedule</button>
             <button id="servicesBtn" class="custom-btn fs-4 my-2 col-md-4 col-xl-3 col-xxl-2 col-12"
-            data-bs-toggle="modal" data-bs-target="#servicesModal">Services</button>
+                data-bs-toggle="modal" data-bs-target="#servicesModal">Services</button>
         </div>
     </div>
 
@@ -45,11 +45,3 @@
     <script type="module" src="~/js/admin/newApptsModal.js"></script>
     <script type="module" src="~/js/admin/servicesModal.js"></script>
 }
-
-@* <CalendarModal services={services} displayService={displayService} setDisplayService={setDisplayService}
-appts={dayAppts} date={displayDate} month={calendarMonth} year={calendarYear} refetch={getAppointments}
-token={token} />
-<NewApptsModal refetch={getAppointments} services={services} months={months} currentDate={currentDate}
-currentMonth={currentMonth} currentYear={currentYear} setLoading={setLoading} setError={setError}
-token={token} />
-<ServicesModal services={services} getServices={getServices} /> *@
