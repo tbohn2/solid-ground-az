@@ -42,7 +42,6 @@ namespace StretchScheduler
             services.AddRazorPages(options =>
             {
                 options.RootDirectory = "/Views";
-                options.Conventions.AddAreaPageRoute("Admin", "/Index", "admin");
             });
         }
 

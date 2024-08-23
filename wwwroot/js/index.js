@@ -8,7 +8,7 @@ function renderServices() {
 
     const serviceCards = privateServices.map(service => {
         let card;
-        const imgURL = '..' + service.ImgURL.slice(5); // Needs revisit after merging admin and client
+        const imgURL = '.' + service.ImgURL.slice(5);
         mobile ?
             card = `
                 <div class="serviceCard league my-3 d-flex fade-top">
