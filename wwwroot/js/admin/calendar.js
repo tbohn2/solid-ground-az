@@ -26,10 +26,6 @@ let state = {
 let calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
 let mobile = window.innerWidth < 768 ? true : false;
 
-function setDisplayService(service) {
-    state.displayService = service;
-}
-
 function setLoading(loading) {
     if (loading) {
         $('#calendar-header').append(`<div class="spinner-border" role="status"></div>`);
