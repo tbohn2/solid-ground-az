@@ -1,4 +1,4 @@
-import auth from "../utils/auth";
+import auth from './auth.js';
 import { renderApptModal } from './calendarModal.js';
 
 const token = auth.getToken()
@@ -8,7 +8,7 @@ const clientStates = {
     clients: [],
     displayedClients: [],
     dayAppts: [],
-    date: 0,
+    displayDate: 0,
     month: 0,
     year: 0,
     displayService: {},
@@ -47,6 +47,7 @@ const getServices = async () => {
     if (typeof services === 'string') { displayError(services); return; }
     clientStates.services = services;
 }
+
 const getService = async (appt) => {
     const service = clientStates.services.find(service => service.Id === appt.ApptTypeId);
     clientStates.displayService = service;
@@ -109,16 +110,49 @@ const sortAppts = (appts) => {
     });
 }
 
-const togglePastAppts = (pastAppts, clientId) => {
-    if (clientId === clientStates.displayClient) {
-        clientStates.displayedPastAppts = [];
-        clientStates.displayClient = 0;
-    }
-    else {
-        clientStates.displayedPastAppts = pastAppts;
-        clientStates.displayClient = clientId;
-    }
-}
+// const togglePastAppts = (pastAppts, clientId) => {
+//     $('.past-appts').remove();
+//     if (clientId === clientStates.displayClient) {
+//         clientStates.displayedPastAppts = [];
+//         clientStates.displayClient = 0;
+//     }
+//     else {
+//         clientStates.displayedPastAppts = pastAppts;
+//         clientStates.displayClient = clientId;
+
+//         $(`#${clientId}`).append(`
+//         <div class="past-appts d-flex flex-column align-items-center col-12">
+//             <h3 class="text-decoration-underline">Past Appointments</h3>
+//             ${clientStates.displayedPastAppts.length === 0 ? '<p>No past appointments</p>' : ''}
+//             ${clientStates.displayedPastAppts.map((appt) => {
+//             const time = new Date(appt.DateTime).toLocaleTimeString('en-US', {
+//                 hour: 'numeric', minute: '2-digit'
+//             });
+//             const date = new Date(appt.DateTime).toLocaleDateString('en-US', {
+//                 month: '2-digit', day: '2-digit',
+//                 year: 'numeric'
+//             });
+//             return (
+//                 `<div id=${appt.Id} data-clientId=${clientId}
+//                         class="client-appt custom-btn pink-border d-flex justify-content-between align-items-center col-10 col-lg-8 px-3 my-2"
+//                          data-bs-toggle='modal' data-bs-target='#apptsModal'>
+//                         <p class="fs-5 m-0 text-center">${date}</p>
+//                         <p class="fs-5 m-0 text-center">${time}</p>
+//                     </div>`
+//             )
+//         })}
+//         </div>`)
+
+//         $('.client-appt').off('click').on('click', function () {
+//             const apptId = $(this).attr('id');
+//             const clientId = $(this).data('clientid');
+//             const clientInfo = clientStates.clients.find(info => info.Client.Id === clientId)
+//             const appts = clientInfo.Appointments;
+//             const appt = appts.find(appt => appt.Id === parseInt(apptId));
+//             setModalStates(appt)
+//         })
+//     }
+// }
 
 const handleSearchChange = (e) => {
     const search = e.target.value;
@@ -136,7 +170,7 @@ const setModalStates = (appt) => {
     getService(appt);
     const date = new Date(appt.DateTime);
     clientStates.dayAppts = [appt];
-    clientStates.date = date.getDate();
+    clientStates.displayDate = date.getDate();
     clientStates.month = date.getMonth() + 1;
     clientStates.year = date.getFullYear();
     renderApptModal(clientStates, fetchClients);
@@ -145,27 +179,28 @@ const setModalStates = (appt) => {
 async function renderClients() {
     $('#clients').children().not('#search').remove();
 
-    if (displayedClients.length === 0 && !loading) {
-        $('#clients').append(`<div className="alert alert-info">No clients to display</div>`);
+    if (clientStates.displayedClients.length === 0 && !clientStates.loading) {
+        $('#clients').append(`<div class="alert alert-info">No clients to display</div>`);
         return
     }
 
     $('#clients').append(`
-        <div className="my-2 col-12 d-flex flex-wrap justify-content-evenly">
+        <div class="my-2 col-12 d-flex flex-wrap justify-content-evenly">
         ${clientStates.displayedClients.map((clientInfo) => {
+        console.log(clientInfo);
+
         const client = clientInfo.Client
         const clientAppts = clientInfo.Appointments
         const phone = client.Phone.includes('-') ? client.Phone : `${client.Phone.slice(0, 3)}-${client.Phone.slice(3, 6)}-${client.Phone.slice(6)}`
-        const pastAppts = sortAppts(clientAppts.filter((appt) => appt.Status === 3))
         const futureAppts = sortAppts(clientAppts.filter((appt) => appt.Status !== 3))
         return (
-            `<div key=${client.Id}
-            className="bg-white text-darkgray rounded fade-in p-1 my-2 col-10 col-md-5 d-flex flex-column align-items-center">
-            <div className="col-12 d-flex flex-column align-items-center border-bottom border-light">
-                <h3 className="m-0">${client.Name}</h3>
-                <p className="m-0">${client.Email}</p>
-                <p className="m-0">${phone}</p>
-                <h3 className="text-decoration-underline mx-1">Upcoming Appointments</h3>
+            `<div id=${client.Id}
+            class="bg-white text-darkgray rounded fade-in p-1 my-2 col-10 col-md-5 d-flex flex-column align-items-center">
+            <div class="col-12 d-flex flex-column align-items-center border-bottom border-light">
+                <h3 class="m-0">${client.Name}</h3>
+                <p class="m-0">${client.Email}</p>
+                <p class="m-0">${phone}</p>
+                <h3 class="text-decoration-underline mx-1">Upcoming Appointments</h3>
                 ${futureAppts.length === 0 ? '<p>No upcoming appointments</p>' : ''}
                 ${futureAppts.map((appt) => {
                 const time = new Date(appt.DateTime).toLocaleTimeString('en-US', {
@@ -176,52 +211,56 @@ async function renderClients() {
                     year: 'numeric'
                 });
                 return (
-                    `<div id=${appt.Id}
-                        className="client-appt custom-btn pink-border d-flex justify-content-between align-items-center col-10 col-lg-8 px-3 my-2" data-bs-toggle="modal" data-bs-target="#apptsModal">
-                        <p className="fs-5 m-0 text-center">${date}</p>
-                        <p className="fs-5 m-0 text-center">${time}</p>
+                    `<div id=${appt.Id} data-clientId=${client.Id}
+                        class="client-appt custom-btn pink-border d-flex justify-content-between align-items-center col-10 col-lg-8 px-3 my-2" data-bs-toggle="modal" data-bs-target="#apptsModal">
+                        <p class="fs-5 m-0 text-center">${date}</p>
+                        <p class="fs-5 m-0 text-center">${time}</p>
                     </div>`
                 )
             }).join('')}            
             </div>
             <h3>Balance: ${client.Balance}</h3>
-            <div className="d-flex justify-content-evenly col-12 my-2">
-                <button className="custom-btn success-btn" onClick=${() => payBalance(client.Id, client.Balance)}>Clear
-                    Balance</button>
-                <button className="custom-btn" onClick=${() => togglePastAppts(pastAppts, client.Id)}>${displayClient === client.Id ? 'Hide' : 'View'} Past Appts</button>
-            </div>
-            ${displayClient === client.Id &&
-            `<div className="d-flex flex-column align-items-center col-12">
-                <h3 className="text-decoration-underline">Past Appointments</h3>
-                ${displayedPastAppts.length === 0 && <p>No past appointments</p>}
-                ${displayedPastAppts.map((appt) => {
-                const time = new Date(appt.DateTime).toLocaleTimeString('en-US', {
-                    hour: 'numeric', minute: '2-digit'
-                });
-                const date = new Date(appt.DateTime).toLocaleDateString('en-US', {
-                    month: '2-digit', day: '2-digit',
-                    year: 'numeric'
-                });
-                return (
-                    `<div id=${appt.Id}
-                            className="client-appt custom-btn pink-border d-flex justify-content-between align-items-center col-10 col-lg-8 px-3 my-2"
-                             data-bs-toggle='modal' data-bs-target='#apptsModal'>
-                            <p className="fs-5 m-0 text-center">${date}</p>
-                            <p className="fs-5 m-0 text-center">${time}</p>
-                        </div>`
-                )
-            })}
-            </div>`
-            }
+            <div id='client-card-btns' class="d-flex justify-content-evenly col-12 my-2">
+                <button data-clientId=${client.Id} class="clear-bal custom-btn success-btn">Clear Balance</button>
+                <button data-clientId=${client.Id} class="toggle-past custom-btn">View Past Appts</button>
+            </div>            
         </div>`
         )
     }
     )}
     </div>`);
 
-    $('.client-appt').off('click').on('click', () => {
+    $('#search').on('input', function () {
+        handleSearchChange
+        renderClients
+    });
+
+    $('.clear-bal').off('click').on('click', function () {
+        const clientId = $(this).data('clientid');
+        const balance = clientStates.clients.find(client => client.Id === clientId).Balance;
+        payBalance(clientId, balance)
+    })
+
+    $('.toggle-past').off('click').on('click', function () {
+        const clientId = $(this).data('clientid');
+        const pastAppts = sortAppts(clientStates.clients.find(client => client.Id === clientId).Appointments.filter((appt) => appt.Status === 3));
+        togglePastAppts(pastAppts, clientId)
+    })
+
+    $('.client-appt').off('click').on('click', function () {
         const apptId = $(this).attr('id');
-        const appt = clientAppts.find(appt => appt.Id === apptId);
+        const clientId = $(this).data('clientid');
+        const clientInfo = clientStates.clients.find(info => info.Client.Id === clientId)
+        const appts = clientInfo.Appointments;
+        const appt = appts.find(appt => appt.Id === parseInt(apptId));
         setModalStates(appt)
     })
 }
+
+async function fetchAndRenderClients() {
+    await getServices();
+    await fetchClients();
+    renderClients();
+}
+
+fetchAndRenderClients();

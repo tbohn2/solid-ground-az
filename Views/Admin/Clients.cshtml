@@ -2,18 +2,12 @@
 @{
     ViewData["Title"] = "Solid Ground Admin";
 }
-
-<div id='clients' className="py-2 text-light d-flex flex-column align-items-center">
-    {displayedClients.length === 0 && !loading && <div className="alert alert-info">No clients to display</div>}
-    <input id='search' type="search" className="input fs-5" placeholder="Search" onChange={handleSearchChange} />
-    
-        @* <CalendarModal services={services} displayService={displayedService} setDisplayService={setDisplayedService}
-            appts={[displayedAppt]} date={displayDate} month={displayMonth} year={displayYear} refetch={fetchClients}
-            token={token} /> *@
-
-    @await Html.PartialAsync("~/Views/Admin/Shared/_CalendarModal.cshtml")
-
+   
+<div id='clients' class="py-2 text-light d-flex flex-column align-items-center">
+    <input id='search' type="search" class="input fs-5" placeholder="Search" onChange={handleSearchChange} />
 </div>
+
+@await Html.PartialAsync("~/Views/Admin/Shared/_CalendarModal.cshtml")
 
 @section Scripts {
     <script type="module" src="~/js/admin/clients.js"></script>
