@@ -161,12 +161,12 @@ async function renderCalendar() {
         state.dayAppts = [appt];
         state.displayService = appt.ApptTypeId ? state.services.find(service => service.Id === appt.ApptTypeId) : {};
         state.displayDate = date;
-        renderApptModal(state, setDisplayService, renderCalendar);
+        renderApptModal(state, renderCalendar);
     })
 
     $('.date-display').on('click', function () {
         state.displayDate = $(this).attr('data-date');
-        renderApptModal(state, setDisplayService, renderCalendar);
+        renderApptModal(state, renderCalendar);
     })
 }
 

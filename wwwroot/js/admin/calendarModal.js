@@ -1,4 +1,4 @@
-export function renderApptModal(state, setDisplayService, refetch) {
+export function renderApptModal(state, refetch) {
     let services = state.services;
     let displayService = state.displayService;
     let appts = state.dayAppts;
