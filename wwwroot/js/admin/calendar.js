@@ -3,7 +3,7 @@ import { renderApptModal } from './calendarModal.js';
 import { renderNewApptsModal } from './newApptsModal.js';
 import { renderServicesModal } from './servicesModal.js';
 
-// Manage logged in state to redirect to login page if not logged in
+$('#option1').attr('checked', true);
 
 const token = auth.getToken();
 const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];

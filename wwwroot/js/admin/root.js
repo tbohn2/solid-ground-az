@@ -15,14 +15,8 @@ let mobile = window.innerWidth < 768 ? true : false;
 $('input[name="navOptions"]').change(
     function () {
         var pageToLoad = $(this).val();
-        window.location.assign(pageToLoad);
+        window.location.assign('/admin/' + pageToLoad);
     });
-if (window.location.pathname === '/calendar') {
-    $('#option1').attr('checked', true);
-}
-else if (window.location.pathname === '/clients') {
-    $('#option2').attr('checked', true);
-}
 
 $('#logout-btn').click(() => {
     auth.logout();
