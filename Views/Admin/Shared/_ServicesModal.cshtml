@@ -5,14 +5,12 @@
                 <h1 class="modal-title fs-3" id="servicesModalLabel">Services</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div id="modal-body" class="mt-2 col-12 d-flex flex-column align-items-center flex-grow-1 text-darkgray">
-                <div id="services-container" class="col-12"></div>
+            <div id="modal-body" class="mt-2 col-12 flex-grow-1 text-darkgray">
+                <div id="services-container" class="col-12 d-flex flex-column align-items-center"></div>
             </div>
             <div id="modal-footer" class="d-flex align-self-end justify-content-end mt-2">
-                <button type="button" class="custom-btn fs-5 m-1" value='add' onClick={toggleServiceForm}>Add
-                    Service</button>
-                <button type="button" class="custom-btn fs-5 m-1" data-bs-dismiss="modal"
-                    onClick={clearStates}>Close</button>
+                <button id='toggle-add-service' type="button" class="custom-btn fs-5 m-1">Add Service</button>
+                <button type="button" class="custom-btn fs-5 m-1" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

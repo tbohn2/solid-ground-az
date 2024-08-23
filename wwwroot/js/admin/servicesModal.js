@@ -2,8 +2,10 @@ import auth from "./auth.js";
 
 export function renderServicesModal(services) {
     const token = auth.getToken();
-    const getServices = auth.getServices();
     const adminId = localStorage.getItem('admin_id');
+    const getServices = async () => {
+        await auth.getServices();
+    }
 
     const initialFormState = {
         Id: 0,
@@ -15,7 +17,8 @@ export function renderServicesModal(services) {
         Private: false,
         LocationName: '',
         LocationAddress: '',
-        ImgURL: ''
+        ImgURL: '../assets/services1.jpg',
+        AdminId: adminId
     };
 
     const servicesState = {
@@ -45,8 +48,9 @@ export function renderServicesModal(services) {
 
     function handleInputChange(e) {
         let { name, value } = e.target;
-        if (name === 'Private') value === 'true' ? value = true : value = false;
-        servicesState.serviceDetails = { ...serviceDetails, [name]: value };
+        if (name === 'Private') { value === 'true' ? value = true : value = false };
+        if (name === 'ImgURL') { $('#service-photo').attr('src', value) };
+        servicesState.serviceDetails = { ...servicesState.serviceDetails, [name]: value };
     };
 
     function clearStates() {
@@ -55,24 +59,10 @@ export function renderServicesModal(services) {
         servicesState.editingService = false;
         servicesState.displayServiceForm = false;
         servicesState.deletingService = false;
+        $('.service-details').remove();
+        $('#service-form').remove();
         setLoading(false);
         removeError();
-    }
-
-    function toggleDetails(service) {
-        if (serviceDetails.Id === service.Id) {
-            setServiceDetails({});
-        } else {
-            setServiceDetails(service);
-        }
-    }
-
-    function toggleServiceForm(e) {
-        e.preventDefault();
-        if (e.target.value === 'add') { setAddingService(true); setEditingService(false) };
-        if (e.target.value === 'edit') { setEditingService(true); setAddingService(false) };
-        if (displayServiceForm) { setServiceDetails(initialFormState) };
-        setDisplayServiceForm(!displayServiceForm);
     }
 
     function toggleDeleteService() {
@@ -81,18 +71,19 @@ export function renderServicesModal(services) {
 
     async function addNewApptType() {
         removeError();
-        setAddingService(false);
+        servicesState.addingService = false;
         setLoading(true);
         try {
             const response = await fetch(`http://localhost:5062/api/newApptType/`, {
                 method: 'POST',
-                body: JSON.stringify(serviceDetails),
+                body: JSON.stringify(servicesState.serviceDetails),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
                 clearStates();
                 localStorage.removeItem('services');
-                getServices();
+                services = getServices();
+                renderServicesModal(services, getServices);
             }
             if (!response.ok) {
                 setLoading(false);
@@ -108,18 +99,19 @@ export function renderServicesModal(services) {
 
     async function saveEdit() {
         removeError();
-        setEditingService(false);
         setLoading(true);
         try {
             const response = await fetch(`http://localhost:5062/api/editApptType/`, {
                 method: 'PUT',
-                body: JSON.stringify(serviceDetails),
+                body: JSON.stringify(servicesState.serviceDetails),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
             });
+            servicesState.editingService = false;
             if (response.ok) {
                 clearStates();
                 localStorage.removeItem('services');
-                getServices();
+                services = getServices();
+                renderServicesModal(services, getServices);
             }
             if (!response.ok) {
                 setLoading(false);
@@ -135,28 +127,29 @@ export function renderServicesModal(services) {
 
     function handleSubmit(e) {
         e.preventDefault();
-        if (addingService) {
+        if (servicesState.addingService) {
             addNewApptType();
         }
-        if (editingService) {
+        if (servicesState.editingService) {
             saveEdit();
         }
     }
 
     async function deleteService() {
         removeError();
-        setDeletingService(false);
+        servicesState.deletingService = false;
         setLoading(true);
         try {
             const response = await fetch(`http://localhost:5062/api/deleteApptType/`, {
                 method: 'DELETE',
-                body: JSON.stringify(serviceDetails),
+                body: JSON.stringify(servicesState.serviceDetails),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
                 setLoading(false);
                 localStorage.removeItem('services');
-                getServices();
+                services = getServices();
+                renderServicesModal(services, getServices);
             }
             if (!response.ok) {
                 setLoading(false);
@@ -170,56 +163,65 @@ export function renderServicesModal(services) {
         }
     }
 
-    function renderEditForm() {
-        $('#services-container').hide();
+    function renderForm() {
+        let parent = '';
+        $('#service-form').remove();
+        if (servicesState.editingService) {
+            $('.service-details').hide().removeClass('d-flex');
+            parent = $(`#s-container-${servicesState.serviceDetails.Id}`);
+        }
+        else if (servicesState.addingService) {
+            $('.service-card').hide().removeClass('d-flex');
+            parent = $('#services-container');
+        }
 
-        $('#modal-body').append(`
-              <form id='service-form' class='col-9 d-flex flex-column align-items-center fade-in'>
+        parent.append(`
+              <form id='service-form' class='col-12 d-flex flex-column align-items-center fade-in'>
                 <div class="col-12 my-1">
                     <label>Name:</label>
-                    <input type='text' class="service-form-input col-12" name='Name' required></input>
+                    <input type='text' class="service-form-input col-12" name='Name' value='${servicesState.serviceDetails.Name}' required></input>
                 </div>
-                ${servicesState.serviceDetails.ImgURL ? `<img id='service-photo' class='col-6 my-1 rounded' href=${servicesState.serviceDetails.ImgURL} alt="servicePhoto" />` : ''}
+                ${servicesState.serviceDetails.ImgURL ? `<img id='service-photo' class='col-6 my-1 rounded' src='${servicesState.serviceDetails.ImgURL}' alt="servicePhoto" />` : ''}
                 <label>Change Image:</label>
                 <select name='ImgURL' class='service-form-input col-12 text-center custom-btn my-1' >
                     <option value=''>None</option>
-                    <option value='~/assets/services1.jpg'>Yoga</option>
-                    <option value='~/assets/services2.jpg'>Stretch 1</option>
-                    <option value='~/assets/services3.jpg'>Stretch 2</option>
-                    <option value='~/assets/services7.jpg'>Stretch 3</option>
-                    <option value='~/assets/services4.jpg'>Balls</option>
-                    <option value='~/assets/services5.jpg'>Group</option>
-                    <option value='~/assets/services6.jpg'>Head Massage</option>
-                    <option value='~/assets/services8.jpg'>Equipment</option>
+                    <option value='../assets/services1.jpg'>Yoga</option>
+                    <option value='../assets/services2.jpg'>Stretch 1</option>
+                    <option value='../assets/services3.jpg'>Stretch 2</option>
+                    <option value='../assets/services7.jpg'>Stretch 3</option>
+                    <option value='../assets/services4.jpg'>Balls</option>
+                    <option value='../assets/services5.jpg'>Group</option>
+                    <option value='../assets/services6.jpg'>Head Massage</option>
+                    <option value='../assets/services8.jpg'>Equipment</option>
                 </select>
-                <select name='Private' class='service-form-input col-12 text-center custom-btn my-1'>
+                <select name='Private' class='service-form-input col-12 text-center custom-btn my-1' value=${servicesState.serviceDetails.Private}>
                     <option value=${false}>Public</option>
                     <option value=${true}>Private</option>
                 </select>
                 <div class='col-12 d-flex my-1'>
                     <label>Price: $</label>
-                    <input class='service-form-input col-2 text-center mx-1' type='number' name='Price' required></input>
+                    <input class='service-form-input col-2 text-center mx-1' type='number' name='Price' value=${servicesState.serviceDetails.Price} required></input>
                 </div>
                 <div class='col-12 d-flex my-1'>
                     <label>Duration:</label>
-                    <input class=' service-form-input col-2 text-center mx-1' type='number' name='Duration' required></input>
+                    <input class=' service-form-input col-2 text-center mx-1' type='number' name='Duration' value=${servicesState.serviceDetails.Duration} required></input>
                     <label>min</label>
                 </div>
                 <div class="col-12 my-1">
                     <label class="col-12">Location Name (Optional):</label>
-                    <input type='text' class="service-form-input col-12" name='LocationName'></input>
+                    <input type='text' class="service-form-input col-12" name='LocationName' value='${servicesState.serviceDetails.LocationName ? servicesState.serviceDetails.LocationName : ''}'></input>
                 </div>
                 <div class="col-12 my-1">
                     <label class="col-12">Address (Optional):</label>
-                    <input type='text' class="service-form-input col-12" name='LocationAddress'></input>
+                    <input type='text' class="service-form-input col-12" name='LocationAddress' value='${servicesState.serviceDetails.LocationAddress ? servicesState.serviceDetails.LocationAddress : ''}'></input>
                 </div>
                 <div class="col-12 my-1">
                     <label class="col-12">Brief Description:</label>
-                    <input type='text' class="service-form-input col-12" name='ShortDescription' required></input>
+                    <input type='text' class="service-form-input col-12" name='ShortDescription' value='${servicesState.serviceDetails.ShortDescription}' required></input>
                 </div>
                 <div class="col-12 my-1">
                     <label class="col-12">Description:</label>
-                    <textarea type='text' class="service-form-input col-12" name='Description' required></textarea>
+                    <textarea type='text' class="service-form-input col-12" name='Description' required>${servicesState.serviceDetails.Description}</textarea>
                 </div>
                 <div class='col-12 text-center my-1'>
                     <button type="submit" class="custom-btn success-btn col-5 fs-5 m-1">Save</button>
@@ -227,7 +229,17 @@ export function renderServicesModal(services) {
                 </div>
             </form>`);
 
-        $('#close-form').on('click', clearStates);
+        $('#close-form').on('click', function () {
+            if (servicesState.addingService) {
+                $('.service-card').show().addClass('d-flex');
+            }
+            if (servicesState.editingService) {
+                $('.service-details').show().addClass('d-flex');
+            }
+            servicesState.addingService = false;
+            servicesState.editingService = false;
+            $('#service-form').remove();
+        });
         $('.service-form-input').change(handleInputChange);
         $('#service-form').on('submit', (e) => handleSubmit(e));
     }
@@ -253,11 +265,16 @@ export function renderServicesModal(services) {
         });
     }
 
-    function displayServiceDetails() {
-        const service = servicesState.serviceDetails;
-        const id = service.Id;
+    function displayServiceDetails(service) {
+        $('.service-details').remove();
+        if (servicesState.serviceDetails.Id === service.Id) {
+            servicesState.serviceDetails = initialFormState;
+            $(`${service.Id}-service-details`).remove();
+        } else {
+            servicesState.serviceDetails = service;
+            const id = service.Id;
 
-        $(`#s-container-${id}`).append(`  
+            $(`#s-container-${id}`).append(`  
             <div class="service-details my-1 col-12 d-flex flex-wrap justify-content-center fade-in">
                 <div class="col-12 text-center bg-purple text-white">${service.Private ? 'Private' : 'Public'}</div>
                 <div class="col-12">Price: <span class="text-purple">$${service.Price}</span></div>
@@ -271,32 +288,42 @@ export function renderServicesModal(services) {
                 <div class="col-12">Description:</div>
                 <div class="col-12 text-purple">${service.Description}</div>
                 <div id='default-services-btns' class='col-12 text-center'>
-                    <button id='toggle-edit' type="button" class="custom-btn col-5 fs-5 m-1" value='edit'>Edit</button>
+                    <button id='toggle-edit' type="button" class="custom-btn col-5 fs-5 m-1">Edit</button>
                     <button id='toggle-delete' type="button" class="custom-btn danger-btn col-5 fs-5 m-1">Delete</button>
                 </div>
             </div>`);
 
-        $('#toggle-edit').on('click', renderEditForm);
-        $('#toggle-delete').on('click', renderDeleteService);
+            $('#toggle-edit').on('click', () => {
+                servicesState.editingService = true
+                renderForm()
+            });
+            $('#toggle-delete').on('click', renderDeleteService);
+        }
     }
 
     function renderServices() {
         $('#services-container').append(`
             ${services.map((service, index) =>
-            `<div id=${`s-container-${service.Id}`} class="d-flex flex-wrap justify-content-between border-darkgray rounded my-2 px-1 fs-4 col-8">
+            `<div id=${`s-container-${service.Id}`} class="service-card d-flex flex-wrap justify-content-between border-darkgray rounded my-2 px-1 fs-4 col-8">
                 <div id=${service.Id} class="service-button col-12 text-center">${service.Name}</div>                        
             </div>`).join('')}
             `);
 
         $('.service-button').on('click', function () {
-            servicesState.serviceDetails = services.find(service => service.Id === parseInt(this.id));
-            displayServiceDetails();
+            const service = services.find(service => service.Id === parseInt(this.id));
+            displayServiceDetails(service);
         });
     }
 
     renderServices();
 
+    $('#toggle-add-service').off('click').on('click', () => {
+        servicesState.addingService = true
+        renderForm()
+    });
+
     $('#servicesModal').on('hidden.bs.modal', function () {
+        $('#services-container').empty();
         clearStates();
     });
 }
