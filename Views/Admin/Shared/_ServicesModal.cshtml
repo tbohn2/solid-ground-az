@@ -6,55 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div id="modal-body" class="mt-2 col-12 d-flex flex-column align-items-center flex-grow-1 text-darkgray">
-                <div id="services-container" class="col-12">
-
-                    services.map((service, index) => {
-                    return (
-                    <div class="d-flex flex-wrap justify-content-between border-darkgray rounded my-2 px-1 fs-4 col-8">
-                        <div class="service-button col-12 text-center" onClick={()=>
-                            toggleDetails(service)}>{service.Name}</div>
-                        {serviceDetails.Id === service.Id && !displayServiceForm &&
-                        <div class={`my-1 col-12 d-flex flex-wrap justify-content-center ${serviceDetails && 'fade-in'
-                            }`}>
-                            <div class="col-12 text-center bg-purple text-white">{service.Private ? 'Private' :
-                                'Public'}</div>
-                            <div class="col-12">Price: <span class="text-purple">${service.Price}</span></div>
-                            <div class="col-12">Duration: <span class="text-purple">{service.Duration}
-                                    min</span>
-                            </div>
-                            {service.LocationName && <div class="col-12">Location:</div>}
-                            {service.LocationName && <div class="col-12 text-purple">{service.LocationName}</div>}
-                            {service.LocationAddress && <div class="col-12">Address:</div>}
-                            {service.LocationAddress && <div class="col-12 text-purple">{service.LocationAddress}
-                            </div>}
-                            <div class="col-12">Brief Description:</div>
-                            <div class="col-12 text-purple">{service.ShortDescription}</div>
-                            <div class="col-12">Description:</div>
-                            <div class="col-12 text-purple">{service.Description}</div>
-                            {deletingService ? (
-                            <div class='col-12 fw-bold text-center'>
-                                <p>Are you sure you want to delete this service?</p>
-                                <button type="button" class="custom-btn danger-btn col-5 fs-5 m-1"
-                                    onClick={deleteService}>Yes</button>
-                                <button type="button" class="custom-btn col-5 fs-5 m-1"
-                                    onClick={toggleDeleteService}>Cancel</button>
-                            </div>
-                            ) : (
-                            <div class='col-12 text-center'>
-                                <button type="button" class="custom-btn col-5 fs-5 m-1" value='edit'
-                                    onClick={toggleServiceForm}>Edit</button>
-                                <button type="button" class="custom-btn danger-btn col-5 fs-5 m-1"
-                                    onClick={toggleDeleteService}>Delete</button>
-                            </div>
-                            )
-                            }
-                        </div>
-                        }
-                    </div>
-                    )
-                    })
-                    )}
-                </div>
+                <div id="services-container" class="col-12"></div>
             </div>
             <div id="modal-footer" class="d-flex align-self-end justify-content-end mt-2">
                 <button type="button" class="custom-btn fs-5 m-1" value='add' onClick={toggleServiceForm}>Add
