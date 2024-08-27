@@ -6,8 +6,10 @@
   <link rel="icon" type="image/svg+xml" href="~/assets/flower.svg" />
   <link rel="stylesheet" href="~/css/root.css" asp-append-version="true" />
   <link rel="stylesheet" href="~/css/admin/root.css" asp-append-version="true" />
-  <link rel="stylesheet" href="~/css/admin/calendar.css" asp-append-version="true" />
   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+
+  @RenderSection("Styles", required: false)
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"]</title>
 </head>

@@ -14,10 +14,10 @@
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/root.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/client/root.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/client/index.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/client/calendar.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/client/about.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 </head>
