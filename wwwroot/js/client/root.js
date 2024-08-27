@@ -1,22 +1,31 @@
 let mobile = window.innerWidth < 768 ? true : false;
 
+function checkNav() {
+    if (window.location.pathname === '/calendar') {
+        $('#option1').attr('checked', true);
+    }
+    else if (window.location.pathname === '/about') {
+        $('#option2').attr('checked', true);
+    }
+    else if (window.location.pathname === '/contact') {
+        $('#option3').attr('checked', true);
+    }
+}
+
 function renderNav() {
     $('.navbar').empty();
     const nav = mobile ? `
         <div class="dropdown-center">
             <span class="navbar-toggler-icon fs-5" data-bs-toggle="dropdown" aria-expanded="false"></span>
             <ul class="dropdown-menu dropdown-menu-end m-0 p-0">
-            <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/">Home</a>
-            </li>
-            <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4"
-            href="/calendar">Calendar</a></li>
-            <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4"
-            href="/contact">Contact</a></li>
+                <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/">Home</a></li>
+                <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/calendar">Calendar</a></li>
+                <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/contact">Contact</a></li>
             </ul>
         </div>
     ` : `
-        <input type="radio" name="navOptions" id="option1" value="/calendar" autocomplete="off">
-        <label for="option1" class="text-purple fs-4">CALENDAR</label>
+        <input type="radio" name="navOptions" id="option1"  value="/calendar" autocomplete="off">
+        <label for="option1" class="navOption text-purple fs-4">CALENDAR</label>
         <input type="radio" name="navOptions" id="option2" value="/about" autocomplete="off">
         <label for="option2" class="text-purple fs-4">ABOUT</label>
         <input type="radio" name="navOptions" id="option3" value="/contact" autocomplete="off">
@@ -24,22 +33,12 @@ function renderNav() {
     `
     $('.navbar').append(nav);
 
-    $(document).ready(function () {
-        $('input[name="navOptions"]').change(
-            function () {
-                var pageToLoad = $(this).val();
-                window.location.assign(pageToLoad);
-            });
-        if (window.location.pathname === '/contact') {
-            $('#option3').attr('checked', true);
-        }
-        else if (window.location.pathname === '/about') {
-            $('#option2').attr('checked', true);
-        }
-        else if (window.location.pathname === '/calendar') {
-            $('#option1').attr('checked', true);
-        }
-    });
+    $('input[name="navOptions"]').change(
+        function () {
+            var pageToLoad = $(this).val();
+            window.location.assign(pageToLoad);
+            checkNav();
+        });
 }
 
 $('#logo').click(() => {
@@ -55,6 +54,7 @@ window.addEventListener('resize', () => {
 });
 
 renderNav();
+checkNav();
 
 async function getServices() {
     try {

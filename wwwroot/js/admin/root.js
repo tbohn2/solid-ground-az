@@ -12,11 +12,23 @@ checkLoggedIn();
 
 let mobile = window.innerWidth < 768 ? true : false;
 
+function checkNav() {
+    if (window.location.pathname === '/admin/calendar') {
+        $('#option1').attr('checked', true);
+    }
+    else if (window.location.pathname === '/admin/clients') {
+        $('#option2').attr('checked', true);
+    }
+}
+
 $('input[name="navOptions"]').change(
     function () {
         var pageToLoad = $(this).val();
         window.location.assign('/admin/' + pageToLoad);
-    });
+        checkNav();
+    }
+);
+
 
 $('#logout-btn').click(() => {
     auth.logout();
@@ -28,5 +40,7 @@ window.addEventListener('resize', () => {
         mobile = !mobile;
     }
 });
+
+checkNav();
 
 export default loggedIn;

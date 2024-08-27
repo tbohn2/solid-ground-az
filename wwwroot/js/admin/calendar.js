@@ -3,8 +3,6 @@ import { renderApptModal } from './calendarModal.js';
 import { renderNewApptsModal } from './newApptsModal.js';
 import { renderServicesModal } from './servicesModal.js';
 
-$('#option1').attr('checked', true);
-
 const token = auth.getToken();
 const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const statuses = ['Available', 'Requested', 'Booked', 'Completed', 'Firm'];

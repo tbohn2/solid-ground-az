@@ -1,8 +1,6 @@
 import auth from './auth.js';
 import { renderApptModal } from './calendarModal.js';
 
-$('#option2').attr('checked', true);
-
 const token = auth.getToken()
 
 const clientStates = {
