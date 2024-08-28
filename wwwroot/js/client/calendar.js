@@ -332,8 +332,6 @@ $('#next').on('click', () => {
     checkApptsAndRender();
 });
 
-checkApptsAndRender();
-
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
     if (isMobile !== mobile) {
@@ -341,3 +339,5 @@ window.addEventListener('resize', () => {
         renderCalendar();
     }
 });
+
+export default checkApptsAndRender;

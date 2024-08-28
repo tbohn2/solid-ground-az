@@ -1,4 +1,9 @@
+import checkApptsAndRender from "./calendar.js";
+
 let mobile = window.innerWidth < 768 ? true : false;
+
+let injectedCssLinks = [];
+let injectedScripts = [];
 
 function checkNav() {
     if (window.location.pathname === '/calendar') {
@@ -12,38 +17,86 @@ function checkNav() {
     }
 }
 
+function removeInjectedAssets() {
+    injectedCssLinks.forEach(function (link) {
+        link.remove();
+    });
+    injectedCssLinks = [];
+    injectedScripts.forEach(function (script) {
+        script.remove();
+    });
+    injectedScripts = [];
+}
+
+function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
+    $('#content').load(url + ' #content > *', function () {
+        removeInjectedAssets();
+
+        if (cssUrl) {
+            var link = $('<link>', {
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: cssUrl
+            });
+            $('head').append(link);
+            injectedCssLinks.push(link);
+        }
+
+        if (jsUrls && jsUrls.length) {
+            jsUrls.forEach(function (jsUrl) {
+                var script = $('<script>', { type: 'module', src: jsUrl });
+                $('body').append(script);
+                injectedScripts.push(script);
+            });
+        }
+
+        if (callback) {
+            callback();
+        }
+    });
+}
+
 function renderNav() {
     $('.navbar').empty();
     const nav = mobile ? `
         <div class="dropdown-center">
             <span class="navbar-toggler-icon fs-5" data-bs-toggle="dropdown" aria-expanded="false"></span>
             <ul class="dropdown-menu dropdown-menu-end m-0 p-0">
-                <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/">Home</a></li>
-                <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/calendar">Calendar</a></li>
-                <li class='text-center bg-white'><a class="text-purple text-decoration-none fs-4" href="/contact">Contact</a></li>
+                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' value="about">About</li>
+                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' value="calendar">Calendar</li>
+                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' value="contact">Contact</li>
             </ul>
         </div>
     ` : `
-        <input type="radio" name="navOptions" id="option1"  value="/calendar" autocomplete="off">
-        <label for="option1" class="navOption text-purple fs-4">CALENDAR</label>
-        <input type="radio" name="navOptions" id="option2" value="/about" autocomplete="off">
+        <input type="radio" name="navOptions" id="option1"  value="calendar" autocomplete="off">
+        <label for="option1" class="text-purple fs-4">CALENDAR</label>
+        <input type="radio" name="navOptions" id="option2" value="about" autocomplete="off">
         <label for="option2" class="text-purple fs-4">ABOUT</label>
-        <input type="radio" name="navOptions" id="option3" value="/contact" autocomplete="off">
+        <input type="radio" name="navOptions" id="option3" value="contact" autocomplete="off">
         <label for="option3" class="text-purple fs-4">CONTACT</label>
     `
     $('.navbar').append(nav);
 
-    $('input[name="navOptions"]').change(
-        function () {
-            var pageToLoad = $(this).val();
-            window.location.assign(pageToLoad);
-            checkNav();
-        });
+    function handleNavClick() {
+        const url = $(this).val();
+        let cssUrl = ''
+        let jsUrls = []
+        let callback = null;
+        if (url !== 'contact') { cssUrl = `css/client/${url}.css` }
+        if (url !== 'about') { jsUrls = [`js/client/${url}.js`]; }
+        if (url === 'calendar') { callback = checkApptsAndRender; }
+
+        loadContentWithAssets(url, cssUrl, jsUrls, callback);
+        checkNav();
+    }
+
+    // Remove event listeners before adding new ones
+    $('#logo').click(handleNavClick);
+    if (mobile) { $('.nav-btn').click(handleNavClick) }
+    else { $('input[name="navOptions"]').change(handleNavClick) }
 }
 
-$('#logo').click(() => {
-    window.location.assign('/');
-});
+
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;

@@ -24,7 +24,7 @@
 
 <body class="body col-12 m-0 p-0 fw-light d-flex flex-column align-items-center">
     <header class="col-12 bg-white d-flex flex-wrap justify-content-center align-items-center my-1 px-3">
-        <div id="logo" class="d-flex align-items-center col-md-6 col-12">
+        <div id="logo" class="d-flex align-items-center col-md-6 col-12" value=''>
             <img src="./assets/flower.svg" alt="flower-logo">
             <div class="d-flex flex-column align-items-center mx-3">
                 <h1 class="m-0 p-0 text-purple text-center libre fw-bold">SOLID GROUND</h1>
@@ -38,7 +38,7 @@
         <nav class="navbar col-md-6 my-0 d-flex justify-content-evenly align-items-center"></nav>
     </header>
 
-    <main role="main" class="col-12">
+    <main role="main" class="col-12" id='content'>
         @RenderBody()
     </main>
 
@@ -66,6 +66,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/node-calendar/node-calendar.js"></script>
     <script type="module" src="~/js/client/root.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
