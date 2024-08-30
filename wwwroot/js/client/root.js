@@ -60,28 +60,29 @@ function renderNav() {
     $('.navbar').empty();
     const nav = mobile ? `
         <div class="dropdown-center">
-            <span class="navbar-toggler-icon fs-5" data-bs-toggle="dropdown" aria-expanded="false"></span>
+            <span class="fs-2 text-purple" data-bs-toggle="dropdown" aria-expanded="false">&#9776;</span>
             <ul class="dropdown-menu dropdown-menu-end m-0 p-0">
-                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' value="about">About</li>
-                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' value="calendar">Calendar</li>
-                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' value="contact">Contact</li>
+                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="about">About</li>
+                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="calendar">Calendar</li>
+                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="contact">Contact</li>
             </ul>
         </div>
     ` : `
-        <input type="radio" name="navOptions" id="option1"  value="calendar" autocomplete="off">
+        <input type="radio" name="navOptions" id="option1" data-page="calendar" autocomplete="off">
         <label for="option1" class="text-purple fs-4">CALENDAR</label>
-        <input type="radio" name="navOptions" id="option2" value="about" autocomplete="off">
+        <input type="radio" name="navOptions" id="option2" data-page="about" autocomplete="off">
         <label for="option2" class="text-purple fs-4">ABOUT</label>
-        <input type="radio" name="navOptions" id="option3" value="contact" autocomplete="off">
+        <input type="radio" name="navOptions" id="option3" data-page="contact" autocomplete="off">
         <label for="option3" class="text-purple fs-4">CONTACT</label>
     `
     $('.navbar').append(nav);
 
     function handleNavClick() {
-        const url = $(this).val();
+        const url = $(this).data('page');
         let cssUrl = ''
         let jsUrls = []
         let callback = null;
+
         if (url !== 'contact') { cssUrl = `css/client/${url}.css` }
         if (url !== 'about') { jsUrls = [`js/client/${url}.js`]; }
         if (url === 'calendar') { callback = checkApptsAndRender; }
@@ -91,7 +92,7 @@ function renderNav() {
     }
 
     // Remove event listeners before adding new ones
-    $('#logo').click(handleNavClick);
+    $('#logo').click(() => loadContentWithAssets('', '', [], null));
     if (mobile) { $('.nav-btn').click(handleNavClick) }
     else { $('input[name="navOptions"]').change(handleNavClick) }
 }
