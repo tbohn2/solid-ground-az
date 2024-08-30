@@ -197,10 +197,3 @@ input:focus {
 .fade-in {
     animation: fade-in 0.75s ease-in-out;
 }
-
-@media screen and (max-width: 768px) {
-    #logo {
-        display: flex;
-        flex-direction: column;
-    }
-}

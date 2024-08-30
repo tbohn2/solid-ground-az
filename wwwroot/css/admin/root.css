@@ -8,7 +8,7 @@
 }
 
 
-.admin-nav label {
+#admin-nav label {
     font-size: 28px;
     font-weight: 300;
     padding: 0 10px;
@@ -19,7 +19,7 @@
     cursor: pointer;
 }
 
-.admin-nav label:hover {
+#admin-nav label:hover {
     border: 1px solid var(--purple);
     background-color: var(--purple);
     color: var(--white);
@@ -59,4 +59,17 @@ select::-webkit-scrollbar {
 option {
     color: var(--purple);
     background-color: var(--white);
+}
+
+@media screen and (max-width: 768px) {
+    header {
+        margin-bottom: 75px;
+    }
+
+    nav {
+        position: absolute !important;
+        top: 20px !important;
+        right: 20px !important;
+        font-size: 28px;
+    }
 }

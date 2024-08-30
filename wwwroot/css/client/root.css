@@ -4,3 +4,16 @@ input[type="radio"]:checked+label {
     border-image-slice: 1;
     border-image-repeat: stretch;
 }
+
+@media screen and (max-width: 768px) {
+    #logo {
+        display: flex;
+        flex-direction: column;
+    }
+
+    nav {
+        position: absolute !important;
+        top: 35px !important;
+        right: 20px !important;
+    }
+}
