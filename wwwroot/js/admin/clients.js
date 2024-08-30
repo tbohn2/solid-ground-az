@@ -255,7 +255,7 @@ async function renderClients() {
     })
 }
 
-async function fetchAndRenderClients() {
+export default async function fetchAndRenderClients() {
     await getServices();
     await fetchClients();
     renderClients();

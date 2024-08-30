@@ -15,26 +15,17 @@
 </head>
 
 <body class="admin-bg col-12 min-vh-100">
-  <header class='col-12 mb-5 d-flex justify-content-end'>
-    <nav class='admin-nav col-4 d-flex justify-content-evenly align-items-center'>
-      <a href='/calendar'>
-        <input type="radio" class="" name="navOptions" id="option1" value="calendar" />
-        <label for="option1">calendar</label>
-      </a>
-      <a href='/clients'>
-        <input type="radio" class="" name="navOptions" id="option2" value="clients" />
-        <label for="option2">clients</label>
-      </a>
-      <button id='logout-btn'>logout</button>
-    </nav>
+  <header class='col-12 d-flex justify-content-end'>
+    <nav id='admin-nav' class=' text-light col-md-6 col-xl-4 d-flex justify-content-evenly align-items-center'></nav>
   </header>
 
-  <main role="main" class="col-12">
+  <main role="main" class="col-12" id='content'>
     @RenderBody()
   </main>
 
   <script src="~/lib/jquery/dist/jquery.min.js"></script>
   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="~/lib/node-calendar/node-calendar.js"></script>
   <script src="~/lib/jwt-decode/index.js"></script>
   <script type="module" src="~/js/admin/root.js"></script>
   @await RenderSectionAsync("Scripts", required: false)
