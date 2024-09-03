@@ -1,4 +1,5 @@
 import checkApptsAndRender from "./calendar.js";
+import renderServices from "./index.js";
 
 let mobile = window.innerWidth < 768 ? true : false;
 
@@ -6,14 +7,17 @@ let injectedCssLinks = [];
 let injectedScripts = [];
 
 function checkNav() {
+    $('#option1').prop('checked', false);
+    $('#option2').prop('checked', false);
+    $('#option3').prop('checked', false);
     if (window.location.pathname === '/calendar') {
-        $('#option1').attr('checked', true);
+        $('#option1').prop('checked', true);
     }
     else if (window.location.pathname === '/about') {
-        $('#option2').attr('checked', true);
+        $('#option2').prop('checked', true);
     }
     else if (window.location.pathname === '/contact') {
-        $('#option3').attr('checked', true);
+        $('#option3').prop('checked', true);
     }
 }
 
@@ -53,7 +57,23 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
         if (callback) {
             callback();
         }
+        history.pushState(null, '', url);
+        checkNav();
     });
+}
+
+function handleNavChange(url) {
+    let fileName = url;
+    let cssUrl = '';
+    let jsUrls = [];
+    let callback = null;
+
+    if (url === '') { url = '/'; fileName = 'index'; callback = renderServices; }
+    if (url !== 'contact') { cssUrl = `css/client/${fileName}.css` }
+    if (url !== 'about') { jsUrls = [`js/client/${fileName}.js`]; }
+    if (url === 'calendar') { callback = checkApptsAndRender; }
+
+    loadContentWithAssets(url, cssUrl, jsUrls, callback);
 }
 
 function renderNav() {
@@ -77,27 +97,14 @@ function renderNav() {
     `
     $('.navbar').append(nav);
 
-    function handleNavClick() {
-        const url = $(this).data('page');
-        let cssUrl = ''
-        let jsUrls = []
-        let callback = null;
-
-        if (url !== 'contact') { cssUrl = `css/client/${url}.css` }
-        if (url !== 'about') { jsUrls = [`js/client/${url}.js`]; }
-        if (url === 'calendar') { callback = checkApptsAndRender; }
-
-        loadContentWithAssets(url, cssUrl, jsUrls, callback);
-        checkNav();
-    }
-
-    // Remove event listeners before adding new ones
-    $('#logo').click(() => loadContentWithAssets('', '', [], null));
-    if (mobile) { $('.nav-btn').click(handleNavClick) }
-    else { $('input[name="navOptions"]').change(handleNavClick) }
+    $('#logo').off('click').on('click', () => handleNavChange(''));
+    if (mobile) { $('.nav-btn').off('click').on('click', (e) => handleNavChange(e.target.dataset.page)) }
+    else { $('input[name="navOptions"]').off('change').on('change', (e) => handleNavChange(e.target.dataset.page)) }
 }
 
-
+window.addEventListener('popstate', function (event) {
+    handleNavChange(window.location.pathname.substring(1));
+});
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
@@ -108,7 +115,7 @@ window.addEventListener('resize', () => {
 });
 
 renderNav();
-checkNav();
+handleNavChange(window.location.pathname.substring(1));
 
 async function getServices() {
     try {
@@ -129,5 +136,4 @@ async function getServices() {
     }
 };
 
-const privateServices = await getServices();
-export { privateServices };
+export { getServices };

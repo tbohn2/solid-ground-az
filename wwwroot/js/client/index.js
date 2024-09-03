@@ -1,10 +1,12 @@
-import { privateServices } from './root.js';
+import { getServices } from './root.js';
 
 let mobile = window.innerWidth < 768 ? true : false;
 
-function renderServices() {
+async function renderServices() {
     const servicesContainer = $('#services');
     servicesContainer.empty();
+
+    let privateServices = await getServices();
 
     const serviceCards = privateServices.map(service => {
         let card;
@@ -91,8 +93,6 @@ $('#overlay').on('click', function () {
     $('.serviceDescription.text-decoration-underline').removeClass('text-decoration-underline');
 });
 
-renderServices();
-
 $('#calendar-link').on('click', function () {
     window.location.assign('./calendar');
 });
@@ -104,3 +104,5 @@ window.addEventListener('resize', () => {
         renderServices();
     }
 });
+
+export default renderServices;

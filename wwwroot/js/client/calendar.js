@@ -1,8 +1,13 @@
-import { privateServices } from './root.js';
+import { getServices } from './root.js';
 const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
 const currentDate = new Date().getDate();
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
+
+let privateServices = [];
+getServices().then(services => {
+    privateServices = services;
+});
 let displayedYear = currentYear;
 let displayedMonth = currentMonth;
 let dateDisplay = '';
