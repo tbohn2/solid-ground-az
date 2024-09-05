@@ -18,10 +18,10 @@ let state = {
     date: '',
     month: currentMonth,
     year: currentYear,
+    calendarDates: new calendar.Calendar(6).monthdayscalendar(currentYear, currentMonth),
     token: token
 };
 
-let calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
 let mobile = window.innerWidth < 768 ? true : false;
 
 function setLoading(loading) {
@@ -78,20 +78,18 @@ async function renderCalendar() {
 
     $('#month').text(months[state.month - 1] + ' ' + state.year);
 
-    calendarDates.forEach((week, index) => {
+    state.calendarDates.forEach((week, index) => {
         $('#calendar-dates').append(`<div class="d-flex col-12 fade-in"></div>`);
         week.forEach((date, index) => {
             const apptsForDay = state.appointments[date] || [];
-            let numberDisplay
-
-            if (date === 0) { numberDisplay = '' }
-            else { numberDisplay = date }
 
             $('#calendar-dates').children().last().append(
                 `<div id="${date + 'container'}" class="date-container px-1 d-flex flex-column align-items-center date" ${mobile ? `data-bs-toggle="modal" data-bs-target="#apptsModal"` : ""}</div>`)
 
+            if (date === 0) { return; }
+
             $(`#${date + 'container'}`).append(
-                `<div class='date-display' data-date=${date} ${mobile ? "" : `data-bs-toggle="modal" data-bs-target="#apptsModal"`}>${numberDisplay}</div>`);
+                `<div class='date-display' data-date=${date} ${mobile ? "" : `data-bs-toggle="modal" data-bs-target="#apptsModal"`}>${date}</div>`);
 
             $(`#${date + 'container'}`).append(
                 `<div class='${`col-12 ${mobile ? 'd-flex justify-content-center' : 'appts-container'}`}'>
@@ -169,12 +167,14 @@ async function renderCalendar() {
     $('#prev').off('click').on('click', () => {
         state.month = state.month === 1 ? 12 : state.month - 1;
         state.year = state.month === 1 ? state.year - 1 : state.year;
+        state.calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
         renderCalendar();
     });
 
     $('#next').off('click').on('click', () => {
         state.month = state.month === 12 ? 1 : state.month + 1;
         state.year = state.month === 12 ? state.year + 1 : state.year;
+        state.calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
         renderCalendar();
     });
 
