@@ -166,41 +166,27 @@ async function renderCalendar() {
         })
     }
 
+    $('#prev').off('click').on('click', () => {
+        state.month = state.month === 1 ? 12 : state.month - 1;
+        state.year = state.month === 1 ? state.year - 1 : state.year;
+        renderCalendar();
+    });
+
+    $('#next').off('click').on('click', () => {
+        state.month = state.month === 12 ? 1 : state.month + 1;
+        state.year = state.month === 12 ? state.year + 1 : state.year;
+        renderCalendar();
+    });
+
+    $('#newApptBtn').off('click').on('click', () => {
+        renderNewApptsModal(renderCalendar, state.services, months, currentDate, currentMonth, currentYear, setLoading, displayError, removeError);
+    });
+
+    $('#servicesBtn').off('click').on('click', () => {
+        renderServicesModal(state.services);
+    });
+
 }
-
-$('#prev').click(() => {
-    if (state.month === 1) {
-        const prevYear = state.year - 1;
-        state.month = 12;
-        state.year = prevYear;
-    }
-    else {
-        const prevMonth = state.month - 1;
-        state.month = prevMonth;
-    }
-    renderCalendar();
-});
-
-$('#next').click(() => {
-    if (state.month === 12) {
-        const nextYear = state.year + 1;
-        state.month = 1;
-        state.year = nextYear;
-    }
-    else {
-        const nextMonth = state.month + 1;
-        state.month = nextMonth;
-    }
-    renderCalendar();
-});
-
-$('#newApptBtn').click(() => {
-    renderNewApptsModal(renderCalendar, state.services, months, currentDate, currentMonth, currentYear, setLoading, displayError, removeError);
-});
-
-$('#servicesBtn').click(() => {
-    renderServicesModal(state.services);
-});
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;

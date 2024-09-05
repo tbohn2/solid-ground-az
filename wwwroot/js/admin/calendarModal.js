@@ -534,10 +534,8 @@ export function renderApptModal(state, refetch) {
     });
 
     $('#apptsModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
-        $('.modal-title').empty();
+        $('#apptsModalLabel').empty();
         $('#cal-modal-body').empty();
-        console.log('modal closed');
-
         clearStates();
     });
 }
