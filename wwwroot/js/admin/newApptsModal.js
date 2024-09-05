@@ -74,7 +74,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
 
     async function createAppts() {
         setLoading(true);
-        setError('');
+        removeError();
         // "DateTime": "2024-04-28 14:00:00"
         const selectedDays = newApptsState.checkedDays;
         let hour = newApptsState.newMeridiem === 'PM' && newApptsState.newHourDisplay !== '12' ? parseInt(newApptsState.newHourDisplay) + 12 : parseInt(newApptsState.newHourDisplay);
@@ -83,17 +83,19 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
         const startDateTime = new Date(newApptsState.startYear, months.indexOf(newApptsState.startMonth), newApptsState.startDate, hour, minute);
         const endDateTime = new Date(newApptsState.endYear, months.indexOf(newApptsState.endMonth), newApptsState.endDate, hour, minute);
 
-        const createApptArray = () => {
+        const createApptArray = async () => {
             const appts = [];
             selectedDays.forEach(day => {
                 let date = startDateTime;
+                const indexOfDay = days.indexOf(day) + 1 === 7 ? 0 : days.indexOf(day) + 1;
+
                 while (date <= endDateTime) {
-                    if (date.getDay() === days.indexOf(day) + 1) {
+                    if (date.getDay() === indexOfDay) {
                         const newAppt = {
                             AdminId: adminId,
                             DateTime: `${date.toISOString().slice(0, 10)}T${hour}:${newApptsState.newMinute}:00`,
                             ApptTypeId: newApptsState.newApptStatus === 0 ? null : newApptsState.newApptTypeId,
-                            Status: newApptsState.newApptStatus
+                            Status: parseInt(newApptsState.newApptStatus)
                         }
                         appts.push(newAppt);
                     }
@@ -102,7 +104,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
             });
             return appts;
         }
-        const apptsToAdd = createApptArray();
+        const apptsToAdd = await createApptArray();
 
         try {
             const response = await fetch(`http://localhost:5062/api/newAppts/`, {
@@ -139,22 +141,21 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
 
     $('.day-checkbox').change((e) => handleCheckedDay(e));
 
-    $('#newHourDisplay').append(
-        hours.map(hour =>
-            `<option key=${hour} value=${hour} ${hour == newApptsState.newHourDisplay ? "selected" : ""}>${hour}</option>`
-        ).join('')
-    );
+    function appendSelectOptions(selectId, options, currentState) {
+        $(selectId).append(
+            options.map((option, index) =>
+                `<option key=${index} value=${option} ${option == currentState ? "selected" : ""}>${option}</option>`
+            ).join('')
+        )
+    }
 
-    $('#newMinute').append(
-        minutes.map(minute =>
-            `<option key=${minute} value=${minute} ${minute == newApptsState.newMinute ? "selected" : ""}>${minute}</option>`
-        ).join('')
-    );
+    appendSelectOptions('#newHourDisplay', hours, newApptsState.newHourDisplay);
+    appendSelectOptions('#newMinute', minutes, newApptsState.newMinute);
 
     function renderDateSelects(start, mSelectId, dSelectId, ySelectId) {
-        $(`#${mSelectId}`).empty();
-        $(`#${dSelectId}`).empty();
-        $(`#${ySelectId}`).empty();
+        $(mSelectId).empty();
+        $(dSelectId).empty();
+        $(ySelectId).empty();
 
         let dates = newApptsState.startDates;
         let monthState = newApptsState.startMonth;
@@ -168,17 +169,9 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
             yearState = newApptsState.endYear;
         }
 
-        $(`#${mSelectId}`).append(`
-            ${months.map((month, index) => `<option key=${index} value=${month} ${month === monthState ? 'selected' : ''}>${month}</option>`)}
-        `)
-
-        $(`#${dSelectId}`).append(`
-            ${dates.map((date, index) => `<option key=${index} value=${date} ${date === dateState ? 'selected' : ''}>${date}</option>`)}
-        `)
-
-        $(`#${ySelectId}`).append(`
-            ${years.map((year, index) => `<option key=${index} value=${year} ${year === yearState ? 'selected' : ''}>${year}</option>`)}
-        `)
+        appendSelectOptions(mSelectId, months, monthState);
+        appendSelectOptions(dSelectId, dates, dateState);
+        appendSelectOptions(ySelectId, years, yearState);
     }
 
     function generateDates(name) {
@@ -198,20 +191,20 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
 
         if (name === 'startMonth' || name === 'startYear') {
             newApptsState.startDates = dates;
-            renderDateSelects(true, 'startMonth', 'startDate', 'startYear');
+            renderDateSelects(true, '#startMonth', '#startDate', '#startYear');
         } else if (name === 'endMonth' || name === 'endYear') {
             newApptsState.endDates = dates;
-            renderDateSelects(false, 'endMonth', 'endDate', 'endYear');
+            renderDateSelects(false, '#endMonth', '#endDate', '#endYear');
         }
     };
 
-    renderDateSelects(true, 'startMonth', 'startDate', 'startYear');
-    renderDateSelects(false, 'endMonth', 'endDate', 'endYear');
+    renderDateSelects(true, '#startMonth', '#startDate', '#startYear');
+    renderDateSelects(false, '#endMonth', '#endDate', '#endYear');
 
     generateDates('startMonth');
     generateDates('endMonth');
 
-    $('#newApptStatus').change(function () {
+    $('#newApptStatus').off('change').on('change', function () {
         const status = parseInt($(this).val());
 
         if (status === 4) {
@@ -233,6 +226,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
     $('select').change(function handleNewState(e) {
         const name = e.target.id;
         const value = e.target.value;
+
         newApptsState[name] = value;
 
         if (name === 'startMonth' || name === 'endMonth' || name === 'startYear' || name === 'endYear') {
@@ -240,7 +234,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
         }
     });
 
-    $('#create-appts-btn').click(() => createAppts());
+    $('#create-appts-btn').off('click').on('click', () => createAppts());
 
     $('#newApptsModal').on('hidden.bs.modal', function () {
         clearStates();
