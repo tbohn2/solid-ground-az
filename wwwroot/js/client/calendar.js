@@ -304,6 +304,30 @@ async function checkApptsAndRender() {
     }
     $('.spinner-border').remove();
     renderCalendar();
+
+    function setDates() {
+        $('.alert').remove();
+        displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
+        checkApptsAndRender();
+    }
+
+    $('#prev').off('click').on('click', () => {
+        displayedMonth -= 1;
+        if (displayedMonth === 0) {
+            displayedMonth = 12;
+            displayedYear -= 1;
+        }
+        setDates();
+    });
+
+    $('#next').off('click').on('click', () => {
+        displayedMonth += 1;
+        if (displayedMonth === 13) {
+            displayedMonth = 1;
+            displayedYear += 1;
+        }
+        setDates();
+    });
 }
 
 $('#serviceSelection').on('hidden.bs.modal', () => {
@@ -311,30 +335,6 @@ $('#serviceSelection').on('hidden.bs.modal', () => {
     $('#send-request').remove();
     $('#serviceSelectionLabel').empty();
     $('#modal-body').empty();
-});
-
-$('#prev').on('click', () => {
-    displayedMonth -= 1;
-    if (displayedMonth === 0) {
-        displayedMonth = 12;
-        displayedYear -= 1;
-    }
-    $('.alert').remove();
-    $('.spinner-border').remove();
-    displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
-    checkApptsAndRender();
-});
-
-$('#next').on('click', () => {
-    displayedMonth += 1;
-    if (displayedMonth === 13) {
-        displayedMonth = 1;
-        displayedYear += 1;
-    }
-    $('.alert').remove();
-    $('.spinner-border').remove();
-    displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
-    checkApptsAndRender();
 });
 
 window.addEventListener('resize', () => {

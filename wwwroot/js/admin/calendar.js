@@ -93,10 +93,8 @@ async function renderCalendar() {
             $(`#${date + 'container'}`).append(
                 `<div class='date-display' data-date=${date} ${mobile ? "" : `data-bs-toggle="modal" data-bs-target="#apptsModal"`}>${numberDisplay}</div>`);
 
-
-
             $(`#${date + 'container'}`).append(
-                `<div class=${`col-12 ${mobile ? 'd-flex justify-content-center flex-wrap' : 'appts-container'} `}>
+                `<div class='${`col-12 ${mobile ? 'd-flex justify-content-center' : 'appts-container'}`}'>
                     ${apptsForDay.length > 0 ?
                     mobile ?
                         apptsForDay.map((appt, index) => {
@@ -140,28 +138,34 @@ async function renderCalendar() {
         $('.date-container').on('click', function () {
             state.dayAppts = state.appointments[$(this).attr('id').slice(0, -9)] ? state.appointments[$(this).attr('id').slice(0, -9)] : [];
         })
+
+        $('.date-container').on('click', function () {
+            state.displayDate = $(this).attr('id').slice(0, -9);
+            renderApptModal(state, renderCalendar);
+        })
     }
     else {
         $('.date-display').on('click', function () {
             state.dayAppts = state.appointments[$(this).data('date')] ? state.appointments[$(this).data('date')] : [];
         })
+
+        $('.date-display').on('click', function () {
+            state.displayDate = $(this).attr('data-date');
+            renderApptModal(state, renderCalendar);
+        })
+
+        $('.appt-time').on('click', function () {
+            const apptId = $(this).attr('id');
+            const date = $(this).attr('data-date');
+            const thisDayAppts = state.appointments[date] || [];
+            const appt = thisDayAppts.find(appt => appt.Id === parseInt(apptId));
+            state.dayAppts = [appt];
+            state.displayService = appt.ApptTypeId ? state.services.find(service => service.Id === appt.ApptTypeId) : {};
+            state.displayDate = date;
+            renderApptModal(state, renderCalendar);
+        })
     }
 
-    $('.appt-time').on('click', function () {
-        const apptId = $(this).attr('id');
-        const date = $(this).attr('data-date');
-        const thisDayAppts = state.appointments[date] || [];
-        const appt = thisDayAppts.find(appt => appt.Id === parseInt(apptId));
-        state.dayAppts = [appt];
-        state.displayService = appt.ApptTypeId ? state.services.find(service => service.Id === appt.ApptTypeId) : {};
-        state.displayDate = date;
-        renderApptModal(state, renderCalendar);
-    })
-
-    $('.date-display').on('click', function () {
-        state.displayDate = $(this).attr('data-date');
-        renderApptModal(state, renderCalendar);
-    })
 }
 
 $('#prev').click(() => {

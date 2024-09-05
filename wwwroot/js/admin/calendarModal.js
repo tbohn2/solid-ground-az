@@ -46,12 +46,6 @@ export function renderApptModal(state, refetch) {
         $('.alert').remove();
     }
 
-    function updateAppointments(appts) {
-        calModalState.appointments = appts;
-        calModalState.apptDetails = appts.length === 1 ? appts[0] : null;
-        refetch();
-    }
-
     function clearStates() {
         $('#adding-container').remove();
         $('#editing-container').remove();
@@ -526,7 +520,7 @@ export function renderApptModal(state, refetch) {
     }).join('')}
  `);
 
-    $('.appt-card-header').on('click', function () {
+    $('.appt-card-header').off('click').on('click', function () {
         const apptId = $(this).attr('id');
         const appt = calModalState.appointments.find(appt => appt.Id === parseInt(apptId));
         toggleDetails(appt)
@@ -539,9 +533,11 @@ export function renderApptModal(state, refetch) {
         }
     });
 
-    $('#apptsModal').on('hidden.bs.modal', function () {
+    $('#apptsModal').off('hidden.bs.modal').on('hidden.bs.modal', function () {
         $('.modal-title').empty();
         $('#cal-modal-body').empty();
+        console.log('modal closed');
+
         clearStates();
     });
 }
