@@ -6,7 +6,7 @@ input[type="radio"]:checked+label {
 }
 
 @media screen and (max-width: 768px) {
-    #logo {
+    .logo {
         display: flex;
         flex-direction: column;
     }
