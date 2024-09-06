@@ -1,3 +1,7 @@
+#calendar {
+    width: 95%;
+}
+
 #calendar-weekdays div {
     width: 14.2857%;
 }
@@ -23,7 +27,7 @@
 
 .date {
     width: 14.2857%;
-    height: 100px;
+    height: 15vh;
     font-size: 20px;
     position: relative;
     border: 1px solid var(--gray);
@@ -142,12 +146,23 @@
 }
 
 .calendar-gallery-img {
-    width: 400px;
+    width: 600px;
     height: 500px;
     object-fit: cover;
-    object-position: center;
+    object-position: center 80%;
     border-radius: 10px;
     margin: 20px;
+}
+
+@media screen and (max-width: 992px) {
+    .appt-time {
+        font-size: 12px;
+    }
+
+    .calendar-gallery-img {
+        width: 450px;
+        height: 500px;
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -159,4 +174,8 @@
         align-self: center;
     }
 
+    .calendar-gallery-img {
+        width: 350px;
+        height: 300px;
+    }
 }

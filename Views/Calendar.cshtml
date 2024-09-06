@@ -4,6 +4,10 @@
 
 
 
+
+
+
+
     ViewData["Title"] = "Calendar";
 }
 
@@ -11,8 +15,8 @@
     <link rel="stylesheet" href="~/css/client/calendar.css" asp-append-version="true" />
 }
 
-<div id="book" class="py-3 col-12 d-flex flex-column align-items-center fade-in">
-    <div id="calendar" class="marble-bg rounded p-3 col-11 d-flex flex-column align-items-center">
+<div id="book" class="py-2 col-12 d-flex flex-column align-items-center fade-in">
+    <div id="calendar" class="marble-bg rounded p-3 mx-1 d-flex flex-column align-items-center">
         <div id="calendar-header" class="col-12 bg-white d-flex align-items-center">
             <div class="d-flex justify-content-evenly">
                 <button id="prev" class="monthNavBtn ">&#8592;</button>
@@ -37,21 +41,21 @@
             by Freepik</a>
     </div>
     <div class="mx-3 my-5 d-flex flex-wrap justify-content-center">
-        <img class="calendar-gallery-img" src="./assets/gallery7.jpg" alt="yoga-gallery7">
-        <img class="calendar-gallery-img" src="./assets/gallery3.jpg" alt="yoga-gallery3">
         <img class="calendar-gallery-img" src="./assets/gallery5.jpg" alt="yoga-gallery4">
     </div>
-</div>
-<div class="modal fade" id="serviceSelection" tabindex="-1" aria-labelledby="serviceSelectionLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content overflow-visible">
-            <div id="modal-header" class="rounded-top p-1 text-center">
-                <h1 class="modal-title fs-3" id="serviceSelectionLabel"></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
-            </div>
-            <div id="modal-body" class="bg-gray d-flex flex-column align-items-center col-12 py-3"></div>
-            <div id="modal-footer" class="bg-gray rounded-bottom d-flex justify-content-end">
-                <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">Close</button>
+
+    <div class="modal fade" id="serviceSelection" tabindex="-1" aria-labelledby="serviceSelectionLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content overflow-visible">
+                <div id="modal-header" class="rounded-top p-1 text-center">
+                    <h1 class="modal-title fs-3" id="serviceSelectionLabel"></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
+                </div>
+                <div id="modal-body" class="bg-gray d-flex flex-column align-items-center col-12 py-3"></div>
+                <div id="modal-footer" class="bg-gray rounded-bottom d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary m-1" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

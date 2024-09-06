@@ -160,6 +160,10 @@
 }
 
 @media screen and (max-width: 1200px) {
+    #private-sessions {
+        padding-top: 65px;
+    }
+
     #meet-container {
         flex-direction: column-reverse;
     }
@@ -176,10 +180,6 @@
     #transition-img {
         top: 57%;
         height: 360px;
-    }
-
-    #private-sessions {
-        padding-top: 75px;
     }
 
     .serviceCard {

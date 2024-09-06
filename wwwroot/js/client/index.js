@@ -2,6 +2,14 @@ import { getServices } from './root.js';
 
 let mobile = window.innerWidth < 768 ? true : false;
 
+function handleHiddenImg() {
+    if (window.innerWidth < 1410 && window.innerWidth > 739 || window.innerWidth > 1880) {
+        $('#last-img').hide();
+    } else {
+        $('#last-img').show();
+    }
+}
+
 async function renderServices() {
     const servicesContainer = $('#services');
     servicesContainer.empty();
@@ -84,6 +92,8 @@ async function renderServices() {
         event.stopPropagation();
     }
     );
+
+    handleHiddenImg();
 };
 
 $('#overlay').on('click', function () {
@@ -100,9 +110,11 @@ $('#calendar-link').on('click', function () {
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
     if (isMobile !== mobile) {
-        mobile = !mobile;
+        mobile = isMobile;
         renderServices();
     }
+
+    handleHiddenImg();
 });
 
 export default renderServices;
