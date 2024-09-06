@@ -196,9 +196,6 @@ window.addEventListener('resize', () => {
     }
 });
 
-renderCalendar();
-getServices();
-
 export default function fetchAndRenderAppts() {
     getServices();
     renderCalendar();

@@ -102,7 +102,7 @@ function renderNav() {
     else { $('input[name="navOptions"]').off('change').on('change', (e) => handleNavChange(e.target.dataset.page)) }
 }
 
-window.addEventListener('popstate', function (event) {
+window.addEventListener('popstate', function () {
     handleNavChange(window.location.pathname.substring(1));
 });
 

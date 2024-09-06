@@ -18,11 +18,14 @@ let injectedCssLinks = [];
 let injectedScripts = [];
 
 function checkNav() {
+    $('#option1').prop('checked', false);
+    $('#option2').prop('checked', false);
+
     if (window.location.pathname === '/admin/calendar') {
-        $('#option1').attr('checked', true);
+        $('#option1').prop('checked', true);
     }
     else if (window.location.pathname === '/admin/clients') {
-        $('#option2').attr('checked', true);
+        $('#option2').prop('checked', true);
     }
 }
 
@@ -62,7 +65,24 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
         if (callback) {
             callback();
         }
+
+        history.pushState(null, '', url);
+        checkNav();
     });
+}
+
+function handleNavChange(url) {
+    const cssUrl = `../css/admin/${url}.css`;
+    let jsUrls = [`../js/admin/${url}.js`, '../js/admin/calendarModal.js'];
+
+    if (url === 'calendar') {
+        jsUrls.push('../js/admin/newApptsModal.js');
+        jsUrls.push('../js/admin/servicesModal.js');
+    }
+
+    let callback = url === 'calendar' ? checkApptsAndRender : fetchAndRenderClients;
+
+    loadContentWithAssets(url, cssUrl, jsUrls, callback);
 }
 
 const mobileNavEl = `
@@ -93,31 +113,18 @@ function renderNav() {
     const nav = mobile ? mobileNavEl : navEl;
 
     $('#admin-nav').append(nav);
-    checkNav();
 
-    function handleNavClick() {
-        const url = $(this).data('page');
-        const cssUrl = `../css/admin/${url}.css`;
-        let jsUrls = [`../js/admin/${url}.js`, '../js/admin/calendarModal.js'];
-
-        if (url === 'calendar') {
-            jsUrls.push('../js/admin/newApptsModal.js');
-            jsUrls.push('../js/admin/servicesModal.js');
-        }
-
-        let callback = url === 'calendar' ? checkApptsAndRender : fetchAndRenderClients;
-
-        loadContentWithAssets(url, cssUrl, jsUrls, callback);
-        checkNav();
-    }
-
-    if (mobile) { $('.nav-btn').click(handleNavClick) }
-    else { $('input[name="navOptions"]').change(handleNavClick) }
+    if (mobile) { $('.nav-btn').off('click').on('click', (e) => handleNavChange(e.target.dataset.page)) }
+    else { $('input[name="navOptions"]').off('click').on('click', (e) => handleNavChange(e.target.dataset.page)) }
 }
 
 
 $('#logout-btn').click(() => {
     auth.logout();
+});
+
+window.addEventListener('popstate', function () {
+    handleNavChange(window.location.pathname.substring(7));
 });
 
 window.addEventListener('resize', () => {
@@ -129,5 +136,6 @@ window.addEventListener('resize', () => {
 });
 
 renderNav();
+handleNavChange(window.location.pathname.substring(7));
 
 export default loggedIn;
