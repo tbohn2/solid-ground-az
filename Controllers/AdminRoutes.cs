@@ -463,24 +463,24 @@ namespace StretchScheduler
             var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
             try
             {
-                var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
+                var client = JsonConvert.DeserializeObject<Client>(requestBody);
 
-                if (appt == null)
+                if (client == null)
                 {
-                    await WriteResponseAsync(context, 400, "application/json", "Invalid appointment data");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid client data");
                     return;
                 }
 
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                    var client = await dbContext.Clients.FindAsync(appt.ClientId);
-                    if (client == null)
+                    var reqClient = await dbContext.Clients.FindAsync(client.Id);
+                    if (reqClient == null)
                     {
                         await WriteResponseAsync(context, 404, "application/json", "Client not found");
                         return;
                     }
-                    client.Balance = 0;
+                    reqClient.Balance = 0;
                     await dbContext.SaveChangesAsync();
                 }
 

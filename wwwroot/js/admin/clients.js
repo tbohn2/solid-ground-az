@@ -31,7 +31,7 @@ function displayError(error) {
 }
 
 function removeError() {
-    $('.alert').remove();
+    $('.alert-danger').remove();
 }
 
 function displaySuccess(message) {
@@ -74,11 +74,11 @@ const fetchClients = async () => {
     }
 }
 
-const payBalance = async (clientId, price) => {
+const payBalance = async (clientId) => {
     try {
         const response = await fetch(`http://localhost:5062/api/adjustBalance/`, {
             method: 'PUT',
-            body: JSON.stringify({ ClientId: clientId, Price: price }),
+            body: JSON.stringify({ Id: clientId }),
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         });
         if (response.ok) {
@@ -112,6 +112,7 @@ const sortAppts = (appts) => {
 
 const togglePastAppts = (pastAppts, clientId) => {
     $('.past-appts').remove();
+    $('.toggle-past').text('View Past Appts');
     if (clientId === clientStates.displayClient) {
         clientStates.displayedPastAppts = [];
         clientStates.displayClient = 0;
@@ -119,6 +120,7 @@ const togglePastAppts = (pastAppts, clientId) => {
     else {
         clientStates.displayedPastAppts = pastAppts;
         clientStates.displayClient = clientId;
+        $(`.toggle-past[data-clientId="${clientId}"]`).text('Hide Past Appts');
 
         $(`#${clientId}`).append(`
         <div class="past-appts d-flex flex-column align-items-center col-12">
@@ -140,7 +142,7 @@ const togglePastAppts = (pastAppts, clientId) => {
                         <p class="fs-5 m-0 text-center">${time}</p>
                     </div>`
             )
-        })}
+        }).join('')}
         </div>`)
 
         $('.client-appt').off('click').on('click', function () {
@@ -228,15 +230,15 @@ async function renderClients() {
     )}
     </div>`);
 
-    $('#search').on('input', function () {
-        handleSearchChange
-        renderClients
+    $('#search').off('input').on('input', async function (e) {
+        handleSearchChange(e)
+        renderClients()
     });
 
-    $('.clear-bal').off('click').on('click', function () {
+    $('.clear-bal').off('click').on('click', async function () {
         const clientId = $(this).data('clientid');
-        const balance = clientStates.clients.find(client => client.Id === clientId).Balance;
-        payBalance(clientId, balance)
+        await payBalance(clientId)
+        renderClients();
     })
 
     $('.toggle-past').off('click').on('click', function () {

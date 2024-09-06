@@ -2,9 +2,9 @@
 @{
     ViewData["Title"] = "Solid Ground Admin";
 }
-   
+
 <div id='clients' class="py-2 text-light d-flex flex-column align-items-center">
-    <input id='search' type="search" class="input fs-5" placeholder="Search" onChange={handleSearchChange} />
+    <input id='search' type="search" class="input fs-5" placeholder="Search" />
 </div>
 
 @await Html.PartialAsync("~/Views/Admin/Shared/_CalendarModal.cshtml")
