@@ -46,9 +46,9 @@
 
 input[type="radio"]:checked+label {
     text-decoration: underline;
-    border: 1px solid var(--purple);
-    background-color: var(--purple);
-    color: var(--white);
+    border: 1px solid var(--purple) !important;
+    background-color: var(--purple) !important;
+    color: var(--white) !important;
 }
 
 select::-webkit-scrollbar {

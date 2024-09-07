@@ -1,15 +1,28 @@
-@media screen and (max-width: 850px) {
-    #logo div h1 {
-        font-size: 30px;
-    }
-}
-
 input[type="radio"]:checked+label {
     border-bottom: 5px solid;
     border-image: linear-gradient(to left, var(--lav), var(--purple));
     border-image-slice: 1;
     border-image-repeat: stretch;
     margin-top: 5px;
+}
+
+nav label {
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 7px;
+}
+
+nav label:hover {
+    color: var(--purple);
+    background-color: var(--lav);
+    transition: all 0.3s ease;
+}
+
+@media screen and (max-width: 850px) {
+    #logo div h1 {
+        font-size: 30px;
+    }
 }
 
 @media screen and (max-width: 768px) {

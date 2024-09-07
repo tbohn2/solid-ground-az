@@ -163,11 +163,11 @@ async function displayApptDetails(event) {
         }
 
         const dropdown = $(` 
-        <div class="dropdown-center col-12 text-center my-2">
+        <div id="service-dropdown" class="dropdown-center col-12 text-center my-2">
             <button class="px-1 col-10 btn dropdown-toggle fs-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 ${selectedService}
             </button>
-            <ul class="dropdown-menu m-0 p-0">
+            <ul class="cal-dropdown-menu dropdown-menu m-0 p-0">
                 ${privateServices.map(service => `<li key=${service.Id} class="dropdown-item fs-4">${service.Name}</li>`).join('')}
             </ul>
         </div>`);
@@ -187,7 +187,7 @@ async function displayApptDetails(event) {
             localStorage.removeItem('bookServiceId');
             $('#book-next').remove();
             $('#modal-footer').prepend(`<button type="submit" id="send-request" class="btn request-btn m-1">Request Appointment</button>`);
-            $('.dropdown-center').remove();
+            $('#service-dropdown').remove();
             $('#service-time').after(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${selectedService}</div>`);
 
             const form = $(
@@ -214,10 +214,10 @@ async function displayModal(event) {
 
     $('#serviceSelectionLabel').text(dateDisplay);
 
-    availableApptsInDay.forEach(appt => {
+    availableApptsInDay.forEach((appt, index) => {
         const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         const timeDisplay = $(
-            `<div id=${appt.Id} class="col-12 p-1 time-option">
+            `<div id=${appt.Id} class="col-12 p-1 time-option ${index === 0 ? 'first-time-option' : ''}">
                 <h3 class="m-0">${appt.ApptType ? appt.ApptType.Name : 'Available To Book Private Session'}</h3>
                 <p class="m-0">${apptTime}</p>
             </div>`
@@ -240,20 +240,16 @@ async function renderCalendar() {
         let weekDisplay = $('<div class="d-flex fade-in"></div>');
         week.forEach(date => {
             let dateDisplay = $(`<div data-date=${date} class="px-1 d-flex flex-column align-items-center date"></div>`);
-            let pastDate = false;
             if (date === 0) {
                 dateDisplay.text('');
             }
             else {
                 dateDisplay.append(`<div id=${date} data-date=${date} class='date-display'>${date}</div>`)
                 const availableApptsInDay = apptsByDate[date] || [];
-                if (date < currentDate && displayedMonth === currentMonth && displayedYear === currentYear || displayedMonth < currentMonth && displayedYear === currentYear || displayedYear < currentYear) {
-                    pastDate = true;
-                }
 
                 let appointmentsDisplay;
 
-                if (availableApptsInDay.length != 0 && !pastDate) {
+                if (availableApptsInDay.length != 0) {
                     if (mobile === true) {
                         dateDisplay.attr('data-bs-toggle', 'modal');
                         dateDisplay.attr('data-bs-target', '#serviceSelection');
@@ -328,14 +324,15 @@ async function checkApptsAndRender() {
         }
         setDates();
     });
+
+    $('#serviceSelection').off('hidden.bs.modal').on('hidden.bs.modal', () => {
+        $('#book-next').remove();
+        $('#send-request').remove();
+        $('#serviceSelectionLabel').empty();
+        $('#modal-body').empty();
+    });
 }
 
-$('#serviceSelection').on('hidden.bs.modal', () => {
-    $('#book-next').remove();
-    $('#send-request').remove();
-    $('#serviceSelectionLabel').empty();
-    $('#modal-body').empty();
-});
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;

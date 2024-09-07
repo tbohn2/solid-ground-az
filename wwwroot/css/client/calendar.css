@@ -88,6 +88,10 @@
     border-bottom: 1px solid var(--darkgray);
 }
 
+.first-time-option {
+    border-top: 1px solid var(--darkgray);
+}
+
 .time-option:hover {
     color: var(--gray);
     background-color: var(--darkgray);
@@ -105,11 +109,7 @@
     color: var(--purple) !important;
 }
 
-.dropdown {
-    position: relative !important;
-}
-
-.dropdown-menu {
+.cal-dropdown-menu {
     position: absolute;
     top: 100%;
     overflow-y: auto;
@@ -117,7 +117,7 @@
     z-index: 5;
 }
 
-.dropdown-menu li {
+.cal-dropdown-menu li {
     cursor: pointer;
     background-color: var(--gray);
     border: 1px solid var(--darkgray) !important;
