@@ -1,6 +1,7 @@
 import auth from './auth.js';
 import checkApptsAndRender from './calendar.js';
 import fetchAndRenderClients from './clients.js';
+import attachSubmitListener from './login.js';
 
 let loggedIn = auth.loggedIn();
 
@@ -72,15 +73,27 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
 }
 
 function handleNavChange(url) {
-    const cssUrl = `../css/admin/${url}.css`;
-    let jsUrls = [`../js/admin/${url}.js`, '../js/admin/calendarModal.js'];
+    let cssUrl = null;
+    let jsUrls = null;
+
+    if (url !== 'login') {
+        cssUrl = `../css/admin/${url}.css`;
+    }
+    jsUrls = [`../js/admin/${url}.js`, '../js/admin/calendarModal.js'];
 
     if (url === 'calendar') {
         jsUrls.push('../js/admin/newApptsModal.js');
         jsUrls.push('../js/admin/servicesModal.js');
     }
 
-    let callback = url === 'calendar' ? checkApptsAndRender : fetchAndRenderClients;
+    let callback
+    if (url === 'login') {
+        callback = attachSubmitListener;
+    } else if (url === 'calendar') {
+        callback = checkApptsAndRender;
+    } else if (url === 'clients') {
+        callback = fetchAndRenderClients;
+    }
 
     loadContentWithAssets(url, cssUrl, jsUrls, callback);
 }
@@ -116,12 +129,10 @@ function renderNav() {
 
     if (mobile) { $('.nav-btn').off('click').on('click', (e) => handleNavChange(e.target.dataset.page)) }
     else { $('input[name="navOptions"]').off('click').on('click', (e) => handleNavChange(e.target.dataset.page)) }
+    $('#logout-btn').off('click').on('click', () => { auth.logout(); });
 }
 
 
-$('#logout-btn').click(() => {
-    auth.logout();
-});
 
 window.addEventListener('popstate', function () {
     handleNavChange(window.location.pathname.substring(7));
