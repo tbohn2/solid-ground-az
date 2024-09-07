@@ -12,7 +12,7 @@ function attachSubmitListener() {
         const password = $('#password').val();
 
         try {
-            const response = await fetch(`http://localhost:5062/api/login/`, {
+            const response = await fetch(`https://solidgroundaz.com/api/login/`, {
                 method: 'POST',
                 body: JSON.stringify({ Username: username, Password: password }),
                 headers: { 'Content-Type': 'application/json' },

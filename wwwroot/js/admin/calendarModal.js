@@ -162,7 +162,7 @@ export function renderApptModal(state, refetch) {
         }
 
         try {
-            const response = await fetch(`http://localhost:5062/api/newAppts/`, {
+            const response = await fetch(`https://solidgroundaz.com/api/newAppts/`, {
                 method: 'POST',
                 body: JSON.stringify([newAppt]),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -196,7 +196,7 @@ export function renderApptModal(state, refetch) {
             newHour === 12 ? newHour = '00' : newHour += 12;
         }
         try {
-            const response = await fetch(`http://localhost:5062/api/editAppt/`, {
+            const response = await fetch(`https://solidgroundaz.com/api/editAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({
                     Id: calModalState.apptDetails.Id,
@@ -230,7 +230,7 @@ export function renderApptModal(state, refetch) {
         showLoading();
         hideError();
         try {
-            const response = await fetch(`http://localhost:5062/api/approveAppt/`, {
+            const response = await fetch(`https://solidgroundaz.com/api/approveAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id }),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -257,7 +257,7 @@ export function renderApptModal(state, refetch) {
         showLoading();
         hideError();
         try {
-            const response = await fetch(`http://localhost:5062/api/denyAppt/`, {
+            const response = await fetch(`https://solidgroundaz.com/api/denyAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id }),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -284,7 +284,7 @@ export function renderApptModal(state, refetch) {
         showLoading();
         hideError();
         try {
-            const response = await fetch(`http://localhost:5062/api/completeAppt/`, {
+            const response = await fetch(`https://solidgroundaz.com/api/completeAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id, ApptType: { Price: displayService.Price }, ClientId: calModalState.apptDetails.ClientId }),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -310,7 +310,7 @@ export function renderApptModal(state, refetch) {
         calModalState.deletingAppt = false;
         hideError();
         try {
-            const response = await fetch(`http://localhost:5062/api/deleteAppt/`, {
+            const response = await fetch(`https://solidgroundaz.com/api/deleteAppt/`, {
                 method: 'DELETE',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id }),
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },

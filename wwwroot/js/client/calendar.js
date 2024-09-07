@@ -23,7 +23,7 @@ async function getAppointments() {
     $('#month-year').after(`<div class="spinner-border" role="status"></div>`)
     try {
         // const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
-        const response = await fetch(`http://localhost:5062/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
+        const response = await fetch(`https://solidgroundaz.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         if (response.ok) {
             const appointments = await response.json();
             // Add to global object for quick access; allows for one loop through appointments instead of every time a date is clicked
@@ -74,8 +74,7 @@ async function submitForm(event) {
     $('#modal-body').append(`<div class="spinner-border" role="status"></div>`)
 
     try {
-        // const response = await fetch('https://tbohn2-001-site1.ctempurl.com/api/requestAppt', {
-        const response = await fetch('http://localhost:5062/api/requestAppt', {
+        const response = await fetch('https://solidgroundaz.com/api/requestAppt', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

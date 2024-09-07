@@ -31,7 +31,7 @@ class AuthService {
                 return JSON.parse(cachedServices);
             }
 
-            const response = await fetch(`http://localhost:5062/api/allServices`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
+            const response = await fetch(`https://solidgroundaz.com/api/allServices`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
             if (response.ok) {
                 const services = await response.json();
                 localStorage.setItem('services', JSON.stringify(services));

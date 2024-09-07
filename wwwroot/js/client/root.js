@@ -119,8 +119,7 @@ handleNavChange(window.location.pathname.substring(1));
 
 async function getServices() {
     try {
-        // const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/services`);
-        const response = await fetch(`http://localhost:5062/api/services`);
+        const response = await fetch(`https://solidgroundaz.com/api/services`);
         if (response.ok) {
             const services = await response.json();
             return services;
