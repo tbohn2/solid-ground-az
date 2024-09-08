@@ -1,3 +1,7 @@
+header {
+    justify-content: space-between;
+}
+
 input[type="radio"]:checked+label {
     border-bottom: 5px solid;
     border-image: linear-gradient(to left, var(--lav), var(--purple));
@@ -26,6 +30,10 @@ nav label:hover {
 }
 
 @media screen and (max-width: 768px) {
+    header {
+        justify-content: center;
+    }
+
     .logo {
         display: flex;
         flex-direction: column;
@@ -34,7 +42,12 @@ nav label:hover {
     nav {
         position: absolute !important;
         top: 35px !important;
-        right: 20px !important;
+        right: 25px !important;
+        z-index: 9;
+    }
+
+    #mobile-nav span {
+        font-size: 28px;
     }
 
     footer {
@@ -47,4 +60,15 @@ nav label:hover {
         display: flex;
         flex-direction: column !important;
     }
+}
+
+@media screen and (max-width: 460px) {
+    #logo div h1 {
+        font-size: 24px;
+    }
+
+    #logo div div h3 {
+        font-size: 16px;
+    }
+
 }

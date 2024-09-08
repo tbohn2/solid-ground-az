@@ -79,8 +79,8 @@ function handleNavChange(url) {
 function renderNav() {
     $('.navbar').empty();
     const nav = mobile ? `
-        <div class="dropdown-center">
-            <span class="fs-2 text-purple" data-bs-toggle="dropdown" aria-expanded="false">&#9776;</span>
+        <div id="mobile-nav" class="dropdown-center">
+            <span class="text-purple" data-bs-toggle="dropdown" aria-expanded="false">&#9776;</span>
             <ul class="dropdown-menu dropdown-menu-end m-0 p-0">
                 <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="about">About</li>
                 <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="calendar">Calendar</li>
