@@ -510,9 +510,9 @@ export function renderApptModal(state, refetch) {
             `<div class="appts-container d-flex flex-column align-items-center col-11">
             <div id=${"appt-card-" + appt.Id} class="appt-card col-12 px-1 mt-3 d-flex flex-wrap align-items-center">
                 <div id=${appt.Id} class="appt-card-header text-purple col-12 d-flex px-1">
-                    <h2 class="time fs-5 my-1 col-3">${time}</h2>
+                    <h2 class="time fs-5 my-1 col-sm-3 col-4">${time}</h2>
                     <h2 class="fs-5 my-1 col-6 text-center">${display}</h2>
-                    <h2 class="my-1 col-3"></h2>
+                    <h2 class="my-1 col-0 col-sm-3"></h2>
                 </div>
             </div>
         </div>`

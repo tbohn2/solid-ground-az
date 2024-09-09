@@ -302,7 +302,7 @@ export function renderServicesModal(services) {
     function renderServices() {
         $('#services-container').append(`
             ${services.map((service, index) =>
-            `<div id=${`s-container-${service.Id}`} class="service-card d-flex flex-wrap justify-content-between border-darkgray rounded my-2 px-1 fs-4 col-8">
+            `<div id=${`s-container-${service.Id}`} class="service-card d-flex flex-wrap justify-content-between border-darkgray rounded my-2 px-1 fs-4 col-sm-8 col-10">
                 <div id=${service.Id} class="service-button col-12 text-center">${service.Name}</div>                        
             </div>`).join('')}
             `);
