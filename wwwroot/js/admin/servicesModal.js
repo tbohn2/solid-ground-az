@@ -33,7 +33,11 @@ export function renderServicesModal(services) {
 
     function setLoading(loading) {
         if (loading) {
-            $('#modal-body').append(`<div class="spinner-border" role="status"></div>`);
+            $('#service-modal-body').prepend(`
+                <div class="text-center col-12">
+                    <div class="spinner-border" role="status"></div>
+                </div>
+            `);
         }
         else {
             $('.spinner-border').remove();
@@ -41,7 +45,11 @@ export function renderServicesModal(services) {
     }
 
     function displayError(error) {
-        $('#modal-body').append(`<div class="alert alert-danger mx-2 my-0 p-2">${error}</div>`);
+        $('#service-modal-body').prepend(`
+            <div class="text-center col-12">
+                <div class="alert alert-danger mx-2 my-0 p-2">${error}</div>
+            </div>
+        `);
     }
 
     function removeError() {
@@ -166,34 +174,33 @@ export function renderServicesModal(services) {
 
     function renderForm() {
         let parent = '';
+        let width
         $('#service-form').remove();
         if (servicesState.editingService) {
             $('.service-details').hide().removeClass('d-flex');
             parent = $(`#s-container-${servicesState.serviceDetails.Id}`);
+            width = 'col-12';
         }
         else if (servicesState.addingService) {
             $('.service-card').hide().removeClass('d-flex');
             parent = $('#services-container');
+            width = 'col-10';
         }
 
+        const imgURLs = [1, 2, 3, 7, 4, 5, 6, 8].map(num => `../assets/services${num}.jpg`);
+
         parent.append(`
-              <form id='service-form' class='col-12 d-flex flex-column align-items-center fade-in'>
+              <form id='service-form' class='${width} d-flex flex-column align-items-center fade-in'>
                 <div class="col-12 my-1">
                     <label>Name:</label>
                     <input type='text' class="service-form-input col-12" name='Name' value='${servicesState.serviceDetails.Name}' required></input>
                 </div>
                 ${servicesState.serviceDetails.ImgURL ? `<img id='service-photo' class='col-6 my-1 rounded' src='${servicesState.serviceDetails.ImgURL}' alt="servicePhoto" />` : ''}
                 <label>Change Image:</label>
-                <select name='ImgURL' class='service-form-input col-12 text-center custom-btn my-1' >
-                    <option value=''>None</option>
-                    <option value='../assets/services1.jpg'>Yoga</option>
-                    <option value='../assets/services2.jpg'>Stretch 1</option>
-                    <option value='../assets/services3.jpg'>Stretch 2</option>
-                    <option value='../assets/services7.jpg'>Stretch 3</option>
-                    <option value='../assets/services4.jpg'>Balls</option>
-                    <option value='../assets/services5.jpg'>Group</option>
-                    <option value='../assets/services6.jpg'>Head Massage</option>
-                    <option value='../assets/services8.jpg'>Equipment</option>
+                <select name='ImgURL' class='service-form-input col-12 text-center custom-btn my-1'>
+                    ${imgURLs.map((url, index) => {
+            return `<option value='${url}' ${servicesState.serviceDetails.ImgURL === url ? 'selected' : ''}>Image ${index + 1}</option>`
+        }).join('')}                    
                 </select>
                 <select name='Private' class='service-form-input col-12 text-center custom-btn my-1' value=${servicesState.serviceDetails.Private}>
                     <option value=${false}>Public</option>
