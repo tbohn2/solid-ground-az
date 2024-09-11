@@ -31,7 +31,7 @@ export function renderApptModal(state, refetch) {
     calModalState.appointments = appts;
 
     function showLoading() {
-        $('#cal-modal-body').append(`<div class="spinner-border" role="status"></div>`);
+        $('#cal-modal-body').prepend(`<div class="spinner-border" role="status"></div>`);
     }
 
     function hideLoading() {
@@ -39,7 +39,7 @@ export function renderApptModal(state, refetch) {
     }
 
     function showError(error) {
-        $('#cal-modal-body').append(`<div class="alert alert-danger">${error}</div>`);
+        $('#cal-modal-body').prepend(`<div class="alert alert-danger">${error}</div>`);
     }
 
     function hideError() {
@@ -468,8 +468,8 @@ export function renderApptModal(state, refetch) {
                 }
             ${appt.Status === 1 ?
                     `<div class="d-flex justify-content-evenly my-3">
-                <button type="button" id='approve-btn' class="custom-btn success-btn fs-5 col-3">Approve</button>
-                <button type="button" id='deny-btn' class="custom-btn danger-btn fs-5 col-3">Deny</button>
+                <button type="button" id='approve-btn' class="custom-btn success-btn fs-5 col-4">Approve</button>
+                <button type="button" id='deny-btn' class="custom-btn danger-btn fs-5 col-4">Deny</button>
             </div>`
                     : ''
                 }            
