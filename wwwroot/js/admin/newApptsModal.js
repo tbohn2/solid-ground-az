@@ -93,7 +93,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
                     if (date.getDay() === indexOfDay) {
                         const newAppt = {
                             AdminId: adminId,
-                            DateTime: `${date.toISOString().slice(0, 10)}T${hour}:${newApptsState.newMinute}:00`,
+                            DateTime: `${date.toISOString().slice(0, 10)} ${hour}:${newApptsState.newMinute}:00`,
                             ApptTypeId: newApptsState.newApptStatus === 0 ? null : newApptsState.newApptTypeId,
                             Status: parseInt(newApptsState.newApptStatus)
                         }
