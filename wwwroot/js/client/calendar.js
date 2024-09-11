@@ -22,7 +22,6 @@ async function getAppointments() {
     apptsByDate = {};
     $('#month-year').after(`<div class="spinner-border" role="status"></div>`)
     try {
-        // const response = await fetch(`https://tbohn2-001-site1.ctempurl.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         const response = await fetch(`https://solidgroundaz.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         if (response.ok) {
             const appointments = await response.json();
@@ -101,7 +100,11 @@ async function displayApptDetails(event) {
 
     // selectedAppt.Status will either be 0 (available) or 4 (fixed)
     const selectedAppt = availableApptsInDay.find(appt => appt.Id == parseInt(apptId));
-    const time = new Date(selectedAppt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const startTime = new Date(selectedAppt.DateTime)
+    const endTime = new Date(selectedAppt.DateTime)
+    endTime.setHours(endTime.getHours() + 1);
+
+    const timeDisplay = `${startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} - ${endTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
 
     $('#serviceSelectionLabel').text(`${selectedAppt.ApptType ? selectedAppt.ApptType.Name : 'Available To Book'}`);
 
@@ -115,7 +118,7 @@ async function displayApptDetails(event) {
             </div>
             <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
                 <img class="icon" src="./assets/clockIcon.png" alt="Calendar Icon By Freepik">
-                <div class="px-1 text-center">${time}</div>            
+                <div class="px-1 text-center">${startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</div>            
             </div>
             <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
                 <img class="icon" src="./assets/locationIcon.png" alt="Calendar Icon By Freepik">
@@ -133,7 +136,7 @@ async function displayApptDetails(event) {
         function renderServiceDetails(serviceId) {
             $('#service-details').remove();
             const service = privateServices.find(service => service.Id == serviceId);
-            const imgURL = '.' + service.ImgURL.slice(5);
+            const imgURL = service.ImgURL;
             const serviceDetails = $(`
                 <div id="service-details" class="col-12 d-flex flex-column align-items-center fade-in">
                     <img class="col-2" src="${imgURL}" alt="yoga">
@@ -150,7 +153,7 @@ async function displayApptDetails(event) {
             </div>
             <div id="service-time" class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
                 <img class="icon" src="./assets/clockIcon.png" alt="Calendar Icon By Freepik">
-                <div class="px-1 text-center">${time}</div>            
+                <div class="px-1 text-center">${timeDisplay}</div>            
             </div>
             `);
 

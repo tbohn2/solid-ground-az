@@ -1,4 +1,4 @@
-import { getServices } from './root.js';
+import { getServices, handleNavChange } from './root.js';
 
 let mobile = window.innerWidth < 768 ? true : false;
 
@@ -92,6 +92,11 @@ async function renderServices() {
     }
     );
 
+    $('#calendar-link').off('click').on('click', () => {
+        handleNavChange('calendar');
+        $('html, body').animate({ scrollTop: 0 }, 'fast');
+    });
+
     handleHiddenImg();
 };
 
@@ -100,10 +105,6 @@ $('#overlay').on('click', function () {
     $('.displayRollModel.show').removeClass('show');
     $('#overlay').removeClass('show');
     $('.serviceDescription.text-decoration-underline').removeClass('text-decoration-underline');
-});
-
-$('#calendar-link').on('click', function () {
-    window.location.assign('./calendar');
 });
 
 window.addEventListener('resize', () => {

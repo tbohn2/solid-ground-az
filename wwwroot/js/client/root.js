@@ -135,4 +135,4 @@ async function getServices() {
     }
 };
 
-export { getServices };
+export { getServices, handleNavChange };
