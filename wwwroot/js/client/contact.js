@@ -1,7 +1,7 @@
 $('#contactForm').submit(async function (e) {
     e.preventDefault();
     $('#form-btn').empty();
-    $('#form-btn').append(`<div class="spinner-border" role="status"></div>`)
+    $('#form-btn').append(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
 
     let fName = $('#firstname').val();
     let lName = $('#lastname').val();

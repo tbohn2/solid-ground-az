@@ -20,7 +20,7 @@ let mobile = window.innerWidth < 768 ? true : false;
 
 async function getAppointments() {
     apptsByDate = {};
-    $('#month-year').after(`<div class="spinner-border" role="status"></div>`)
+    $('#month-year').after(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
     try {
         const response = await fetch(`https://solidgroundaz.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         if (response.ok) {
@@ -37,7 +37,7 @@ async function getAppointments() {
             return true;
         } else {
             console.error('Server request failed');
-            $('.spinner-border').remove();
+            $('.loading').remove();
             $('#month-year').after(`
             <div class="alert alert-danger text-center m-2 p-2" role="alert">
                 Server request failed. Please try again later.
@@ -47,7 +47,7 @@ async function getAppointments() {
         }
     } catch (error) {
         console.error(error);
-        $('.spinner-border').remove();
+        $('.loading').remove();
         $('#month-year').after(`
         <div class="alert alert-danger text-center m-2 p-2" role="alert">
             Server request failed. Please try again later.
@@ -70,7 +70,7 @@ async function submitForm(event) {
     const data = { Id, Name, Email, Phone, ApptTypeId }
 
     $('#modal-body').empty()
-    $('#modal-body').append(`<div class="spinner-border" role="status"></div>`)
+    $('#modal-body').append(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
 
     try {
         const response = await fetch('https://solidgroundaz.com/api/requestAppt', {
@@ -300,7 +300,7 @@ async function checkApptsAndRender() {
             </div>
             `);
     }
-    $('.spinner-border').remove();
+    $('.loading').remove();
     renderCalendar();
 
     function setDates() {

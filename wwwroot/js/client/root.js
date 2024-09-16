@@ -6,6 +6,14 @@ let mobile = window.innerWidth < 768 ? true : false;
 let injectedCssLinks = [];
 let injectedScripts = [];
 
+function setLoading(loading) {
+    if (loading) {
+        $('#content').prepend(`<div class='col-12 loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`);
+    } else {
+        $('.loading').remove();
+    }
+}
+
 function checkNav() {
     $('#option1').prop('checked', false);
     $('#option2').prop('checked', false);
@@ -58,6 +66,11 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
             callback();
         }
         history.pushState(null, '', url);
+        setLoading(true);
+        $('img').on('load', () => {
+            $('img').addClass('loaded');
+            setLoading(false);
+        });
         checkNav();
     });
 }
