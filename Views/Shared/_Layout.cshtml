@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="~/assets/flower.svg" />
+    <link rel="apple-touch-icon" href="~/assets/flower.png">
+    <link rel="apple-touch-startup-image" href="~/assets/flower.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -18,6 +20,9 @@
 
     @RenderSection("Styles", required: false)
 
+    <meta name="apple-mobile-web-app-title" content="Solid Ground">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
 </head>
@@ -57,7 +62,7 @@
         <div id="footer-info"
             class="col-md-6 col-lg-4 col-12 d-flex flex-wrap justify-content-between align-items-center">
             <div class="my-3 d-flex flex-column justify-content-evenly align-items-start">
-                <p class="text-center m-0">nicolestretcharizona@gmail.com</p>
+                <p class="text-center m-0">nicole.solidgroundaz@gmail.com</p>
                 <a id="photographer-link" href="https://www.timelesscapturephotography.com/">Photos by Gabe Olsen</a>
             </div>
             <img id="ryt-logo" src="./assets/RYTLogo.png" alt="RYT Logo">

@@ -4,12 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="~/assets/flower.svg" />
+  <link rel="apple-touch-icon" href="~/assets/flower.png">
+  <link rel="apple-touch-startup-image" href="~/assets/flower.png">
   <link rel="stylesheet" href="~/css/root.css" asp-append-version="true" />
   <link rel="stylesheet" href="~/css/admin/root.css" asp-append-version="true" />
   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
 
   @RenderSection("Styles", required: false)
 
+  <meta name="apple-mobile-web-app-title" content="Solid Ground Admin">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@ViewData["Title"]</title>
 </head>

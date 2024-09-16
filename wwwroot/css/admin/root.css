@@ -1,4 +1,5 @@
 .admin-bg {
+    background-color: var(--lav);
     background-image: url('../../assets/bg.jpg');
     background-size: cover;
     background-repeat: no-repeat;

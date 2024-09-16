@@ -3,16 +3,6 @@ import checkApptsAndRender from './calendar.js';
 import fetchAndRenderClients from './clients.js';
 import attachSubmitListener from './login.js';
 
-let loggedIn = auth.loggedIn();
-
-function checkLoggedIn() {
-    if (!loggedIn && window.location.pathname !== '/admin/login') {
-        window.location.assign('/admin/login');
-    }
-}
-
-checkLoggedIn();
-
 let mobile = window.innerWidth < 768 ? true : false;
 
 let injectedCssLinks = [];
@@ -27,6 +17,9 @@ function checkNav() {
     }
     else if (window.location.pathname === '/admin/clients') {
         $('#option2').prop('checked', true);
+    }
+    else if (window.location.pathname === '/admin/login') {
+        $('#option3').prop('checked', true);
     }
 }
 
@@ -73,6 +66,19 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
 }
 
 function handleNavChange(url) {
+    const loggedIn = auth.loggedIn();
+
+    if (!loggedIn && url !== 'login') {
+        $('#content').append('<div class="col-6 mt-5 position-absolute top-0 start-50 translate-middle alert alert-info">Please log in to view admin pages</div>');
+        checkNav();
+        if (window.location.pathname !== '/admin/login') {
+            window.location.assign('/admin/login');
+        }
+        return;
+    }
+
+    $('#content').remove('.alert');
+
     let cssUrl = null;
     let jsUrls = null;
 
@@ -99,26 +105,37 @@ function handleNavChange(url) {
 }
 
 const mobileNavEl = `
-    <div class="dropdown-center">
+    <div class="dropdown-end">
         <span data-bs-toggle="dropdown" aria-expanded="false">&#9776;</span>
-        <ul class="dropdown-menu dropdown-menu-end m-0 p-0">
+        <ul class="dropdown-menu m-0 p-0">
             <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="calendar">calendar</li>
             <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="clients">clients</li>
-            <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4'>logout</li>
+            ${auth.loggedIn() ?
+        `<li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4'>logout</li>`
+        :
+        `<li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="login">login</li>`
+    }
         </ul>
     </div>
     `
 
 const navEl = `
     <a href='/calendar'>
-      <input type="radio" class="" name="navOptions" id="option1" data-page="calendar" />
+      <input type="radio" name="navOptions" id="option1" data-page="calendar" />
       <label for="option1">calendar</label>
     </a>
     <a href='/clients'>
-      <input type="radio" class="" name="navOptions" id="option2" data-page="clients" />
+      <input type="radio" name="navOptions" id="option2" data-page="clients" />
       <label for="option2">clients</label>
     </a>
-    <button id='logout-btn'>logout</button>
+    ${auth.loggedIn() ?
+        `<button id='logout-btn'>logout</button>`
+        :
+        `<a href='/clients'>
+            <input type="radio" name="navOptions" id="option3" data-page="login" />
+            <label for="option3">login</label>
+        </a>`
+    }   
     `
 
 function renderNav() {
@@ -127,8 +144,13 @@ function renderNav() {
 
     $('#admin-nav').append(nav);
 
-    if (mobile) { $('.nav-btn').off('click').on('click', (e) => handleNavChange(e.target.dataset.page)) }
-    else { $('input[name="navOptions"]').off('click').on('click', (e) => handleNavChange(e.target.dataset.page)) }
+    if (mobile) {
+        $('.nav-btn').off('click').on('click', (e) => handleNavChange(e.target.dataset.page))
+    }
+    else {
+        $('input[name="navOptions"]').off('click').on('click', (e) => handleNavChange(e.target.dataset.page));
+        checkNav();
+    }
     $('#logout-btn').off('click').on('click', () => { auth.logout(); });
 }
 
@@ -148,5 +170,3 @@ window.addEventListener('resize', () => {
 
 renderNav();
 handleNavChange(window.location.pathname.substring(7));
-
-export default loggedIn;
