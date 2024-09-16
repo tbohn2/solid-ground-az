@@ -226,8 +226,7 @@ async function renderClients() {
             </div>            
         </div>`
         )
-    }
-    )}
+    }).join('')}
     </div>`);
 
     $('#search').off('input').on('input', async function (e) {

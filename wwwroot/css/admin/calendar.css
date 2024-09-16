@@ -12,10 +12,6 @@ textarea {
     border-top: 1px solid var(--gray);
 }
 
-#calendar-body {
-    min-height: 525px;
-}
-
 #calendar-weekdays {
     border-left: 1px solid var(--gray);
     border-right: 1px solid var(--gray);
