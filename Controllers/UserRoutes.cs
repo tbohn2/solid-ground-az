@@ -104,9 +104,9 @@ namespace StretchScheduler
                 }
                 var email = Environment.GetEnvironmentVariable("EMAIL");
                 var password = Environment.GetEnvironmentVariable("GPW");
-                if (email == null || password == null)
+                if (email == null || email == "" || password == null || password == "")
                 {
-                    await WriteResponseAsync(context, 500, "application/json", "Email credentials not found");
+                    await WriteResponseAsync(context, 500, "application/json", "Server error; Email credentials not found");
                     return;
                 }
 

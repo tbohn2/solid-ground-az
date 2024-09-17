@@ -61,6 +61,38 @@ namespace StretchScheduler
                 return false;
             }
         }
+        private static async Task WriteEmail(HttpContext context, string clientEmail, string subject, string message)
+        {
+            var email = Environment.GetEnvironmentVariable("EMAIL");
+            var password = Environment.GetEnvironmentVariable("GPW");
+            if (email == null || email == "" || password == null || password == "")
+
+            {
+                await WriteResponseAsync(context, 500, "application/json", "Email credentials not found");
+                return;
+            }
+
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
+            smtpClient.Port = 587;
+            smtpClient.Credentials = new NetworkCredential(email, password);
+            smtpClient.EnableSsl = true;
+
+            MailMessage mailMessage = new MailMessage();
+            mailMessage.From = new MailAddress(email);
+            mailMessage.To.Add(clientEmail);
+            mailMessage.Subject = subject;
+            mailMessage.Body = message;
+            try
+            {
+                smtpClient.Send(mailMessage);
+                Console.WriteLine("Email sent successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to send email: " + ex.Message);
+                await context.Response.WriteAsync(ex.Message);
+            }
+        }
         private static async Task GetAllAppts(HttpContext context)
         {
             var authenticated = await Authenticate(context);
@@ -333,38 +365,19 @@ namespace StretchScheduler
                     requestedAppt.Status = Appointment.StatusOptions.Booked;
                     await dbContext.SaveChangesAsync();
 
-                    var email = Environment.GetEnvironmentVariable("EMAIL");
-                    var password = Environment.GetEnvironmentVariable("GPW");
-                    if (email == null || password == null)
+                    var service = await dbContext.ApptTypes.FindAsync(requestedAppt.ApptTypeId);
+                    if (service == null)
                     {
-                        await WriteResponseAsync(context, 500, "application/json", "Email credentials not found");
+                        await WriteResponseAsync(context, 404, "application/json", "Service not found");
                         return;
                     }
 
-                    // Console.WriteLine(requestedAppt.ApptType.Name, requestedAppt.ApptType.Price, requestedAppt.ApptType.Duration); // to test
+                    string clientEmail = requestedAppt.Client.Email;
+                    string subject = "Appointment Confirmation";
+                    string message = "Your appointment has been confirmed for " + requestedAppt.DateTime.ToLocalTime().ToString("MMMM dd, yyyy 'at' h:mm tt")
+                     + " for the following session: " + service.Name + ". See you soon!";
 
-                    SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
-                    smtpClient.Port = 587;
-                    smtpClient.Credentials = new NetworkCredential(email, password);
-                    smtpClient.EnableSsl = true;
-
-                    MailMessage mailMessage = new MailMessage();
-                    mailMessage.From = new MailAddress(email);
-                    mailMessage.To.Add(requestedAppt.Client.Email);
-                    mailMessage.Subject = "Appointment Confirmation";
-                    mailMessage.Body = "Your appointment has been confirmed for " + requestedAppt.DateTime.ToLocalTime().ToString("MMMM dd, yyyy 'at' h:mm tt")
-                     + " for the following session: " + requestedAppt.ApptType + ". See you soon!";
-
-                    try
-                    {
-                        smtpClient.Send(mailMessage);
-                        Console.WriteLine("Email sent successfully.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Failed to send email: " + ex.Message);
-                        await context.Response.WriteAsync(ex.Message);
-                    }
+                    await WriteEmail(context, clientEmail, subject, message);
                 }
             }
             catch (Exception ex)
