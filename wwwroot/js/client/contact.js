@@ -16,7 +16,7 @@ $('#contactForm').submit(async function (e) {
     }
 
     try {
-        const response = await fetch('https://tbohn2-001-site1.ctempurl.com/api/sendEmail', {
+        const response = await fetch('https://solidgroundaz.com/api/sendEmail', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
