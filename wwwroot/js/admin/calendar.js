@@ -4,6 +4,7 @@ import { renderNewApptsModal } from './newApptsModal.js';
 import { renderServicesModal } from './servicesModal.js';
 
 const token = auth.getToken();
+const adminId = localStorage.getItem('admin_id')
 const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const statuses = ['Available', 'Requested', 'Booked', 'Completed', 'Firm'];
 const currentDate = new Date().getDate();
@@ -51,7 +52,7 @@ async function getAppointments() {
     setLoading(true);
     removeError();
     try {
-        const response = await fetch(`https://solidgroundaz.com/api/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`https://solidgroundaz.com/api/${adminId}/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
         const data = await response.json();
         setLoading(false);
         if (response.ok) {
@@ -102,7 +103,6 @@ async function renderCalendar() {
                         }).join('')
                         :
                         apptsForDay.map((appt, index) => {
-
                             let display = ''
                             const apptType = state.services.find(service => service.Id === appt.ApptTypeId)
                             if (appt.Status === 2 || appt.Status === 4) {
@@ -196,7 +196,7 @@ window.addEventListener('resize', () => {
     }
 });
 
-export default function fetchAndRenderAppts() {
-    getServices();
+export default async function fetchAndRenderAppts() {
+    await getServices();
     renderCalendar();
 }

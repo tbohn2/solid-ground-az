@@ -415,7 +415,7 @@ export function renderApptModal(state, refetch) {
 
             $(`#appt-card-${apptId}`).append(`
             <div id='deleting-container' class="mt-2 fs-4 col-12 pink-border d-flex flex-column align-items-center">
-                <h3>Are you sure you want to delete this appointment?</h3>
+                <h3 class='text-center'>Are you sure you want to delete this appointment?</h3>
                 <div class="d-flex justify-content-evenly col-12">
                     <button id="confirm-del" type="button" class="custom-btn danger-btn fs-5 my-2">Confirm Delete</button>
                     <button id="cancel-del" type="button" class="custom-btn fs-5 my-2">Cancel</button>

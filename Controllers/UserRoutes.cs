@@ -170,12 +170,15 @@ namespace StretchScheduler
                     var existingClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.Email == client.Email);
                     if (existingClient == null)
                     {
+                        var idString = Environment.GetEnvironmentVariable("ID");
+                        Guid.TryParse(idString, out Guid adminId);
+
                         Client newClient = new Client
                         {
                             Name = client.Name,
                             Email = client.Email,
                             Phone = client.Phone,
-                            AdminId = client.AdminId
+                            AdminId = adminId
                         };
                         await dbContext.Clients.AddAsync(newClient);
                         existingClient = newClient;

@@ -15,9 +15,9 @@ namespace StretchScheduler
         public static void MapEndpoints(IEndpointRouteBuilder endpoints)
         {
             endpoints.MapMethods("api/{*path}", new[] { "OPTIONS" }, AllowAccess);
-            endpoints.MapGet("/api/allAppts/{month}/{year}", GetAllAppts);
-            endpoints.MapGet("/api/allServices", GetAllServices);
-            endpoints.MapGet("/api/clients", GetClients);
+            endpoints.MapGet("/api/{id}/allAppts/{month}/{year}", GetAllAppts);
+            endpoints.MapGet("/api/{id}/allServices", GetAllServices);
+            endpoints.MapGet("/api/{id}/clients", GetClients);
             endpoints.MapPost("/api/login", Login);
             endpoints.MapPost("/api/newAdmin", CreateAdmin);
             endpoints.MapPost("/api/newAppts", CreateNewAppts);
@@ -99,11 +99,14 @@ namespace StretchScheduler
             if (!authenticated) { return; }
             try
             {
-                if (context.Request.RouteValues["month"] == null || context.Request.RouteValues["year"] == null)
+                if (context.Request.RouteValues["month"] == null || context.Request.RouteValues["year"] == null || context.Request.RouteValues["id"] == null || context.Request.RouteValues["id"]?.ToString() == null)
                 {
-                    await WriteResponseAsync(context, 400, "application/json", "Invalid month or year");
+                    await WriteResponseAsync(context, 400, "application/json", "Invalid month, year, or admin id");
                     return;
                 }
+
+                var idString = context.Request.RouteValues["id"]?.ToString();
+                Guid.TryParse(idString, out Guid adminId);
 
                 var month = Convert.ToInt32(context.Request.RouteValues["month"]);
                 var year = Convert.ToInt32(context.Request.RouteValues["year"]);
@@ -112,7 +115,7 @@ namespace StretchScheduler
                 using (var scope = context.RequestServices.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                    var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year).Include(a => a.Client).OrderBy(a => a.DateTime).ToListAsync();
+                    var appts = await dbContext.Appointments.Where(a => a.DateTime.Month == month && a.DateTime.Year == year && a.AdminId == adminId).Include(a => a.Client).OrderBy(a => a.DateTime).ToListAsync();
                     if (appts == null)
                     {
                         await WriteResponseAsync(context, 404, "application/json", "No appointments found");
@@ -138,7 +141,12 @@ namespace StretchScheduler
             {
                 using (var scope = context.RequestServices.CreateScope())
                 {
-                    var idString = Environment.GetEnvironmentVariable("ID");
+                    if (context.Request.RouteValues["id"] == null || context.Request.RouteValues["id"]?.ToString() == null)
+                    {
+                        await WriteResponseAsync(context, 400, "application/json", "Invalid admin id");
+                        return;
+                    }
+                    var idString = context.Request.RouteValues["id"]?.ToString();
                     if (Guid.TryParse(idString, out Guid adminId))
                     {
                         var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
@@ -166,18 +174,26 @@ namespace StretchScheduler
             var authenticated = await Authenticate(context);
             if (!authenticated) { return; }
 
-            using (var scope = context.RequestServices.CreateScope())
+            if (context.Request.RouteValues["id"] == null || context.Request.RouteValues["id"]?.ToString() == null)
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                var clients = await dbContext.Clients.ToListAsync();
-                var appts = await dbContext.Appointments.Where(a => a.Status != Appointment.StatusOptions.Available).ToListAsync();
-                var clientData = clients.Select(client => new
-                {
-                    Client = client,
-                    Appointments = appts.Where(a => a.ClientId == client.Id).ToList()
-                }).ToList();
-                await WriteResponseAsync(context, 200, "application/json", clientData);
+                await WriteResponseAsync(context, 400, "application/json", "Invalid admin id");
+                return;
             }
+            var idString = context.Request.RouteValues["id"]?.ToString();
+            if (Guid.TryParse(idString, out Guid adminId))
+
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
+                    var clients = await dbContext.Clients.Where(c => c.AdminId == adminId).ToListAsync();
+                    var appts = await dbContext.Appointments.Where(a => a.Status != Appointment.StatusOptions.Available && a.AdminId == adminId).ToListAsync();
+                    var clientData = clients.Select(client => new
+                    {
+                        Client = client,
+                        Appointments = appts.Where(a => a.ClientId == client.Id).ToList()
+                    }).ToList();
+                    await WriteResponseAsync(context, 200, "application/json", clientData);
+                }
         }
         private static async Task Login(HttpContext context)
         {

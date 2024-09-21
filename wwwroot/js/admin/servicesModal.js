@@ -76,10 +76,6 @@ export function renderServicesModal(services) {
         removeError();
     }
 
-    function toggleDeleteService() {
-        setDeletingService(!deletingService);
-    }
-
     async function addNewApptType() {
         $('.service-card').show().addClass('d-flex');
         removeError();
@@ -195,7 +191,7 @@ export function renderServicesModal(services) {
                     <label>Name:</label>
                     <input type='text' class="service-form-input col-12" name='Name' value='${servicesState.serviceDetails.Name}' required></input>
                 </div>
-                ${servicesState.serviceDetails.ImgURL ? `<img id='service-photo' class='col-6 my-1 rounded' src='${servicesState.serviceDetails.ImgURL}' alt="servicePhoto" />` : ''}
+                ${servicesState.serviceDetails.ImgURL ? `<img id='service-photo' class='col-6 my-1 rounded loaded' src='${servicesState.serviceDetails.ImgURL}' alt="servicePhoto" />` : ''}
                 <label>Change Image:</label>
                 <select name='ImgURL' class='service-form-input col-12 text-center custom-btn my-1'>
                     ${imgURLs.map((url, index) => {
@@ -259,9 +255,9 @@ export function renderServicesModal(services) {
         $('#default-services-btns').hide();
         $(`#s-container-${id}`).append(`
             <div id='delete-services-btns' class='col-12 fw-bold text-center'>
-                <p>Are you sure you want to delete this service?</p>
-                <button id='confirm-service-del' type="button" class="custom-btn danger-btn col-5 fs-5 m-1" onClick=${deleteService}>Yes</button>
-                <button id='cancel-service-del' type="button" class="custom-btn col-5 fs-5 m-1" onClick=${toggleDeleteService}>Cancel</button>
+                <p class='text-center'>Are you sure you want to delete this service?</p>
+                <button id='confirm-service-del' type="button" class="custom-btn danger-btn col-5 fs-5 m-1">Yes</button>
+                <button id='cancel-service-del' type="button" class="custom-btn col-5 fs-5 m-1">Cancel</button>
             </div>
         `);
 
