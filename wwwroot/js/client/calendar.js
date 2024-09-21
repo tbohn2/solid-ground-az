@@ -94,7 +94,7 @@ async function submitForm(event) {
     }
 };
 
-async function displayApptDetails(event) {
+async function displayApptDetails() {
     $('#modal-body').empty();
     const apptId = currentApptId;
 
@@ -285,7 +285,7 @@ async function renderCalendar() {
             const date = event.target.dataset.date;
             availableApptsInDay = apptsByDate[date];
             dateDisplay = new Date(displayedYear, displayedMonth - 1, date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            displayApptDetails(event);
+            displayApptDetails();
         });
     }
 }
