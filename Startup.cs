@@ -68,6 +68,7 @@ namespace StretchScheduler
                 endpoints.MapRazorPages();
                 AdminRoutes.MapEndpoints(endpoints);
                 UserRoutes.MapEndpoints(endpoints);
+                MiscRoutes.MapEndpoints(endpoints);
             });
         }
     }
