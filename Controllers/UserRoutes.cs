@@ -13,7 +13,7 @@ namespace StretchScheduler
         {
             endpoints.MapGet("/api/apptsInMonth/{month}/{year}", GetAppts);
             endpoints.MapGet("/api/services", GetServices);
-            endpoints.MapPost("/api/sendEmail", SendEmail);
+            endpoints.MapPost("/api/sendEmail", WriteMessage);
             endpoints.MapPut("/api/requestAppt", RequestAppt);
         }
         public static async Task WriteResponseAsync(HttpContext context, int statusCode, string contentType, object data)
@@ -22,6 +22,39 @@ namespace StretchScheduler
             context.Response.ContentType = contentType;
             await context.Response.WriteAsync(JsonConvert.SerializeObject(data));
             return;
+        }
+        private static async Task SendEmail(HttpContext context, string subject, string message)
+        {
+            var email = Environment.GetEnvironmentVariable("EMAIL");
+            var password = Environment.GetEnvironmentVariable("GPW");
+            if (email == null || email == "" || password == null || password == "")
+
+            {
+                await WriteResponseAsync(context, 500, "application/json", "Email credentials not found");
+                return;
+            }
+
+            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
+            smtpClient.Port = 587;
+            smtpClient.Credentials = new NetworkCredential(email, password);
+            smtpClient.EnableSsl = true;
+
+            MailMessage mailMessage = new MailMessage();
+            mailMessage.IsBodyHtml = true;
+            mailMessage.From = new MailAddress(email);
+            mailMessage.To.Add(email);
+            mailMessage.Subject = subject;
+            mailMessage.Body = message;
+            try
+            {
+                smtpClient.Send(mailMessage);
+                Console.WriteLine("Email sent successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Failed to send email: " + ex.Message);
+                await context.Response.WriteAsync(ex.Message);
+            }
         }
         private static async Task GetAppts(HttpContext context)
         {
@@ -91,7 +124,7 @@ namespace StretchScheduler
                 await WriteResponseAsync(context, 500, "application/json", "An error occurred while getting data");
             }
         }
-        private static async Task SendEmail(HttpContext context)
+        private static async Task WriteMessage(HttpContext context)
         {
             var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
             try
@@ -102,29 +135,13 @@ namespace StretchScheduler
                     await WriteResponseAsync(context, 400, "application/json", "Invalid data, please provide required email data");
                     return;
                 }
-                var email = Environment.GetEnvironmentVariable("EMAIL");
-                var password = Environment.GetEnvironmentVariable("GPW");
-                if (email == null || email == "" || password == null || password == "")
-                {
-                    await WriteResponseAsync(context, 500, "application/json", "Server error; Email credentials not found");
-                    return;
-                }
 
-                SmtpClient smtpClient = new SmtpClient("smtp.gmail.com");
-                smtpClient.Port = 587;
-                smtpClient.Credentials = new NetworkCredential(email, password);
-                smtpClient.EnableSsl = true;
-
-                MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(userEmail.EmailAddress);
-                mailMessage.To.Add(email);
-                mailMessage.Subject = "New Message from " + userEmail.FirstName + " " + userEmail.LastName;
-                mailMessage.Body = userEmail.FirstName + " " + userEmail.LastName + " (" + userEmail.EmailAddress + ")" + " sent the following message: " + userEmail.Message;
+                string subject = "New Message from " + userEmail.FirstName + " " + userEmail.LastName;
+                string message = userEmail.FirstName + " " + userEmail.LastName + " (" + userEmail.EmailAddress + ")" + " sent the following message: <br></br>" + userEmail.Message;
 
                 try
                 {
-                    smtpClient.Send(mailMessage);
-                    Console.WriteLine("Email sent successfully.");
+                    await SendEmail(context, subject, message);
                 }
                 catch (Exception ex)
                 {
@@ -189,6 +206,14 @@ namespace StretchScheduler
                     requestedAppt.Client = existingClient;
                     requestedAppt.Status = StatusOptions.Requested;
                     await dbContext.SaveChangesAsync();
+
+                    string subject = existingClient.Name + " has requested an appointment on " + requestedAppt.DateTime.ToShortDateString();
+                    string siteUrl = "https://solidgroundaz.com/admin/login";
+                    string message = existingClient.Name + " has requested to book the following session: " + requestedAppt.ApptType.Name +
+                        " on " + requestedAppt.DateTime.ToShortDateString() + " at " + requestedAppt.DateTime.ToShortTimeString() + ".<br/><br/>" +
+                        "<a href='" + siteUrl + "'>Log in</a> to manage booking.";
+
+                    await SendEmail(context, subject, message);
                 }
                 await WriteResponseAsync(context, 200, "application/json", "Appointment requested successfully");
             }
