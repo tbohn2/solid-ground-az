@@ -9,10 +9,18 @@
     object-position: center 100%;
 }
 
+@media screen and (max-width: 1200px) {
+    #portrait {
+        width: 400px;
+        height: 400px;
+    }
+}
+
 @media screen and (max-width: 768px) {
-    #about-me {
+    #about-me div {
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
     #portrait {

@@ -1,7 +1,7 @@
 $('#contactForm').submit(async function (e) {
     e.preventDefault();
-    $('#form-btn').empty();
-    $('#form-btn').append(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
+    $('#contactForm').append(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
+    $('#form-btn').hide();
 
     let fName = $('#firstname').val();
     let lName = $('#lastname').val();
@@ -24,18 +24,18 @@ $('#contactForm').submit(async function (e) {
             body: JSON.stringify(email)
         })
         if (response.ok) {
-            $('#form-btn').remove();
-            $('#contactForm').before(`<div class="alert alert-info text-center mt-2" role="alert">Thank you for your request! Expect a response within 24 hours</div>`);
+            $('#contactForm').before(`<div class="alert alert-success text-center mt-2" role="alert">Thank you for your request! Expect a response within 24 hours</div>`);
+            $('.loading').remove();
         }
         else {
-            $('#form-btn').empty();
-            $('#form-btn').text("Submit");
-            $('#contactForm').before(`<div class="fs-3 m-1 text-center">An error occured. Please try again later.</div>`);
+            $('#form-btn').show();
+            $('.loading').remove();
+            $('#contactForm').before(`<div class="alert alert-danger text-center mt-2">An error occured. Please try again later.</div>`);
         }
     } catch (error) {
         console.error('Error:', error);
-        $('#form-btn').empty();
-        $('#form-btn').text("Submit");
-        $('#contactForm').before(`<div class="fs-3 m-1 text-center">An error occured. Please try again later.</div>`);
+        $('#form-btn').show();
+        $('.loading').remove();
+        $('#contactForm').before(`<div class="alert alert-danger text-center mt-2">An error occured. Please try again later.</div>`);
     }
 });
