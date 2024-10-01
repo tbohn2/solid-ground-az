@@ -109,28 +109,23 @@ async function displayApptDetails() {
     $('#serviceSelectionLabel').text(`${selectedAppt.ApptType ? selectedAppt.ApptType.Name : 'Available To Book'}`);
 
     if (selectedAppt.Status === 4) {
-        const locationName = selectedAppt.ApptType.LocationName || 'Location Name TBD';
-        const locationAddress = selectedAppt.ApptType.LocationAddress || 'Address TBD';
+
+        const detailsArray = [
+            { icon: './assets/calendarIcon.png', text: dateDisplay },
+            { icon: './assets/clockIcon.png', text: startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) },
+            { icon: './assets/locationIcon.png', text: selectedAppt.ApptType.LocationName || 'Location Name TBD' },
+            { icon: './assets/mapIcon.png', text: selectedAppt.ApptType.LocationAddress || 'Address TBD' },
+        ];
+
         $('#modal-body').append(`
-            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
-                <img class="icon loaded" src="./assets/calendarIcon.png" alt="Calendar Icon By Freepik">
-                <div class="px-1 text-center">${dateDisplay}</div>            
-            </div>
-            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
-                <img class="icon loaded" src="./assets/clockIcon.png" alt="Calendar Icon By Freepik">
-                <div class="px-1 text-center">${startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</div>            
-            </div>
-            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
-                <img class="icon loaded" src="./assets/locationIcon.png" alt="Calendar Icon By Freepik">
-                <div class="px-1 text-center">${locationName}</div>            
-            </div>                                    
-            <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
-                <img class="icon loaded" src="./assets/locationIcon.png" alt="Calendar Icon By Freepik">
-                <div class="px-1 text-center">${locationAddress}</div>            
-            </div>                                    
-            <div class="mx-5 fs-4 text-darkgray">${selectedAppt.ApptType.Description}</div>
-            `
-        );
+        ${detailsArray.map(detail =>
+            `<div class="col-12 d-flex px-3 fs-4 text-darkgray">
+                <img class="icon loaded" src=${detail.icon} alt="Calendar Icon By Freepik">
+                <p class="px-1 my-0 text-wrap">${detail.text}</p>            
+            </div>`).join('')
+            }
+             <div class="p-3 fs-4 text-darkgray">${selectedAppt.ApptType.Description}</div>
+            `);
         return;
     } else {
         function renderServiceDetails(serviceId) {
