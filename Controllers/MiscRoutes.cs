@@ -29,7 +29,6 @@ namespace StretchScheduler
             var requestBody = await new StreamReader(context.Request.Body).ReadToEndAsync();
             try
             {
-                Console.WriteLine("Request body: " + requestBody);
                 var userEmail = JsonConvert.DeserializeObject<Email>(requestBody);
                 if (userEmail == null)
                 {
@@ -37,7 +36,7 @@ namespace StretchScheduler
                     return;
                 }
 
-                var email = "tannerbohndev@gmail.com";
+                var email = "tannerjbohn@gmail.com";
                 var password = Environment.GetEnvironmentVariable("DEVGPW");
                 if (password == null || password == "")
                 {
