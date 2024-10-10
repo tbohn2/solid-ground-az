@@ -115,7 +115,7 @@ input:focus {
 #modal-header {
     border-bottom: 1px solid var(--darkgray);
     color: var(--white);
-    background-color: var(--purple2);
+    background-image: linear-gradient(135deg, var(--purple), var(--purple2));
 }
 
 .btn-close {

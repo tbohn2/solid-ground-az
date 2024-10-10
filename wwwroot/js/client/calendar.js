@@ -111,16 +111,16 @@ async function displayApptDetails() {
     if (selectedAppt.Status === 4) {
 
         const detailsArray = [
-            { icon: './assets/calendarIcon.png', text: dateDisplay },
-            { icon: './assets/clockIcon.png', text: startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) },
-            { icon: './assets/locationIcon.png', text: selectedAppt.ApptType.LocationName || 'Location Name TBD' },
-            { icon: './assets/mapIcon.png', text: selectedAppt.ApptType.LocationAddress || 'Address TBD' },
+            { icon: '<i class="bi bi-calendar"></i>', text: dateDisplay },
+            { icon: '<i class="bi bi-clock"></i>', text: startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) },
+            { icon: '<i class="bi bi-geo-alt"></i>', text: selectedAppt.ApptType.LocationName || 'Location Name TBD' },
+            { icon: '<i class="bi bi-map"></i>', text: selectedAppt.ApptType.LocationAddress || 'Address TBD' },
         ];
 
         $('#modal-body').append(`
         ${detailsArray.map(detail =>
             `<div class="col-12 d-flex px-3 fs-4 text-darkgray">
-                <img class="icon loaded" src=${detail.icon} alt="Calendar Icon By Freepik">
+                ${detail.icon}
                 <p class="px-1 my-0 text-wrap">${detail.text}</p>            
             </div>`).join('')
             }
@@ -143,11 +143,11 @@ async function displayApptDetails() {
 
         $('#modal-body').append(`
             <div class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
-                <img class="icon loaded" src="./assets/calendarIcon.png" alt="Calendar Icon By Freepik">
+                <i class="bi bi-calendar"></i>
                 <div class="px-1 text-center">${dateDisplay}</div>            
             </div>
             <div id="service-time" class="col-12 d-flex align-items-center ms-5 fs-4 text-darkgray">
-                <img class="icon loaded" src="./assets/clockIcon.png" alt="Calendar Icon By Freepik">
+                <i class="bi bi-clock"></i>
                 <div class="px-1 text-center">${timeDisplay}</div>            
             </div>
             `);
@@ -181,14 +181,20 @@ async function displayApptDetails() {
         $('#modal-footer').prepend(`<button id="book-next" class="btn request-btn m-1">Next</button>`);
 
         $('#book-next').on('click', () => {
+            if (selectedService === 'Select Service') {
+                $('.alert').remove();
+                $('#service-dropdown').after('<div class="alert alert-info col-10 fs-5 text-center m-2 p-2" role="alert">Please select a service</div>');
+                return;
+            }
+            $('#close-btn').hide();
+            $('.alert').remove();
             localStorage.removeItem('bookServiceId');
             $('#book-next').remove();
-            $('#modal-footer').prepend(`<button type="submit" id="send-request" class="btn request-btn m-1">Request Appointment</button>`);
             $('#service-dropdown').remove();
             $('#service-time').after(`<div class="col-12 px-1 fs-4 text-center text-darkgray">${selectedService}</div>`);
 
             const form = $(
-                `<form class="d-flex col-12 px-1 fs-5 text-darkgray flex-column justify-content-between">
+                `<form id="request-form" class="d-flex col-12 px-1 fs-5 text-darkgray flex-column justify-content-between">
                     <label for="nameInput" class="form-label">Name</label>
                     <input type="text" class="form-control mb-1" id="nameInput" required>
                     <label for="emailInput" class="form-label">Email address</label>
@@ -196,10 +202,12 @@ async function displayApptDetails() {
                     <label for="phoneInput" class="form-label">Phone Number (10 digits)</label>
                     <input type="text" class="form-control mb-1" id="phoneInput"
                         pattern="[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+                    <button type="submit" id="send-request" class="btn request-btn m-1">Request Appointment</button>
+                    <button type="button" class="btn btn-secondary mt-2 mx-1" data-bs-dismiss="modal">Cancel</button>
                 </form>`
             )
             $('#modal-body').append(form);
-            $('#send-request').on('click', submitForm);
+            $('#request-form').on('submit', submitForm);
         });
     }
 };
@@ -327,9 +335,10 @@ async function checkApptsAndRender() {
         $('#send-request').remove();
         $('#serviceSelectionLabel').empty();
         $('#modal-body').empty();
+        selectedService = 'Select Service'
+        $('#close-btn').show();
     });
 }
-
 
 window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
