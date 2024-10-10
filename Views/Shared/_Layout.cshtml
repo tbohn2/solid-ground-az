@@ -65,11 +65,59 @@
             class="col-md-6 col-lg-4 col-12 d-flex flex-wrap justify-content-between align-items-center">
             <div class="my-3 d-flex flex-column justify-content-evenly align-items-start">
                 <p class="text-center m-0">nicole.solidgroundaz@gmail.com</p>
-                <a id="photographer-link" href="https://www.timelesscapturephotography.com/">Photos by Gabe Olsen</a>
+                <p class="text-center m-0 footer-link" data-bs-toggle="modal" data-bs-target="#footerModal">Terms and
+                    Privacy</p>
+                <a class="footer-link" href="https://www.timelesscapturephotography.com/">Photos by Gabe Olsen</a>
             </div>
             <img id="ryt-logo" src="./assets/RYTLogo.png" alt="RYT Logo">
         </div>
     </footer>
+
+    <div class="modal fade" id="footerModal" tabindex="-1" aria-labelledby="footerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="footerModalLabel">Terms and Privacy</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h2>Privacy Notice</h2>
+                    <p>At <strong>Solid Ground AZ</strong>, we value your privacy and are committed to protecting
+                        your personal information. This notice explains how we handle your data when you book a private
+                        session through our scheduling platform.</p>
+
+                    <h3>1. Information We Collect</h3>
+                    <ul>
+                        <li><strong>Email Address</strong>: Collected for communication regarding your appointment.</li>
+                        <li><strong>Phone Number</strong>: Collected for appointment coordination and confirmation.</li>
+                    </ul>
+
+                    <h3>2. Use of Your Information</h3>
+                    <p>Your email address and phone number will only be used to communicate with you regarding your
+                        scheduled private session. We do not store this information long-term, and we do not sell or
+                        share your data with any third parties.</p>
+
+                    <h3>3. Data Protection and Retention</h3>
+                    <p>Your personal information is encrypted during transmission and while stored on our systems to
+                        ensure its security. Once payment for your private session has been recorded, your email and
+                        phone number will be <strong>deleted</strong> from our systems. We do not retain your personal
+                        data for any other purposes beyond the completion of your session and its associated payment.
+                    </p>
+
+                    <h3>4. Your Privacy Rights</h3>
+                    <p>You have the right to request the deletion of your data at any time prior to the automatic
+                        deletion upon payment. If you have any concerns or questions about how your data is handled,
+                        please contact us at <a
+                            href="mailto:nicole.solidgroundaz@gmail.com">nicole.solidgroundaz@gmail.com</a>.</p>
+
+                    <p>By using our scheduling services, you agree to the terms outlined in this privacy notice.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

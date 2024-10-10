@@ -187,6 +187,7 @@ async function displayApptDetails() {
                 $('#service-dropdown').after('<div class="alert alert-info col-10 fs-5 text-center m-2 p-2" role="alert">Please select a service</div>');
                 return;
             }
+
             $('#close-btn').hide();
             $('.alert').remove();
             localStorage.removeItem('bookServiceId');
@@ -203,6 +204,9 @@ async function displayApptDetails() {
                     <label for="phoneInput" class="form-label">Phone Number (10 digits)</label>
                     <input type="text" class="form-control mb-1" id="phoneInput"
                         pattern="[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+                    <div class="text-center">
+                        By using this service, you agree to our <span class="footer-link" data-bs-toggle="modal" data-bs-target="#footerModal">Terms and Privacy</p>
+                    </div>
                     <button type="submit" id="send-request" class="btn request-btn m-1">Request Appointment</button>
                     <button type="button" class="btn btn-secondary mt-2 mx-1" data-bs-dismiss="modal">Cancel</button>
                 </form>`

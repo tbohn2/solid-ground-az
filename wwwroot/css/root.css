@@ -118,10 +118,16 @@ input:focus {
     background-image: linear-gradient(135deg, var(--purple), var(--purple2));
 }
 
+.modal-header {
+    border-bottom: 1px solid var(--darkgray);
+    color: var(--white);
+    background-image: linear-gradient(135deg, var(--purple), var(--purple2));
+}
+
 .btn-close {
     position: absolute;
-    top: 3px;
-    right: 3px;
+    top: 7px;
+    right: 7px;
     color: var(--white) !important;
 }
 
@@ -154,12 +160,13 @@ input:focus {
     border-image-slice: 1;
 }
 
-#photographer-link {
+.footer-link {
     text-decoration: none;
     color: var(--purple);
+    cursor: pointer;
 }
 
-#photographer-link:hover {
+.footer-link:hover {
     text-decoration: underline;
 }
 
