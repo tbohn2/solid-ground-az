@@ -514,7 +514,16 @@ namespace StretchScheduler
                         await WriteResponseAsync(context, 404, "application/json", "Client not found");
                         return;
                     }
+
+                    var futureAppointment = await dbContext.Appointments.FirstOrDefaultAsync(a => a.ClientId == client.Id && a.DateTime > DateTime.Now);
+                    if (futureAppointment == null) {
+                        var appointments = await dbContext.Appointments.Where(a => a.ClientId == client.Id).ToListAsync();
+                        dbContext.Appointments.RemoveRange(appointments);
+                        dbContext.Clients.Remove(reqClient);
+                    } else {
                     reqClient.Balance = 0;
+                    }
+
                     await dbContext.SaveChangesAsync();
                 }
 

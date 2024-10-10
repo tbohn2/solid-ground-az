@@ -89,28 +89,6 @@ textarea {
     text-decoration: underline;
 }
 
-.model-content {
-    border: 1px solid var(--darkgray) !important;
-    border-radius: 7px !important;
-    color: var(--darkgray) !important;
-}
-
-.appt-card {
-    color: var(--darkgray);
-    border: 1px solid var(--darkgray);
-    border-radius: 7px;
-}
-
-.appt-card-header {
-    cursor: pointer;
-
-}
-
-.appt-card:hover {
-    box-shadow: 0 0 10px var(--purple);
-    transition: all 0.3s ease;
-}
-
 .service-button {
     cursor: pointer;
 }
