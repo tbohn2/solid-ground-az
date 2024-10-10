@@ -62,6 +62,7 @@ let displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, d
 
 async function submitForm(event) {
     event.preventDefault();
+    $('#send-request').remove();
     const Id = parseInt(currentApptId);
     const Name = $('#nameInput').val();
     const Email = $('#emailInput').val();
