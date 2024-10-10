@@ -192,7 +192,7 @@ namespace StretchScheduler
                     {
                         Name = clientDTO.Name,
                         Email = clientDTO.Email,
-                        Phone = clientDTO.Phone,
+                        Phone = clientDTO.Phone ?? "",
                         AdminId = adminId
                     };
 

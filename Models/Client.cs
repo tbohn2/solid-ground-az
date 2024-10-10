@@ -9,7 +9,7 @@ namespace StretchScheduler.Models
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public string EncryptedEmail { get; private set; }
+        public string? EncryptedEmail { get; private set; }
         public string? EncryptedPhone { get; private set; }
         public required Guid AdminId { get; set; }
         public int Balance { get; set; } = 0;
@@ -17,14 +17,14 @@ namespace StretchScheduler.Models
         [NotMapped]
         public string Email
         {
-            get => Decrypt(EncryptedEmail);
+            get => Decrypt(EncryptedEmail ?? "");
             set => EncryptedEmail = Encrypt(value);
         }
 
         [NotMapped]
         public string Phone
         {
-            get => Decrypt(EncryptedPhone);
+            get => Decrypt(EncryptedPhone ?? "");
             set => EncryptedPhone = Encrypt(value);
         }
 
