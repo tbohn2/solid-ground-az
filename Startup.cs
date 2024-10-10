@@ -11,6 +11,11 @@ namespace StretchScheduler
         public void ConfigureServices(IServiceCollection services)
         {
             DotEnv.Load();
+            var JWT_KEY = Environment.GetEnvironmentVariable("JWT_KEY");
+            if (JWT_KEY == null || JWT_KEY == "")
+            {
+                throw new Exception("JWTKEY not found in environment variables");
+            }
 
             services.AddCors(options =>
             {
@@ -32,9 +37,9 @@ namespace StretchScheduler
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ouP12@fsNv#27G48E1l1e53T59l8V0Af")),
-                        ValidIssuer = "http://localhost:5062",
-                        ValidAudience = "http://localhost:5173"
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_KEY)),
+                        ValidIssuer = "https://solidgroundaz.com",
+                        ValidAudience = "https://solidgroundaz.com"
                     };
                 });
             services.AddDbContext<StretchSchedulerContext>();

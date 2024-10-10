@@ -7,7 +7,6 @@ using System;
 using System.Net;
 using System.Net.Mail;
 
-
 namespace StretchScheduler
 {
     public static class AdminRoutes
@@ -219,8 +218,14 @@ namespace StretchScheduler
                         return;
                     }
 
-                    var jwtToken = admin.GenerateJwtToken("ouP12@fsNv#27G48E1l1e53T59l8V0Af", "http://localhost:5062", "http://localhost:5173", 60);
+                    var JWT_KEY = Environment.GetEnvironmentVariable("JWT_KEY");
+                    if (JWT_KEY == null || JWT_KEY == "")
+                    {
+                        await WriteResponseAsync(context, 500, "application/json", "JWTKEY not found in env on server");
+                        return;
+                    }
 
+                    var jwtToken = admin.GenerateJwtToken(JWT_KEY, "https://solidgroundaz.com", "https://solidgroundaz.com", 60);
                     await WriteResponseAsync(context, 200, "application/json", new { id = admin.Id, token = jwtToken });
                 }
             }
