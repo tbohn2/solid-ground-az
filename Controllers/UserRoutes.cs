@@ -161,9 +161,9 @@ namespace StretchScheduler
             try
             {
                 var appt = JsonConvert.DeserializeObject<Appointment>(requestBody);
-                var client = JsonConvert.DeserializeObject<Client>(requestBody);
+                var clientDTO = JsonConvert.DeserializeObject<ClientDTO>(requestBody);
 
-                if (appt == null || client == null)
+                if (appt == null || clientDTO == null)
                 {
                     await WriteResponseAsync(context, 400, "application/json", "Invalid data, please provide required appointment and client data");
                     return;
@@ -184,21 +184,25 @@ namespace StretchScheduler
                         await WriteResponseAsync(context, 404, "application/json", "Appointment type not found");
                         return;
                     }
-                    var existingClient = await dbContext.Clients.FirstOrDefaultAsync(c => c.Email == client.Email);
+
+                    var idString = Environment.GetEnvironmentVariable("ID");
+                    Guid.TryParse(idString, out Guid adminId);
+
+                    Client clientDetails = new Client
+                    {
+                        Name = clientDTO.Name,
+                        Email = clientDTO.Email,
+                        Phone = clientDTO.Phone,
+                        AdminId = adminId
+                    };
+
+                    var clients = await dbContext.Clients.Where(c => c.AdminId == adminId).ToListAsync();
+
+                    var existingClient = clients.FirstOrDefault(c => c.Email == clientDetails.Email);
                     if (existingClient == null)
                     {
-                        var idString = Environment.GetEnvironmentVariable("ID");
-                        Guid.TryParse(idString, out Guid adminId);
-
-                        Client newClient = new Client
-                        {
-                            Name = client.Name,
-                            Email = client.Email,
-                            Phone = client.Phone,
-                            AdminId = adminId
-                        };
-                        await dbContext.Clients.AddAsync(newClient);
-                        existingClient = newClient;
+                        await dbContext.Clients.AddAsync(clientDetails);
+                        existingClient = clientDetails;
                     }
                     requestedAppt.ApptTypeId = appt.ApptTypeId;
                     requestedAppt.ApptType = requestedApptType;
