@@ -2,6 +2,15 @@ header {
     justify-content: space-between;
 }
 
+#content {
+    opacity: 0;
+    min-height: 90vh;
+}
+
+#content.loaded {
+    opacity: 1;
+}
+
 input[type="radio"]:checked+label {
     border-bottom: 5px solid;
     border-image: linear-gradient(to left, var(--lav), var(--purple));

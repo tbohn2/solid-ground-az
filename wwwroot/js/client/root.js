@@ -5,12 +5,25 @@ let mobile = window.innerWidth < 768 ? true : false;
 
 let injectedCssLinks = [];
 let injectedScripts = [];
+let loadedPages = {
+    home: false,
+    calendar: false,
+    about: false,
+    contact: true
+}
 
-function setLoading(loading) {
-    if (loading) {
-        $('#content').prepend(`<div class='col-12 loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`);
-    } else {
-        $('.loading').remove();
+function setLoading(loading, url) {
+    const page = url === '/' ? 'home' : url
+
+    if (!loadedPages[page]) {
+        if (loading) {
+            $('header').after(`<div class='col-12 loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`);
+        } else {
+            setTimeout(() => {
+                $('.loading').remove();
+                loadedPages[page] = true;
+            }, 1000);
+        }
     }
 }
 
@@ -41,6 +54,8 @@ function removeInjectedAssets() {
 }
 
 function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
+    setLoading(true, url);
+
     $('#content').load(url + ' #content > *', function () {
         removeInjectedAssets();
 
@@ -65,17 +80,35 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
         if (callback) {
             callback();
         }
+
         history.pushState(null, '', url);
-        setLoading(true);
-        $('img').on('load', () => {
-            $('img').addClass('loaded');
-            setLoading(false);
-        });
+
+        var firstImg = $('img:first');
+
+        if (!firstImg) {
+            setLoading(false, url);
+        } else {
+            $(firstImg).on('load', function () {
+                setLoading(false, url);
+                $('#content').addClass('loaded');
+            })
+
+            $('img').on('load', function () {
+                $(this).addClass('loaded');
+            }).each(function () {
+                if (this.complete) {
+                    $(this).trigger('load');
+                }
+            });
+        }
+
         checkNav();
     });
 }
 
 function handleNavChange(url) {
+    $('#content').removeClass('loaded');
+
     let fileName = url;
     let cssUrl = '';
     let jsUrls = [];
