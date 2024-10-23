@@ -164,18 +164,25 @@ renderNav();
 handleNavChange(window.location.pathname.substring(1));
 
 async function getServices() {
+    function setServiceError() {
+        $('body').append('<div id="failed-services" class="alert alert-danger" role="alert">Failed to retrieve services, try again later</div>')
+        setTimeout(() => {
+            $('#failed-services').remove();
+        }, 5000);
+    }
+
     try {
         const response = await fetch(`https://solidgroundaz.com/api/services`);
         if (response.ok) {
             const services = await response.json();
             return services;
         } else {
-            // Need to display an error message to the user
+            setServiceError();
             console.error('Server request failed');
             return [];
         }
     } catch (error) {
-        // Need to display an error message to the user
+        setServiceError();
         console.error(error);
         return [];
     }

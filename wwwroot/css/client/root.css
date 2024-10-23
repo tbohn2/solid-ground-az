@@ -31,6 +31,15 @@ nav label:hover {
     transition: all 0.3s ease;
 }
 
+#failed-services {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index: 9;
+}
+
+
 @media screen and (max-width: 850px) {
     #logo div h1 {
         font-size: 30px;
