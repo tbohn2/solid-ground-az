@@ -7,6 +7,7 @@
 }
 
 .monthNavBtn {
+    color: black;
     font-size: 24px;
     font-weight: 300;
     cursor: pointer;
@@ -134,25 +135,6 @@
     border: 1px solid var(--purple) !important;
     background-color: var(--lav) !important;
     color: var(--purple) !important;
-}
-
-#freepik-link {
-    font-size: 12px;
-    text-decoration: none;
-    color: var(--darkgray);
-}
-
-#freepik-link:hover {
-    text-decoration: underline;
-}
-
-.calendar-gallery-img {
-    width: 600px;
-    height: 500px;
-    object-fit: cover;
-    object-position: center 80%;
-    border-radius: 10px;
-    margin: 20px;
 }
 
 @media screen and (max-width: 992px) {

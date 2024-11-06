@@ -4,10 +4,8 @@ const currentDate = new Date().getDate();
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
+let services = [];
 let privateServices = [];
-getServices().then(services => {
-    privateServices = services;
-});
 let displayedYear = currentYear;
 let displayedMonth = currentMonth;
 let dateDisplay = '';
@@ -298,7 +296,35 @@ async function renderCalendar() {
     }
 }
 
+async function renderServices() {
+    const servicesContainer = $('#services');
+    servicesContainer.append('<div class="loading text-center"><img class="spinning" src="./assets/flower.svg" alt="flower-logo"></div>');
+    await getServices().then(allServices => {
+        services = allServices;
+        privateServices = services.filter(service => service.Private === true);
+    });
+
+    servicesContainer.empty();
+
+    const serviceCards = services.map(service => {
+        const card = `
+                <div class="league my-3 col-lg-5 col-11 d-flex flex-column align-items-center justify-content-between fade-top">                    
+                    <div class="col-12 position-relative d-flex flex-column align-items-center">
+                        <h3 class="mt-3 align-self-center text-center">${service.Name}</h3>
+                        <p class="m-0 text-center">${service.Duration} min</p>                        
+                        <p id=${service.Id + 'descDisplay'} class="col-10 fs-4">${service.Description}</p>
+                    </div>                        
+                </div>`;
+        return card;
+    }).join(''); // Join all cards into a single string
+
+    $('.loading').remove();
+    servicesContainer.append(serviceCards); // Append all cards at once   
+};
+
 async function checkApptsAndRender() {
+    renderServices();
+
     const appointmentsExist = await getAppointments();
     if (appointmentsExist === false) { return; }
     if (JSON.stringify(apptsByDate) === "{}") {

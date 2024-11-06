@@ -105,7 +105,7 @@ namespace StretchScheduler
                     if (Guid.TryParse(idString, out Guid adminId))
                     {
                         var dbContext = scope.ServiceProvider.GetRequiredService<StretchSchedulerContext>();
-                        var services = await dbContext.ApptTypes.Where(a => a.AdminId == adminId && a.Private == true).ToListAsync();
+                        var services = await dbContext.ApptTypes.Where(a => a.AdminId == adminId).ToListAsync();
                         if (services == null)
                         {
                             await WriteResponseAsync(context, 404, "application/json", "No services found");
