@@ -1,5 +1,5 @@
 import checkApptsAndRender from "./calendar.js";
-import renderServices from "./index.js";
+import addEventListeners from "./index.js";
 
 let mobile = window.innerWidth < 768 ? true : false;
 
@@ -114,7 +114,7 @@ function handleNavChange(url) {
     let jsUrls = [];
     let callback = null;
 
-    if (url === '') { url = '/'; fileName = 'index'; callback = renderServices; }
+    if (url === '') { url = '/'; fileName = 'index'; callback = addEventListeners; }
     if (url !== 'contact') { cssUrl = `css/client/${fileName}.css` }
     if (url !== 'about') { jsUrls = [`js/client/${fileName}.js`]; }
     if (url === 'calendar') { callback = checkApptsAndRender; }

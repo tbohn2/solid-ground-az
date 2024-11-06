@@ -24,91 +24,13 @@
     background-color: var(--white);
 }
 
-.serviceCard {
-    width: 20vw;
-    margin: 20px;
+#calendar-link {
     color: var(--purple);
-    background-color: var(--lav);
-    transition: all 0.3s ease;
-}
-
-.serviceCard img {
-    height: 475px;
-    object-fit: cover;
-    object-position: center 75%;
-}
-
-.serviceCard div div {
-    height: 110px;
-}
-
-.serviceDescription {
-    font-size: 20px;
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    line-clamp: 1;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    transition: overflow 0.5s ease;
-}
-
-.serviceCard-button {
     cursor: pointer;
 }
 
-.serviceCard-button:hover {
+#calendar-link:hover {
     text-decoration: underline;
-}
-
-.service-read-more {
-    cursor: pointer;
-}
-
-.service-read-more:hover {
-    text-decoration: underline;
-}
-
-.displayDescription {
-    position: absolute;
-    color: var(--purple);
-    padding: 10px 25px;
-    top: 72px;
-    left: 47%;
-    transform: translateX(-50%);
-    z-index: 10;
-    border: 1px solid var(--purple);
-    border-radius: 10px;
-    background-color: var(--lav);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.35s ease, visibility 0.35s ease;
-}
-
-.displayDescription.show {
-    display: block;
-    opacity: 1;
-    visibility: visible;
-}
-
-#overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.35s ease, visibility 0.35s ease;
-    z-index: 9;
-}
-
-#overlay.show {
-    opacity: 1;
-    visibility: visible;
 }
 
 #move-mods img {
@@ -144,8 +66,8 @@
 }
 
 .gallery-img {
-    width: 450px;
-    height: 400px;
+    width: 500px;
+    height: 425px;
     object-fit: cover;
     object-position: center;
     border-radius: 10px;
