@@ -59,6 +59,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
         $('#newMinute').val('00');
         $('#newMeridiem').val('AM');
         $('#day-checks').find('input').prop('checked', false);
+        $('.new-appt-option').remove();
     };
 
     function handleCheckedDay(e) {
@@ -85,15 +86,20 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
 
         const createApptArray = async () => {
             const appts = [];
+
             selectedDays.forEach(day => {
                 let date = startDateTime;
                 const indexOfDay = days.indexOf(day) + 1 === 7 ? 0 : days.indexOf(day) + 1;
 
                 while (date <= endDateTime) {
                     if (date.getDay() === indexOfDay) {
+                        const localDate = date.getFullYear() + '-' +
+                            String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                            String(date.getDate()).padStart(2, '0');
+
                         const newAppt = {
                             AdminId: adminId,
-                            DateTime: `${date.toISOString().slice(0, 10)} ${hour}:${newApptsState.newMinute}:00`,
+                            DateTime: `${localDate} ${hour}:${newApptsState.newMinute}:00`,
                             ApptTypeId: newApptsState.newApptStatus === 0 ? null : newApptsState.newApptTypeId,
                             Status: parseInt(newApptsState.newApptStatus)
                         }
@@ -144,7 +150,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
     function appendSelectOptions(selectId, options, currentState) {
         $(selectId).append(
             options.map((option, index) =>
-                `<option key=${index} value=${option} ${option == currentState ? "selected" : ""}>${option}</option>`
+                `<option key=${index} class="new-appt-option" value=${option} ${option == currentState ? "selected" : ""}>${option}</option>`
             ).join('')
         )
     }
@@ -213,7 +219,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
             $('#newApptStatus').after(`
                 <select id="apptType-select" name="ApptTypeId" class="custom-btn mt-2">
                     ${publicServices.map((service, index) =>
-                `<option key=${index} value=${service.Id} ${service.Id === newApptsState.newApptTypeId ? "selected" : ""}>${service.Name}</option>`).join('')}
+                `<option key=${index} class="new-appt-option" value=${service.Id} ${service.Id === newApptsState.newApptTypeId ? "selected" : ""}>${service.Name}</option>`).join('')}
                 </select>`
             );
 
