@@ -5,7 +5,6 @@ export function renderApptModal(state, refetch) {
     let date = state.displayDate;
     let month = state.month;
     let year = state.year;
-    let token = state.token;
 
     const privateServices = services.filter(service => service.Private === true);
     const publicServices = services.filter(service => service.Private === false);
@@ -165,7 +164,7 @@ export function renderApptModal(state, refetch) {
             const response = await fetch(`https://solidgroundaz.com/api/newAppts/`, {
                 method: 'POST',
                 body: JSON.stringify([newAppt]),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
                 hideLoading();
@@ -203,7 +202,7 @@ export function renderApptModal(state, refetch) {
                     DateTime: `${year}-${month}-${date} ${newHour}:${calModalState.newApptDetails.Minutes == '0' ? '00' : calModalState.newApptDetails.Minutes}:00`,
                     ApptTypeId: calModalState.newApptDetails.ApptTypeId
                 }),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
                 const appt = await response.json();
@@ -233,7 +232,7 @@ export function renderApptModal(state, refetch) {
             const response = await fetch(`https://solidgroundaz.com/api/approveAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id }),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
                 hideLoading();
@@ -260,7 +259,7 @@ export function renderApptModal(state, refetch) {
             const response = await fetch(`https://solidgroundaz.com/api/denyAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id }),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
                 hideLoading();
@@ -287,7 +286,7 @@ export function renderApptModal(state, refetch) {
             const response = await fetch(`https://solidgroundaz.com/api/completeAppt/`, {
                 method: 'PUT',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id, ApptType: { Price: displayService.Price }, ClientId: calModalState.apptDetails.ClientId }),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
                 hideLoading();
@@ -313,7 +312,7 @@ export function renderApptModal(state, refetch) {
             const response = await fetch(`https://solidgroundaz.com/api/deleteAppt/`, {
                 method: 'DELETE',
                 body: JSON.stringify({ Id: calModalState.apptDetails.Id }),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
                 hideLoading();

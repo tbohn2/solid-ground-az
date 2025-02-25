@@ -1,7 +1,6 @@
 import auth from "./auth.js";
 
 export function renderServicesModal(services) {
-    const token = auth.getToken();
     const adminId = localStorage.getItem('admin_id');
     const refetchServices = async () => {
         $('#services-container').empty();
@@ -85,7 +84,7 @@ export function renderServicesModal(services) {
             const response = await fetch(`https://solidgroundaz.com/api/newApptType/`, {
                 method: 'POST',
                 body: JSON.stringify(servicesState.serviceDetails),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                headers: { 'Content-Type': 'application/json' }
             });
             if (response.ok) {
                 clearStates();
@@ -111,7 +110,7 @@ export function renderServicesModal(services) {
             const response = await fetch(`https://solidgroundaz.com/api/editApptType/`, {
                 method: 'PUT',
                 body: JSON.stringify(servicesState.serviceDetails),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                headers: { 'Content-Type': 'application/json' }
             });
             servicesState.editingService = false;
             if (response.ok) {
@@ -149,7 +148,7 @@ export function renderServicesModal(services) {
             const response = await fetch(`https://solidgroundaz.com/api/deleteApptType/`, {
                 method: 'DELETE',
                 body: JSON.stringify(servicesState.serviceDetails),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+                headers: { 'Content-Type': 'application/json' }
             });
             if (response.ok) {
                 setLoading(false);

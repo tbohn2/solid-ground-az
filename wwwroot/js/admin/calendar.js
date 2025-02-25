@@ -3,7 +3,6 @@ import { renderApptModal } from './calendarModal.js';
 import { renderNewApptsModal } from './newApptsModal.js';
 import { renderServicesModal } from './servicesModal.js';
 
-const token = auth.getToken();
 const adminId = localStorage.getItem('admin_id')
 const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const statuses = ['Available', 'Requested', 'Booked', 'Completed', 'Firm'];
@@ -20,7 +19,6 @@ let state = {
     month: currentMonth,
     year: currentYear,
     calendarDates: new calendar.Calendar(6).monthdayscalendar(currentYear, currentMonth),
-    token: token
 };
 
 let mobile = window.innerWidth < 768 ? true : false;
@@ -52,7 +50,7 @@ async function getAppointments() {
     setLoading(true);
     removeError();
     try {
-        const response = await fetch(`https://solidgroundaz.com/api/${adminId}/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`https://solidgroundaz.com/api/${adminId}/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json' } });
         const data = await response.json();
         setLoading(false);
         if (response.ok) {
@@ -165,15 +163,15 @@ async function renderCalendar() {
     }
 
     $('#prev').off('click').on('click', () => {
-        state.month = state.month === 1 ? 12 : state.month - 1;
         state.year = state.month === 1 ? state.year - 1 : state.year;
+        state.month = state.month === 1 ? 12 : state.month - 1;
         state.calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
         renderCalendar();
     });
 
     $('#next').off('click').on('click', () => {
-        state.month = state.month === 12 ? 1 : state.month + 1;
         state.year = state.month === 12 ? state.year + 1 : state.year;
+        state.month = state.month === 12 ? 1 : state.month + 1;
         state.calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
         renderCalendar();
     });

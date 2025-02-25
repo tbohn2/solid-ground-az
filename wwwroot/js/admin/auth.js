@@ -1,30 +1,9 @@
 class AuthService {
-    getProfile() {
-        return jwtDecode(this.getToken());
-    }
-
     loggedIn() {
-        const token = this.getToken();
-        return token && !this.isTokenExpired(token) ? true : false;
-    }
-
-    isTokenExpired(token) {
-        const decoded = jwtDecode(token);
-        if (decoded.exp < Date.now() / 1000) {
-            localStorage.removeItem('id_token');
-            localStorage.removeItem('services');
-            localStorage.removeItem('admin_id');
-            return true;
-        }
-        return false;
-    }
-
-    getToken() {
-        return localStorage.getItem('id_token');
+        return localStorage.getItem('loggedIn') === 'true';
     }
 
     getServices = async () => {
-        const token = this.getToken();
         try {
             const cachedServices = localStorage.getItem('services');
             if (cachedServices) {
@@ -32,7 +11,7 @@ class AuthService {
             }
 
             const adminId = localStorage.getItem('admin_id');
-            const response = await fetch(`https://solidgroundaz.com/api/${adminId}/allServices`, { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
+            const response = await fetch(`https://solidgroundaz.com/api/${adminId}/allServices`, { headers: { 'Content-Type': 'application/json' } });
             if (response.ok) {
                 const services = await response.json();
                 localStorage.setItem('services', JSON.stringify(services));
@@ -47,15 +26,8 @@ class AuthService {
         }
     };
 
-    login(data) {
-        localStorage.setItem('id_token', data.token);
-        localStorage.setItem('admin_id', data.id);
-    }
-
     logout() {
-        localStorage.removeItem('id_token');
-        localStorage.removeItem('services');
-        localStorage.removeItem('admin_id');
+        localStorage.clear();
         window.location.assign('/admin/login');
     }
 }

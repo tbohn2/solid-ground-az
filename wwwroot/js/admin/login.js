@@ -1,5 +1,3 @@
-import auth from './auth.js';
-
 function attachSubmitListener() {
     $('#loginForm').submit(async function (e) {
         e.preventDefault();
@@ -11,15 +9,19 @@ function attachSubmitListener() {
         const username = $('#username').val();
         const password = $('#password').val();
 
+        localStorage.clear();
+
         try {
             const response = await fetch(`https://solidgroundaz.com/api/login/`, {
                 method: 'POST',
                 body: JSON.stringify({ Username: username, Password: password }),
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
             });
             const data = await response.json();
-            if (response.ok && data.token && data.id) {
-                auth.login(data)
+            if (response.ok && data.id) {
+                localStorage.setItem('admin_id', data.id);
+                localStorage.setItem('loggedIn', true);
                 window.location.assign('/admin/calendar');
             }
             if (!response.ok) {

@@ -1,7 +1,6 @@
 import auth from './auth.js';
 import { renderApptModal } from './calendarModal.js';
 
-const token = auth.getToken()
 const adminId = localStorage.getItem("admin_id")
 
 const clientStates = {
@@ -15,7 +14,6 @@ const clientStates = {
     displayService: {},
     displayedPastAppts: [],
     displayClient: 0,
-    token: token
 }
 
 function setLoading(loading) {
@@ -59,7 +57,7 @@ const fetchClients = async () => {
     removeError();
     try {
         const response = await fetch(`https://solidgroundaz.com/api/${adminId}/clients`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Content-Type': 'application/json' }
         });
         const data = await response.json();
         if (response.ok) {
@@ -80,7 +78,7 @@ const payBalance = async (clientId) => {
         const response = await fetch(`https://solidgroundaz.com/api/adjustBalance/`, {
             method: 'PUT',
             body: JSON.stringify({ Id: clientId }),
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            headers: { 'Content-Type': 'application/json' },
         });
         if (response.ok) {
             displaySuccess('Balance cleared')

@@ -1,8 +1,5 @@
-import auth from './auth.js';
-
 export function renderNewApptsModal(refetch, services, months, currentDate, currentMonth, currentYear, setLoading, setError, removeError) {
 
-    const token = auth.getToken();
     const adminId = localStorage.getItem('admin_id');
     const publicServices = services.filter(service => service.Private === false);
     const initialService = publicServices.length > 0 ? publicServices[0] : null;
@@ -116,7 +113,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
             const response = await fetch(`https://solidgroundaz.com/api/newAppts/`, {
                 method: 'POST',
                 body: JSON.stringify(apptsToAdd),
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                headers: { 'Content-Type': 'application/json' },
             });
             if (response.ok) {
                 setLoading(false);
