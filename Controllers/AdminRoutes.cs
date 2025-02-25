@@ -1,11 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using StretchScheduler.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System;
 using System.Net;
 using System.Net.Mail;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using StretchScheduler.Models;
 
 namespace StretchScheduler
 {
@@ -48,17 +53,47 @@ namespace StretchScheduler
         }
         private static async Task<bool> Authenticate(HttpContext context)
         {
-            var authenticated = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
-
-            if (authenticated.Succeeded)
+            var JWT_KEY = Environment.GetEnvironmentVariable("JWT_KEY");
+            if (JWT_KEY == null || JWT_KEY == "")
             {
-                return true;
-            }
-            else
-            {
-                await WriteResponseAsync(context, 401, "application/json", "Unauthorized. Refresh the page and log in.");
+                await WriteResponseAsync(context, 500, "application/json", "JWT key not found in environment variables.");
                 return false;
             }
+
+            if (!context.Request.Cookies.TryGetValue("id_token", out var token) || string.IsNullOrEmpty(token))
+            {
+                await WriteResponseAsync(context, 401, "application/json", "Unauthorized. Please log in.");
+                return false;
+            }
+
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "https://solidgroundaz.com",
+                    ValidAudience = "https://solidgroundaz.com",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT_KEY)),
+                };
+
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+
+                if (principal != null)
+                {
+                    context.User = principal;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"JWT validation failed: {ex.Message}");
+            }
+
+            await WriteResponseAsync(context, 401, "application/json", "Unauthorized. Invalid or expired token.");
+            return false;
         }
         private static async Task WriteEmail(HttpContext context, string clientEmail, string subject, string message)
         {
@@ -219,14 +254,23 @@ namespace StretchScheduler
                     }
 
                     var JWT_KEY = Environment.GetEnvironmentVariable("JWT_KEY");
-                    if (JWT_KEY == null || JWT_KEY == "")
+                    if (string.IsNullOrEmpty(JWT_KEY))
                     {
                         await WriteResponseAsync(context, 500, "application/json", "JWTKEY not found in env on server");
                         return;
                     }
 
                     var jwtToken = admin.GenerateJwtToken(JWT_KEY, "https://solidgroundaz.com", "https://solidgroundaz.com", 60);
-                    await WriteResponseAsync(context, 200, "application/json", new { id = admin.Id, token = jwtToken });
+
+                    context.Response.Cookies.Append("id_token", jwtToken, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTimeOffset.UtcNow.AddMinutes(60)
+                    });
+
+                    await WriteResponseAsync(context, 200, "application/json", new { id = admin.Id });
                 }
             }
             catch (Exception ex)
@@ -516,12 +560,15 @@ namespace StretchScheduler
                     }
 
                     var futureAppointment = await dbContext.Appointments.FirstOrDefaultAsync(a => a.ClientId == client.Id && a.DateTime > DateTime.Now);
-                    if (futureAppointment == null) {
+                    if (futureAppointment == null)
+                    {
                         var appointments = await dbContext.Appointments.Where(a => a.ClientId == client.Id).ToListAsync();
                         dbContext.Appointments.RemoveRange(appointments);
                         dbContext.Clients.Remove(reqClient);
-                    } else {
-                    reqClient.Balance = 0;
+                    }
+                    else
+                    {
+                        reqClient.Balance = 0;
                     }
 
                     await dbContext.SaveChangesAsync();
