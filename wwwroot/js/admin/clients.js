@@ -56,7 +56,7 @@ const fetchClients = async () => {
     setLoading(true);
     removeError();
     try {
-        const response = await fetch(`https://solidgroundaz.com/api/${adminId}/clients`, {
+        const response = await fetch(`/api/${adminId}/clients`, {
             headers: { 'Content-Type': 'application/json' }
         });
         const data = await response.json();
@@ -75,7 +75,7 @@ const fetchClients = async () => {
 
 const payBalance = async (clientId) => {
     try {
-        const response = await fetch(`https://solidgroundaz.com/api/adjustBalance/`, {
+        const response = await fetch(`/api/adjustBalance/`, {
             method: 'PUT',
             body: JSON.stringify({ Id: clientId }),
             headers: { 'Content-Type': 'application/json' },

@@ -20,7 +20,7 @@ async function getAppointments() {
     apptsByDate = {};
     $('#month-year').after(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
     try {
-        const response = await fetch(`https://solidgroundaz.com/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
+        const response = await fetch(`/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         if (response.ok) {
             const appointments = await response.json();
             // Add to global object for quick access; allows for one loop through appointments instead of every time a date is clicked
@@ -72,7 +72,7 @@ async function submitForm(event) {
     $('#modal-body').append(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
 
     try {
-        const response = await fetch('https://solidgroundaz.com/api/requestAppt', {
+        const response = await fetch('/api/requestAppt', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

@@ -81,7 +81,7 @@ export function renderServicesModal(services) {
         servicesState.addingService = false;
         setLoading(true);
         try {
-            const response = await fetch(`https://solidgroundaz.com/api/newApptType/`, {
+            const response = await fetch(`/api/newApptType/`, {
                 method: 'POST',
                 body: JSON.stringify(servicesState.serviceDetails),
                 headers: { 'Content-Type': 'application/json' }
@@ -107,7 +107,7 @@ export function renderServicesModal(services) {
         removeError();
         setLoading(true);
         try {
-            const response = await fetch(`https://solidgroundaz.com/api/editApptType/`, {
+            const response = await fetch(`/api/editApptType/`, {
                 method: 'PUT',
                 body: JSON.stringify(servicesState.serviceDetails),
                 headers: { 'Content-Type': 'application/json' }
@@ -145,7 +145,7 @@ export function renderServicesModal(services) {
         servicesState.deletingService = false;
         setLoading(true);
         try {
-            const response = await fetch(`https://solidgroundaz.com/api/deleteApptType/`, {
+            const response = await fetch(`/api/deleteApptType/`, {
                 method: 'DELETE',
                 body: JSON.stringify(servicesState.serviceDetails),
                 headers: { 'Content-Type': 'application/json' }

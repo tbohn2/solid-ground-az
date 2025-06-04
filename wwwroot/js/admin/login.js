@@ -12,7 +12,7 @@ function attachSubmitListener() {
         localStorage.clear();
 
         try {
-            const response = await fetch(`https://solidgroundaz.com/api/login/`, {
+            const response = await fetch(`/api/login/`, {
                 method: 'POST',
                 body: JSON.stringify({ Username: username, Password: password }),
                 headers: { 'Content-Type': 'application/json' },

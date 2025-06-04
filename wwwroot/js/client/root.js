@@ -172,7 +172,7 @@ async function getServices() {
     }
 
     try {
-        const response = await fetch(`https://solidgroundaz.com/api/services`);
+        const response = await fetch(`/api/services`);
         if (response.ok) {
             const services = await response.json();
             return services;

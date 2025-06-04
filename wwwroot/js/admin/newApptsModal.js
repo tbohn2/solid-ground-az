@@ -110,7 +110,7 @@ export function renderNewApptsModal(refetch, services, months, currentDate, curr
         const apptsToAdd = await createApptArray();
 
         try {
-            const response = await fetch(`https://solidgroundaz.com/api/newAppts/`, {
+            const response = await fetch(`/api/newAppts/`, {
                 method: 'POST',
                 body: JSON.stringify(apptsToAdd),
                 headers: { 'Content-Type': 'application/json' },

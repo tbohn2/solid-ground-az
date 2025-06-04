@@ -50,7 +50,7 @@ async function getAppointments() {
     setLoading(true);
     removeError();
     try {
-        const response = await fetch(`https://solidgroundaz.com/api/${adminId}/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json' } });
+        const response = await fetch(`/api/${adminId}/allAppts/${state.month}/${state.year}`, { headers: { 'Content-Type': 'application/json' } });
         const data = await response.json();
         setLoading(false);
         if (response.ok) {
