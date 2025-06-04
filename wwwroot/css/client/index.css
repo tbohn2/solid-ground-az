@@ -27,6 +27,7 @@
 #calendar-link {
     color: var(--purple);
     cursor: pointer;
+    text-decoration: none;
 }
 
 #calendar-link:hover {

@@ -210,6 +210,13 @@ img.loaded {
     opacity: 1;
 }
 
+.loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .spinning {
     animation: spin 1.5s linear infinite;
     opacity: 1;
