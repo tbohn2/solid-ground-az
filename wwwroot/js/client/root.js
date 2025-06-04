@@ -33,11 +33,8 @@ function checkNav() {
     if (window.location.pathname === '/calendar') {
         $('#option1').prop('checked', true);
     }
-    else if (window.location.pathname === '/about') {
+    else {
         $('#option2').prop('checked', true);
-    }
-    else if (window.location.pathname === '/contact') {
-        $('#option3').prop('checked', true);
     }
 }
 
@@ -127,18 +124,15 @@ function renderNav() {
         <div id="mobile-nav" class="dropdown-center">
             <span class="text-purple" data-bs-toggle="dropdown" aria-expanded="false">&#9776;</span>
             <ul class="dropdown-menu dropdown-menu-end m-0 p-0">
-                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="about">About</li>
+                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="">Home</li>
                 <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="calendar">Calendar</li>
-                <li class='nav-btn text-center bg-white text-purple text-decoration-none fs-4' data-page="contact">Contact</li>
             </ul>
         </div>
     ` : `
+        <input type="radio" name="navOptions" id="option2" data-page="" autocomplete="off">
+        <label for="option2" class="text-purple fs-4">HOME</label>       
         <input type="radio" name="navOptions" id="option1" data-page="calendar" autocomplete="off">
-        <label for="option1" class="text-purple fs-4">CALENDAR</label>
-        <input type="radio" name="navOptions" id="option2" data-page="about" autocomplete="off">
-        <label for="option2" class="text-purple fs-4">ABOUT</label>
-        <input type="radio" name="navOptions" id="option3" data-page="contact" autocomplete="off">
-        <label for="option3" class="text-purple fs-4">CONTACT</label>
+        <label for="option1" class="text-purple fs-4">CALENDAR</label>       
     `
     $('.navbar').append(nav);
 
