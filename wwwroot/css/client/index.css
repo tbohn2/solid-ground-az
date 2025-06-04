@@ -34,27 +34,9 @@
 }
 
 #move-mods img {
-    width: 125px;
+    height: 110px;
     object-fit: cover;
-    margin: 10px;
-}
-
-#move-mods div h2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-top: 2px solid var(--purple);
-    border-bottom: 2px solid var(--purple);
-    padding: 10px 0px;
-}
-
-#move-mods div div {
-    padding: 10px 0px;
-}
-
-#move-mods div div p {
-    width: 75%;
-    margin: 0px;
+    margin: 10px 40px;
 }
 
 #home-portrait {
@@ -96,6 +78,10 @@
     #meet-container {
         flex-direction: column-reverse;
     }
+
+    #move-mods img {
+        margin: 10px;
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -112,6 +98,11 @@
 
     #private-sessions {
         padding-top: 30px;
+    }
+
+    #move-mods img {
+        height: 110px;
+        margin: 10px 45px;
     }
 
     .serviceCard {
@@ -135,20 +126,6 @@
         left: 30%;
     }
 
-    .odd-mod {
-        flex-direction: column;
-    }
-
-    .even-mod {
-        flex-direction: column-reverse;
-    }
-
-    #move-mods div div p {
-        width: 90%;
-        text-align: center;
-        margin-top: 10px;
-    }
-
     .gallery-img {
         width: 350px;
         height: 350px;
@@ -163,5 +140,10 @@
     #home-portrait {
         width: 300px;
         height: 300px;
+    }
+
+    #move-mods img {
+        height: 80px;
+        margin: 10px 25px;
     }
 }
