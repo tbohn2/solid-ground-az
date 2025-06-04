@@ -65,19 +65,15 @@ export function renderApptModal(state, refetch) {
 
         if (name === 'MeridiemAM') {
             value = value === 'AM';
+        } else if (name === 'Status') {
+            const apptTypeId = value === '4' ? publicServices[0].Id : null;
+            calModalState.newApptDetails = {
+                ...calModalState.newApptDetails,
+                Status: parseInt(value),
+                ApptTypeId: apptTypeId
+            };
+            return;
         } else if (name !== 'Minutes') {
-            if (name === 'Status') {
-                let apptTypeId = null;
-                if (value === '4') {
-                    apptTypeId = publicServices[0].Id;
-                }
-                calModalState.newApptDetails = {
-                    ...calModalState.newApptDetails,
-                    [name]: parseInt(value),
-                    ApptTypeId: apptTypeId
-                };
-                return;
-            }
             value = parseInt(value);
         }
 
@@ -133,8 +129,8 @@ export function renderApptModal(state, refetch) {
                             ${publicServices.map((service, index) => `<option key=${index} value=${service.Id} ${service.Id === calModalState.newApptDetails.ApptTypeId ? 'selected' : ''}>${service.Name}</option>`)}
                         </select>`
                     }`
-
                 );
+                $('select[name="ApptTypeId"]').on('change', (e) => handleInputChange(e));
             }
         }
 
