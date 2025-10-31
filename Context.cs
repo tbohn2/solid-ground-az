@@ -4,7 +4,7 @@ using StretchScheduler.Models;
 
 public class StretchSchedulerContext : DbContext
 {
-  static readonly string? connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
+  static readonly string? connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
   public DbSet<Appointment> Appointments { get; set; }
   public DbSet<ApptType> ApptTypes { get; set; }
   public DbSet<Client> Clients { get; set; }
@@ -18,7 +18,7 @@ public class StretchSchedulerContext : DbContext
     }
     else
     {
-      optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+      optionsBuilder.UseNpgsql(connectionString);
     }
   }
 }
