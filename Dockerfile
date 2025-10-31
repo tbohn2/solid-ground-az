@@ -2,18 +2,21 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # copy csproj and restore as distinct layers
-COPY ["stretch-scheduler.csproj", "/src/"]
-RUN dotnet restore "/src/stretch-scheduler.csproj"
+COPY ["stretch-scheduler.csproj", "./"]
+RUN dotnet restore "stretch-scheduler.csproj"
 
-# copy rest of the source and publish
+# copy all remaining source files (respects .dockerignore)
 COPY . .
-RUN dotnet publish "/src/stretch-scheduler.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# publish the application
+RUN dotnet publish "stretch-scheduler.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
 # Render routes traffic to port 10000 internally; container should listen on 8080
-ENV ASPNETCORE_URLS=http://+:${PORT}
+ENV ASPNETCORE_URLS=http://+:8080
+
 EXPOSE 8080
 
 COPY --from=build /app/publish .
