@@ -50,3 +50,18 @@ For any questions or support, please contact tanner.bohn@gmail.com.
 ## Screenshot
 
 ![solidgroundaz com_](https://github.com/user-attachments/assets/da699142-8989-40c7-9be5-62a41f4f908c)
+ 
+## Deploying to Render with Docker
+
+1. Ensure the provided `Dockerfile` and `.dockerignore` exist at the repository root.
+2. Commit and push your changes to your default branch (e.g., `main`).
+3. In Render, click New → Web Service and connect this repository.
+   - Environment: Docker
+   - Render will detect `Dockerfile` automatically (or you can keep `render.yaml` in the repo).
+   - No need to set a port; the container listens on `8080` via `ASPNETCORE_URLS`.
+4. Add environment variables in Render:
+   - `ASPNETCORE_ENVIRONMENT=Production`
+   - Any required secrets (DB connection string, JWT settings, encryption keys, email creds, etc.). Do not commit secrets.
+5. Deploy. Render builds the image and runs the container. Health check defaults to `/`.
+
+Optional: `render.yaml` in the repo root allows infra-as-code provisioning on Render.

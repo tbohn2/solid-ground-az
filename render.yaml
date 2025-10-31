@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: stretch-scheduler
+    env: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /
+    dockerfilePath: ./Dockerfile
+    # Render sends requests to port 10000 externally; container must listen on 8080
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://0.0.0.0:8080
+ 
+
