@@ -56,7 +56,7 @@ async function getAppointments() {
 }
 
 // Array of arrays of weeks
-let displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
+let displayedDates = new window.calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
 
 async function submitForm(event) {
     event.preventDefault();
@@ -339,7 +339,7 @@ async function checkApptsAndRender() {
 
     function setDates() {
         $('.alert').remove();
-        displayedDates = new calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
+        displayedDates = new window.calendar.Calendar(6).monthdayscalendar(displayedYear, displayedMonth);
         checkApptsAndRender();
     }
 

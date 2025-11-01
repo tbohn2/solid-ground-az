@@ -18,7 +18,7 @@ let state = {
     date: '',
     month: currentMonth,
     year: currentYear,
-    calendarDates: new calendar.Calendar(6).monthdayscalendar(currentYear, currentMonth),
+    calendarDates: new window.calendar.Calendar(6).monthdayscalendar(currentYear, currentMonth),
 };
 
 let mobile = window.innerWidth < 768 ? true : false;
@@ -165,14 +165,14 @@ async function renderCalendar() {
     $('#prev').off('click').on('click', () => {
         state.year = state.month === 1 ? state.year - 1 : state.year;
         state.month = state.month === 1 ? 12 : state.month - 1;
-        state.calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
+        state.calendarDates = new window.calendar.Calendar(6).monthdayscalendar(state.year, state.month);
         renderCalendar();
     });
 
     $('#next').off('click').on('click', () => {
         state.year = state.month === 12 ? state.year + 1 : state.year;
         state.month = state.month === 12 ? 1 : state.month + 1;
-        state.calendarDates = new calendar.Calendar(6).monthdayscalendar(state.year, state.month);
+        state.calendarDates = new window.calendar.Calendar(6).monthdayscalendar(state.year, state.month);
         renderCalendar();
     });
 
