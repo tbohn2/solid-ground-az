@@ -73,22 +73,15 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
             });
         }
 
-        if (callback) {
-            callback();
-        }
-
         history.pushState(null, '', url);
 
-        var firstImg = $('img:first');
-
-        if (!firstImg) {
-            setLoading(false, url);
-        } else {
-            $(firstImg).on('load', function () {
-                setLoading(false, url);
-                $('#content').addClass('loaded');
-            })
-
+        // If there's a callback (like checkApptsAndRender), let it handle spinner removal
+        // For the calendar page, checkApptsAndRender will remove the spinner when done
+        if (callback) {
+            // Call the callback - it will handle its own spinner removal
+            callback();
+            
+            // Set up image loading tracking for other assets
             $('img').on('load', function () {
                 $(this).addClass('loaded');
             }).each(function () {
@@ -96,6 +89,26 @@ function loadContentWithAssets(url, cssUrl, jsUrls, callback) {
                     $(this).trigger('load');
                 }
             });
+        } else {
+            // For pages without callbacks, use image loading to remove spinner
+            var firstImg = $('img:first');
+
+            if (!firstImg.length) {
+                setLoading(false, url);
+            } else {
+                $(firstImg).on('load', function () {
+                    setLoading(false, url);
+                    $('#content').addClass('loaded');
+                })
+
+                $('img').on('load', function () {
+                    $(this).addClass('loaded');
+                }).each(function () {
+                    if (this.complete) {
+                        $(this).trigger('load');
+                    }
+                });
+            }
         }
 
         checkNav();

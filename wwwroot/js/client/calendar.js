@@ -18,7 +18,7 @@ let mobile = window.innerWidth < 768 ? true : false;
 
 async function getAppointments() {
     apptsByDate = {};
-    $('#month-year').after(`<div class='loading text-center'><img class='spinning' src="./assets/flower.svg" alt="flower-logo"></div>`)
+    // Use the main spinner from root.js, don't add a duplicate one here
     try {
         const response = await fetch(`/api/apptsInMonth/${displayedMonth}/${displayedYear}`);
         if (response.ok) {
@@ -239,7 +239,8 @@ async function displayModal(event) {
     });
 };
 
-async function renderCalendar() {
+// Render the calendar structure (dates without appointments)
+function renderCalendarStructure() {
     $('#calendar-dates').empty();
     mobile ? $('#calendar-header').addClass('flex-column-reverse') : $('#calendar-header').removeClass('flex-column-reverse');
     $('#month-year').text(`${months[displayedMonth - 1]} ${displayedYear}`);
@@ -253,40 +254,60 @@ async function renderCalendar() {
             }
             else {
                 dateDisplay.append(`<div id=${date} data-date=${date} class='date-display'>${date}</div>`)
-                const availableApptsInDay = apptsByDate[date] || [];
-
-                let appointmentsDisplay;
-
-                if (availableApptsInDay.length != 0) {
-                    if (mobile === true) {
-                        dateDisplay.attr('data-bs-toggle', 'modal');
-                        dateDisplay.attr('data-bs-target', '#serviceSelection');
-                        dateDisplay.addClass('availableDate');
-                        appointmentsDisplay = $('<div class="d-flex"></div>');
-                        availableApptsInDay.forEach(appt => {
-                            appointmentsDisplay.append(`<div data-date=${date} class='appt-dot'>.</div>`)
-                        });
-                        dateDisplay.append(appointmentsDisplay);
-                    } else {
-                        appointmentsDisplay = $(`<div class="col-12 appts-container"></div>`);
-
-                        availableApptsInDay.forEach(appt => {
-                            const apptName = appt.ApptType ? appt.ApptType.Name : 'Available';
-                            const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-
-                            appointmentsDisplay.append(`<div id=${appt.Id} data-date=${date} data-bs-toggle='modal' data-bs-target='#serviceSelection' class='appt-time'>${apptTime} ${apptName}</div>`)
-                        });
-                        dateDisplay.append(appointmentsDisplay);
-                    }
-                }
+                // Add empty container for appointments - will be populated later
+                dateDisplay.append(`<div id="appts-${date}" class="${mobile ? 'd-flex justify-content-center' : 'col-12 appts-container'}"></div>`);
             }
             weekDisplay.append(dateDisplay);
         });
         $('#calendar-dates').append(weekDisplay);
     });
-    if (mobile === true) { $('.availableDate').on('click', displayModal) }
-    else {
-        $('.appt-time').on('click', (event) => {
+}
+
+// Populate the calendar with appointments
+function populateCalendarAppointments() {
+    displayedDates.forEach(week => {
+        week.forEach(date => {
+            if (date === 0) return;
+
+            const availableApptsInDay = apptsByDate[date] || [];
+            const appointmentsContainer = $(`#appts-${date}`);
+            appointmentsContainer.empty();
+
+            if (availableApptsInDay.length > 0) {
+                let appointmentsDisplay;
+
+                if (mobile === true) {
+                    // Find the parent date container and add modal attributes
+                    const dateContainer = appointmentsContainer.closest('.date');
+                    dateContainer.attr('data-bs-toggle', 'modal');
+                    dateContainer.attr('data-bs-target', '#serviceSelection');
+                    dateContainer.addClass('availableDate');
+
+                    appointmentsDisplay = $('<div class="d-flex"></div>');
+                    availableApptsInDay.forEach(appt => {
+                        appointmentsDisplay.append(`<div data-date=${date} class='appt-dot'>.</div>`)
+                    });
+                    appointmentsContainer.append(appointmentsDisplay);
+                } else {
+                    appointmentsDisplay = $(`<div class="col-12 appts-container"></div>`);
+
+                    availableApptsInDay.forEach(appt => {
+                        const apptName = appt.ApptType ? appt.ApptType.Name : 'Available';
+                        const apptTime = new Date(appt.DateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+                        appointmentsDisplay.append(`<div id=${appt.Id} data-date=${date} data-bs-toggle='modal' data-bs-target='#serviceSelection' class='appt-time'>${apptTime} ${apptName}</div>`)
+                    });
+                    appointmentsContainer.append(appointmentsDisplay);
+                }
+            }
+        });
+    });
+
+    // Set up event handlers after populating
+    if (mobile === true) {
+        $('.availableDate').off('click').on('click', displayModal);
+    } else {
+        $('.appt-time').off('click').on('click', (event) => {
             currentApptId = event.target.id;
             const date = event.target.dataset.date;
             availableApptsInDay = apptsByDate[date];
@@ -296,9 +317,15 @@ async function renderCalendar() {
     }
 }
 
+// Combined function for backward compatibility
+async function renderCalendar() {
+    renderCalendarStructure();
+    populateCalendarAppointments();
+}
+
 async function renderServices() {
     const servicesContainer = $('#services');
-    servicesContainer.append('<div class="loading text-center"><img class="spinning" src="./assets/flower.svg" alt="flower-logo"></div>');
+    // Don't add a local spinner here - use the main one from root.js
     await getServices().then(allServices => {
         services = allServices;
         privateServices = services.filter(service => service.Private === true);
@@ -318,15 +345,25 @@ async function renderServices() {
         return card;
     }).join(''); // Join all cards into a single string
 
-    $('.loading').remove();
     servicesContainer.append(serviceCards); // Append all cards at once   
 };
 
 async function checkApptsAndRender() {
-    renderServices();
+    // Render services first
+    await renderServices();
 
+    // Render calendar structure immediately (before fetching appointments)
+    renderCalendarStructure();
+
+    // Remove spinner now so users can see the calendar layout
+    // Appointments will populate asynchronously after
+    $('.loading').remove();
+
+    // Then get appointments in the background
     const appointmentsExist = await getAppointments();
-    if (appointmentsExist === false) { return; }
+    if (appointmentsExist === false) {
+        return;
+    }
     if (JSON.stringify(apptsByDate) === "{}") {
         $('#month-year').after(`
             <div class="alert alert-info text-center m-2 p-2" role="alert">
@@ -334,8 +371,9 @@ async function checkApptsAndRender() {
             </div>
             `);
     }
-    $('.loading').remove();
-    renderCalendar();
+
+    // Populate calendar with appointments (calendar is already visible)
+    populateCalendarAppointments();
 
     function setDates() {
         $('.alert').remove();
@@ -375,7 +413,8 @@ window.addEventListener('resize', () => {
     let isMobile = window.innerWidth < 768 ? true : false;
     if (isMobile !== mobile) {
         mobile = !mobile;
-        renderCalendar();
+        renderCalendarStructure();
+        populateCalendarAppointments();
     }
 });
 
